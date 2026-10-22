@@ -1,0 +1,151 @@
+[
+  {
+    "id": "bhairavi",
+    "raga": "Bhairavi",
+    "name": "Peach Tissue Silk Saree",
+    "cat": "sarees",
+    "mood": "dawn",
+    "price": 7450,
+    "mrp": 8900,
+    "images": [
+      "peach-bhairavi.jpg",
+      "peach-bhairavi-detail.jpg"
+    ],
+    "swatch": "#e9b39a",
+    "tag": "New",
+    "ragaNote": "Bhairavi is sung at the close of a morning concert — tender, unhurried, a little wistful. This saree has the same light: blush tissue with a gold-washed border that catches sunlight rather than demanding it.",
+    "details": [
+      "Tissue silk with zari border",
+      "Woven butta all over",
+      "Unstitched blouse piece included",
+      "Length 6.3 m including blouse"
+    ],
+    "care": "Dry clean only. Store folded in muslin, refold every few months."
+  },
+  {
+    "id": "hindol",
+    "raga": "Hindol",
+    "name": "Marigold Kanjivaram with Royal Blue Border",
+    "cat": "sarees",
+    "mood": "festive",
+    "price": 14900,
+    "images": [
+      "marigold-hindol.jpg",
+      "marigold-hindol-detail.jpg"
+    ],
+    "swatch": "#d79a2b",
+    "tag": "Bestseller",
+    "ragaNote": "Hindol is the raga of spring and swings. Marigold body, a royal-blue korvai border and a pallu dense with zari — made for Pongal mornings and wedding receptions alike.",
+    "details": [
+      "Pure mulberry silk, Kanchipuram",
+      "Contrast korvai border",
+      "Rich zari pallu",
+      "Silk Mark certified"
+    ],
+    "care": "Dry clean only. Wrap zari sections in cotton before storing."
+  },
+  {
+    "id": "yaman",
+    "raga": "Yaman",
+    "name": "Aubergine Banarasi Katan Silk",
+    "cat": "sarees",
+    "mood": "dusk",
+    "price": 11800,
+    "mrp": 13500,
+    "images": [
+      "aubergine-yaman.jpg",
+      "aubergine-yaman-detail.jpg"
+    ],
+    "swatch": "#4a2a5e",
+    "tag": "",
+    "ragaNote": "Yaman is the first raga a student learns and the one masters return to at dusk. Aubergine katan silk with a broad gold border and a flash of magenta — classic, with confidence.",
+    "details": [
+      "Katan silk, handwoven in Varanasi",
+      "Gold zari border with magenta edge",
+      "Contrast blouse piece",
+      "Length 6.3 m including blouse"
+    ],
+    "care": "Dry clean only. Avoid spraying perfume directly on zari."
+  },
+  {
+    "id": "kalyani",
+    "raga": "Kalyani",
+    "name": "Rani Pink Bridal Silk with Gold Buttas",
+    "cat": "sarees",
+    "mood": "bridal",
+    "price": 18500,
+    "images": [
+      "rani-kalyani.jpg",
+      "rani-kalyani-detail.jpg"
+    ],
+    "swatch": "#d2384f",
+    "tag": "Bridal",
+    "ragaNote": "Kalyani literally means auspicious — the raga sung to begin good things. Rani pink silk scattered with gold buttas, a temple border and a pallu heavy enough for the muhurtham photographs.",
+    "details": [
+      "Pure silk with gold zari buttas",
+      "Temple border, rich pallu",
+      "Brocade blouse piece",
+      "Silk Mark certified"
+    ],
+    "care": "Dry clean only. Air it out after every wear before folding."
+  },
+  {
+    "id": "chandrakauns",
+    "raga": "Chandrakauns",
+    "name": "Ivory Organza Anarkali Set",
+    "cat": "ethnic",
+    "mood": "night",
+    "price": 9200,
+    "images": [
+      "ivory-chandrakauns.jpg",
+      "ivory-chandrakauns-detail.jpg"
+    ],
+    "swatch": "#e8ece6",
+    "tag": "New",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "ragaNote": "Chandrakauns is a late-night raga named for the moon. Ivory organza, a full twirling hem and a sequin-dusted dupatta — for sangeets that go well past midnight.",
+    "details": [
+      "Organza anarkali with cotton lining",
+      "Sequin-dusted net dupatta",
+      "Matching churidar",
+      "Made to your size within 7 days"
+    ],
+    "care": "Dry clean recommended. Steam, don't iron, the dupatta."
+  },
+  {
+    "id": "megh",
+    "raga": "Megh",
+    "name": "Teal Georgette Tiered Maxi",
+    "cat": "ethnic",
+    "mood": "monsoon",
+    "price": 4650,
+    "mrp": 5400,
+    "images": [
+      "teal-megh.jpg",
+      "teal-megh-detail.jpg"
+    ],
+    "swatch": "#2f8a83",
+    "tag": "",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "ragaNote": "Megh is a monsoon raga, sung to call the clouds. Teal georgette, a cinched waist and a tiered hem that moves like rain on a field — the easy piece in the collection.",
+    "details": [
+      "Georgette with soft lining",
+      "Smocked cuffs, wrap neckline",
+      "Tiered flared hem",
+      "Ankle length"
+    ],
+    "care": "Gentle hand wash in cold water. Dry in shade."
+  }
+]

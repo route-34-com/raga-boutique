@@ -1,0 +1,16 @@
+# /etc/systemd/system/raga-api.service
+[Unit]
+Description=Raga Boutique API
+After=network.target postgresql.service
+
+[Service]
+User=raga
+WorkingDirectory=/srv/raga/backend
+EnvironmentFile=/srv/raga/backend/.env
+ExecStart=/srv/raga/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 2 --proxy-headers
+Restart=always
+RestartSec=3
+MemoryMax=300M
+
+[Install]
+WantedBy=multi-user.target

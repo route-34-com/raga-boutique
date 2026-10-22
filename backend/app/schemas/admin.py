@@ -1,0 +1,77 @@
+from typing import Annotated
+
+from pydantic import BaseModel, Field, StringConstraints
+
+from app.schemas.order import OrderSummary
+
+Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=160)]
+Short = Annotated[str, StringConstraints(strip_whitespace=True, max_length=60)]
+
+
+class AdminOrderRow(OrderSummary):
+    customer_name: str
+    phone: str
+    payment_method: str
+    payment_status: str
+
+
+class StatusChange(BaseModel):
+    status: str
+    note: Annotated[str, StringConstraints(strip_whitespace=True, max_length=300)] = ""
+    courier: Short = ""
+    tracking_id: Short = ""
+
+
+class VariantIn(BaseModel):
+    size: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=10)]
+    stock: int = Field(ge=0, le=100_000)
+
+
+class ProductIn(BaseModel):
+    name: Name
+    raga: Short = ""
+    category_id: str
+    mood: str = "festive"
+    price: int = Field(gt=0)
+    mrp: int | None = Field(default=None, ge=0)
+    tag: Annotated[str, StringConstraints(strip_whitespace=True, max_length=30)] = ""
+    swatch: Annotated[str, StringConstraints(pattern=r"^#[0-9a-fA-F]{6}$")] = "#c08040"
+    raga_note: Annotated[str, StringConstraints(strip_whitespace=True, max_length=2000)] = ""
+    details: list[Annotated[str, StringConstraints(strip_whitespace=True, max_length=200)]] = []
+    care: Annotated[str, StringConstraints(strip_whitespace=True, max_length=1000)] = ""
+    active: bool = True
+    variants: list[VariantIn] = Field(min_length=1, max_length=12)
+    images: list[Annotated[str, StringConstraints(pattern=r"^/uploads/products/[\w.-]+$")]] = Field(min_length=1, max_length=12)  # first is the cover
+
+
+class StockAdjust(BaseModel):
+    size: str
+    delta: int = Field(ge=-1000, le=1000)
+
+
+class ActiveToggle(BaseModel):
+    active: bool
+
+
+class CategoryIn(BaseModel):
+    name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=80)]
+    active: bool = True
+
+
+class CategoryPatch(BaseModel):
+    name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=80)] | None = None
+    active: bool | None = None
+
+
+class Reorder(BaseModel):
+    ids: list[str]
+
+
+class SettingsIn(BaseModel):
+    free_ship_above: int = Field(ge=0)
+    ship_fee: int = Field(ge=0)
+    low_stock_at: int = Field(ge=0)
+
+
+class AdminPhone(BaseModel):
+    phone: Annotated[str, StringConstraints(pattern=r"^[6-9]\d{9}$")]
