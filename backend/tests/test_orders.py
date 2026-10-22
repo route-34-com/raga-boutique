@@ -178,3 +178,10 @@ def test_settings_save_couriers(admin):
     assert admin.get("/api/admin/settings").json()["couriers"][0]["name"] == "DTDC"
     s["couriers"] = [{"name": "Bad", "track_url": "https://no-placeholder.example"}]
     assert admin.put("/api/admin/settings", json=s).status_code == 422
+
+
+def test_public_settings_list_couriers_for_tracking_links(admin):
+    s = admin.get("/api/admin/settings").json()
+    s["couriers"] = [{"name": "DTDC", "track_url": "https://www.dtdc.in/tracking?awb={id}"}]
+    admin.put("/api/admin/settings", json=s)
+    assert admin.get("/api/settings").json()["couriers"] == s["couriers"]

@@ -2,6 +2,7 @@ import { Link, useParams, useSearchParams } from "react-router"
 
 import { OrderTimeline } from "@/components/common/OrderTimeline"
 import { StatusBadge } from "@/components/common/StatusBadge"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PageLoader } from "@/components/common/PageLoader"
 import { useMe, useMyOrder, useSettings } from "@/hooks/queries"
@@ -16,6 +17,8 @@ export default function OrderPage() {
   const { data: o, isLoading, isError } = useMyOrder(orderNo, !!me)
   const { data: settings } = useSettings()
   useTitle(`Order ${orderNo}`)
+  const courier = o && settings?.couriers?.find((c) => c.name.trim().toLowerCase() === o.courier.trim().toLowerCase())
+  const trackUrl = o?.tracking_id && courier?.track_url.includes("{id}") ? courier.track_url.replace("{id}", encodeURIComponent(o.tracking_id)) : ""
 
   if (meLoading) return <PageLoader />
   if (!me) return <LoginPrompt title="Your order" text="Log in to see this order." />
@@ -39,7 +42,12 @@ export default function OrderPage() {
           {o.status === "cancelled"
             ? <p className="mb-8 rounded-2xl border bg-paper px-5 py-4">This order was cancelled. Any stock was released.</p>
             : <div className="mb-9"><OrderTimeline order={o} /></div>}
-          {o.tracking_id && <p className="mb-8 rounded-2xl border bg-paper px-5 py-4">Shipped with {o.courier} · Tracking no. <strong>{o.tracking_id}</strong></p>}
+          {o.tracking_id && (
+            <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-paper px-5 py-4">
+              <p>Shipped with {o.courier} · Tracking no. <strong>{o.tracking_id}</strong></p>
+              {trackUrl && <Button asChild className="h-10 rounded-full px-5"><a href={trackUrl} target="_blank" rel="noopener">Track on {o.courier} →</a></Button>}
+            </div>
+          )}
           <div className="grid items-start gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
             <div>
               {o.items.map((it, i) => (

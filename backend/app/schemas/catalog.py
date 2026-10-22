@@ -58,3 +58,4 @@ class PublicSettings(Out):
     contact_hours: str = ""
     instagram_url: str = ""
     facebook_url: str = ""
+    couriers: list[dict] = []  # [{name, track_url}], so a customer's order page can link to the courier's tracking

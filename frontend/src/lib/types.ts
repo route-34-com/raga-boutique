@@ -107,4 +107,4 @@ export type ContactDetails = {
   facebook_url: string
 }
 
-export type StoreSettings = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at?: number }
+export type StoreSettings = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at?: number; couriers?: Courier[] }

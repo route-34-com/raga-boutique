@@ -17,7 +17,18 @@ export default function Story() {
         <p className="eyebrow">Our story</p>
         <h1 className="mt-3.5 text-[clamp(36px,4.6vw,60px)] leading-none">The music of colours</h1>
       </section>
-      <section className="container-x grid items-center gap-8 pt-10 md:grid-cols-[1.1fr_1fr] md:gap-24">
+      <section className="container-x grid items-center gap-8 pt-8 md:grid-cols-[1fr_1.1fr] md:gap-20">
+        <figure className="aspect-[4/5] max-h-[600px] overflow-hidden rounded-t-[200px] rounded-b-2xl ring-2 ring-marigold/60 ring-offset-4 ring-offset-background">
+          <img src="/brand/owner.jpg" alt="Suja, founder of Raga Boutique" className="size-full object-cover object-top" />
+        </figure>
+        <div className="space-y-4">
+          <p className="eyebrow">Meet Suja</p>
+          <h2 className="text-[clamp(30px,3.6vw,46px)] leading-tight">Thirteen years of <em className="text-rust">handpicked colour.</em></h2>
+          <p className="max-w-[48ch] text-muted-foreground">Raga began in 2013 as a small boutique in Tiruchengode, built on a simple idea: every woman deserves a saree that makes her feel confident. Suja still chooses each piece herself. She feels the weave, watches how it falls and checks the colour in daylight.</p>
+          <p className="max-w-[48ch] text-muted-foreground">Today Raga has a larger showroom on Erode Main Road, and every customer is still welcomed like family, in the shop or on WhatsApp.</p>
+        </div>
+      </section>
+      <section className="container-x grid items-center gap-8 pt-14 md:grid-cols-[1.1fr_1fr] md:gap-24">
         <figure className="aspect-[4/5] max-h-[640px] overflow-hidden rounded-2xl"><img src="/brand/aubergine-yaman.jpg" alt="Model in an aubergine Banarasi saree" className="size-full object-cover" /></figure>
         <div className="space-y-4">
           <p className="eyebrow">Why ragas?</p>
