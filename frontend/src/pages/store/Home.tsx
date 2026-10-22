@@ -29,20 +29,20 @@ export default function Home() {
 
   return (
     <>
-      <section className="container-x grid items-center gap-10 pt-6 md:grid-cols-[1fr_1.05fr] md:gap-16 md:pt-12">
+      <section className="container-x grid items-center gap-8 pt-6 md:grid-cols-[1fr_1fr] md:gap-14 md:pt-8">
         <div className="max-md:order-2">
           <p className="eyebrow">Festive edit · Autumn 2026</p>
-          <h1 className="my-5 text-[clamp(44px,6vw,76px)] leading-[1.02]">Every weave<br />has a <em className="font-light text-rust">raga.</em></h1>
+          <h1 className="my-4 text-[clamp(42px,5.6vw,72px)] leading-[1.02]">Every weave<br />has a <em className="font-light text-rust">raga.</em></h1>
           <p className="max-w-[46ch] text-[17px] text-muted-foreground">
             Handwoven sarees and ethnic wear from Kanchipuram, Varanasi and beyond — each one named after the raga whose mood it carries.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-7 flex flex-wrap gap-3">
             <Button asChild className="h-12 rounded-full px-7"><Link to="/shop">Shop the edit</Link></Button>
             {cats[0] && <Button asChild variant="outline" className="h-12 rounded-full border-cocoa bg-transparent px-7"><Link to={`/shop/${cats[0].id}`}>{cats[0].name}</Link></Button>}
           </div>
         </div>
-        <div className="relative pb-9 pl-7 md:pb-12 md:pl-12">
-          <figure className="aspect-[4/4.4] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-[4/4.6] md:rounded-t-[220px]">
+        <div className="relative pb-9 pl-7 md:pb-10 md:pl-12">
+          <figure className="aspect-[4/4.2] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-auto md:h-[min(68vh,600px)] md:rounded-t-[220px]">
             <img src="/brand/hero-marigold.jpg" alt="Model in a marigold Kanjivaram saree with royal blue border in a temple courtyard"
               className="size-full animate-[drift_18s_ease-in-out_infinite_alternate] object-cover object-[55%_30%]" />
           </figure>
@@ -57,7 +57,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container-x pt-16 md:pt-28">
+      <section className="container-x pt-10 md:pt-16">
         <SectionHead eyebrow="Shop by mood" title="Dress for the hour"
           aside={<p className="max-w-[40ch] text-muted-foreground">Indian classical music gives each raga a time of day and a feeling. We do the same with colour.</p>} />
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6 lg:gap-3.5">
@@ -76,7 +76,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container-x pt-16 md:pt-28">
+      <section className="container-x pt-10 md:pt-16">
         <SectionHead eyebrow="The collection" title="New in the edit"
           aside={<Link to="/shop" className="border-b-[1.5px] border-cocoa pb-0.5 font-semibold text-cocoa hover:text-rust">Shop all →</Link>} />
         <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">
@@ -85,8 +85,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container-x grid items-center gap-8 pt-16 md:grid-cols-[1.1fr_1fr] md:gap-24 md:pt-28">
-        <figure className="aspect-[4/3.4] overflow-hidden rounded-2xl md:aspect-square">
+      <section className="container-x grid items-center gap-8 pt-10 md:grid-cols-[1.1fr_1fr] md:gap-16 md:pt-16">
+        <figure className="aspect-[4/3.4] overflow-hidden rounded-2xl md:aspect-auto md:h-[460px]">
           <img src="/brand/hero-peach.jpg" alt="Model in a peach saree on a garden path" loading="lazy" className="size-full object-cover" />
         </figure>
         <div>
@@ -97,7 +97,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container-x pt-16 md:pt-28">
+      <section className="container-x pt-10 md:pt-16">
         <div className="grid overflow-hidden rounded-2xl border bg-border sm:grid-cols-2 lg:grid-cols-4" style={{ gap: 1 }}>
           {SERVICES.map(([icon, title, body]) => (
             <div key={title} className="bg-paper p-7">
@@ -110,7 +110,7 @@ export default function Home() {
       </section>
 
       {products && products.length > 4 && (
-        <section className="container-x pt-16 md:pt-28">
+        <section className="container-x pt-10 md:pt-16">
           <SectionHead eyebrow="Also in the edit" title="For the evening after" />
           <div className="grid grid-cols-2 gap-3 md:gap-7">
             {products.slice(4, 6).map((p) => <ProductCard key={p.id} p={p} tall />)}
