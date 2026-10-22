@@ -55,9 +55,11 @@ function Header() {
   return (
     <header className={cn("sticky top-0 z-30 bg-background/90 backdrop-blur-md transition-shadow", scrolled && "shadow-[0_1px_0_var(--border)]")}>
       <div className="container-x grid grid-cols-[1fr_auto_1fr] items-center py-2.5">
-        <button className="-ml-2 grid size-10 place-items-center justify-self-start xl:hidden" aria-label="Menu" onClick={() => setMenu(true)}><Menu className="size-5" /></button>
-        <NavLinks className="hidden items-center gap-6 text-sm font-medium xl:flex 2xl:gap-8" />
-        <Link to="/" className="justify-self-center px-2" aria-label="Raga Boutique home">
+        <button className="-ml-2 grid size-10 place-items-center justify-self-start lg:hidden" aria-label="Menu" onClick={() => setMenu(true)}><Menu className="size-5" /></button>
+        <span className="hidden lg:block" />
+        <NavLinks className="hidden items-center gap-6 py-2.5 text-[15px] font-medium lg:flex xl:gap-10" />
+        {/* On desktop the logo lives in the home hero; small screens keep it here beside the menu button. */}
+        <Link to="/" className="justify-self-center px-2 lg:hidden" aria-label="Raga Boutique home">
           <img src="/brand/logo-sm.png" alt="Raga — The Music of Colours" className={cn("w-auto transition-[height]", scrolled ? "h-10" : "h-11 md:h-[52px]")} />
         </Link>
         <div className="flex items-center justify-end gap-1">
