@@ -152,7 +152,7 @@ function Footer() {
           <h4 className="mb-3 font-heading text-lg text-background">Help</h4>
           <Link to="/account" className={a}>My orders</Link>
           <Link to="/story" className={a}>Our story</Link>
-          <Link to="/story#shipping" className={a}>Shipping &amp; returns</Link>
+          <Link to="/story#shipping" className={a}>Shipping &amp; orders</Link>
           <Link to="/story#contact" className={a}>Contact</Link>
         </div>
         <div>
