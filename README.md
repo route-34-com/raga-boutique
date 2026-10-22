@@ -21,9 +21,9 @@ cd backend && uv run uvicorn app.main:app --reload --reload-dir app
 cd frontend && npm run dev
 ```
 
-- Store: http://127.0.0.1:5173
-- Admin: http://127.0.0.1:5173/admin (log in with **9000000001**)
-- Test customer with order history: **9000000002**. Any other number signs up as a new customer.
+- Store: http://localhost:5173
+- Admin: http://localhost:5173/admin (log in with **9000000001**)
+- Test customers with order history: **9000000002** to **9000000006**. Any other number signs up as a new customer.
 
 In demo mode (`OTP_PROVIDER=console`) no SMS is sent: the code appears on screen and in the API log.
 
@@ -41,10 +41,29 @@ cd ../frontend && npm install
 
 ## Tests
 ```bash
-cd backend && uv run pytest        # uses the raga_test database
+cd backend && uv run pytest        # uses the raga_test database (override with TEST_DATABASE_URL)
 ```
 Covers OTP login and lockout, server-side prices, no overselling (row locks), duplicate cart lines,
-cancellation restocking, the order status flow and admin-only access.
+cancellation restocking, the order status flow, admin-only access, search, plain-language validation
+errors and contact settings.
+
+## Deploying (Vercel)
+
+Live at https://raga-boutique.vercel.app. Every push to `main` deploys to production; other branches
+get a preview URL. `vercel.json` builds the frontend and serves the API as one Python function
+(`api/index.py`); the catalog photos are copied into the build so the CDN serves them directly.
+
+The database is Neon Postgres (Vercel Marketplace, Singapore), which sets `DATABASE_URL`. The project
+also needs: `ENV=demo`, `OTP_PROVIDER=console` (or `msg91`), `JWT_SECRET`, `COOKIE_SECURE=true`,
+`IMAGE_STORE=db` (Vercel has no lasting disk, so uploaded photos are kept in Postgres) and
+`SERVERLESS=true`. Preview deployments share the production database.
+
+Migrations don't run on deploy. After adding one, run it against Neon (use the unpooled URL):
+```bash
+vercel env pull .env.production.local --environment production
+cd backend && DATABASE_URL="<DATABASE_URL_UNPOOLED>" IMAGE_STORE=db uv run alembic upgrade head
+```
+If backend dependencies change, regenerate `requirements.txt` (command at the top of that file).
 
 ## How it's organised
 
@@ -78,6 +97,11 @@ cancellation restocking, the order status flow and admin-only access.
 ## Switching on real SMS
 Set in `backend/.env`: `OTP_PROVIDER=msg91`, `MSG91_AUTHKEY`, `MSG91_TEMPLATE_ID` (a DLT-approved template with an `##otp##` variable).
 Another provider = one new file in `app/services/otp/` + one line in its `__init__.py`.
+
+## Store details
+Contact phone, WhatsApp, email, address, hours and Instagram/Facebook links are edited under
+Admin → Settings and appear in the footer, the Story page and on order confirmations. The demo seed
+fills placeholders; replace them before launch.
 
 ## Not built yet
 Online payments (Razorpay), SMS/WhatsApp order updates, GST invoices, courier booking, returns, coupons.
