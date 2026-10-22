@@ -100,8 +100,12 @@ Another provider = one new file in `app/services/otp/` + one line in its `__init
 
 ## Store details
 Contact phone, WhatsApp, email, address, hours and Instagram/Facebook links are edited under
-Admin → Settings and appear in the footer, the Story page and on order confirmations. The demo seed
-fills placeholders; replace them before launch.
+Admin → Settings and appear in the footer, the Story page and on order confirmations. The seed fills
+the store's details from its Google Maps listing (Tiruchengode); confirm the WhatsApp number and add an
+email address there.
+
+Live at https://ragaboutique.route34solutions.com (also https://raga-boutique.vercel.app). The subdomain
+is a DNS-only CNAME in route34's Cloudflare pointing at Vercel.
 
 ## Not built yet
 Online payments (Razorpay), SMS/WhatsApp order updates, GST invoices, courier booking, returns, coupons.

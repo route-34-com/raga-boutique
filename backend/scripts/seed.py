@@ -26,9 +26,10 @@ CATEGORIES = [("sarees", "Sarees"), ("ethnic", "Anarkalis & dresses"), ("lehenga
 # A few pieces start low so the dashboard's low-stock list has something to show; the rest are comfortably stocked.
 LOW_STOCK = {"hindol": 3, "kalyani": 2, "malhar": 2}
 SIZE_STOCK = {"XS": 3, "S": 4, "M": 5, "L": 5, "XL": 3, "XXL": 3}
-# Placeholders until the owner fills in real details under Admin → Settings.
-CONTACT = dict(contact_phone="9000000000", contact_whatsapp="9000000000", contact_email="hello@ragaboutique.in",
-               contact_address="12, Kutchery Road, Mylapore, Chennai 600004", contact_hours="Mon–Sat, 10am–8pm",
+# The store's details from its Google Maps listing; edited later under Admin → Settings.
+CONTACT = dict(contact_phone="8754291999", contact_whatsapp="8754291999", contact_email="",
+               contact_address="22–23, Municipal Complex, near the Bus Stand, Erode Main Road, Santhaipettai, Tiruchengode, Tamil Nadu 637211",
+               contact_hours="Open till 8 pm",
                instagram_url="https://www.instagram.com/ragaboutique_/", facebook_url="https://www.facebook.com/ragatheboutique/")
 
 
