@@ -15,6 +15,12 @@ export type Product = {
   images: Image[]
   variants: VariantStock[]
   total_stock: number
+  color: string
+  material: string
+  work: string
+  pattern: string
+  occasions: string[]
+  created_at: string
 }
 
 export type ProductDetail = Product & { raga_note: string; details: string[]; care: string }
