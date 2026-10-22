@@ -65,7 +65,7 @@ export function AdminLayout() {
             <button onClick={logout} aria-label="Log out" className="grid size-9 place-items-center rounded-lg text-marigold hover:bg-sidebar-accent"><LogOut className="size-4" /></button>
           </div>
         </div>
-        <div className="flex items-center gap-2 overflow-x-auto px-3 py-2.5 md:h-full md:flex-col md:items-stretch md:px-3.5 md:py-5">
+        <div className="flex items-center gap-2 overflow-x-auto px-3 py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:h-full md:flex-col md:items-stretch md:px-3.5 md:py-5">
           <NavLink to="/admin" className="hidden shrink-0 items-center gap-2.5 md:flex md:px-2 md:pb-5">
             <img src="/brand/logo-sm.png" alt="Raga" className="w-16 brightness-0 invert-[.9] sepia-[.3] md:w-[92px]" />
             <span className="rounded-md bg-marigold px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.14em] text-cocoa">Admin</span>

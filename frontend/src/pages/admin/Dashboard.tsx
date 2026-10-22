@@ -57,7 +57,8 @@ export default function Dashboard() {
         <Kpi label="Waiting for you" value={toConfirm + toShip} sub={`${toConfirm} to confirm · ${toShip} to ship`} tone={toConfirm ? "alert" : undefined} />
         <Kpi label="Low stock" value={d.low_stock.length} sub={`at or below ${d.low_stock_at}`} tone={d.low_stock.length ? "warn" : undefined} />
       </div>
-      <div className="grid items-start gap-4 xl:grid-cols-2">
+      {/* min-w-0 lets the wide orders table scroll inside its card instead of stretching the page on phones */}
+      <div className="grid items-start gap-4 xl:grid-cols-2 [&>section]:min-w-0">
         <section className="rounded-2xl border bg-card p-5">
           <div className="mb-2 flex items-baseline justify-between"><h3 className="text-xl">Needs action</h3><Link to="/admin/orders?status=placed" className="text-[13px] font-semibold text-rust hover:underline">All new orders →</Link></div>
           {d.needs_action.length ? d.needs_action.map((o) => {
