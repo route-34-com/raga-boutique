@@ -35,13 +35,15 @@ export default function Shop() {
 
   return (
     <>
-      <section className="container-x pt-8 md:pt-16">
+      <section className="container-x pt-5 md:pt-6">
         <p className="eyebrow"><Link to="/" className="hover:underline">Home</Link> / Shop</p>
-        <h1 className="mb-2.5 mt-3.5 text-[clamp(40px,6vw,76px)] leading-none">{title ?? "Shop"}</h1>
-        <p className="text-muted-foreground">{sub}</p>
+        <div className="mt-2 flex flex-col gap-x-8 gap-y-1 md:flex-row md:items-end md:justify-between">
+          <h1 className="text-[clamp(36px,4.4vw,56px)] leading-none">{title ?? "Shop"}</h1>
+          <p className="text-muted-foreground md:pb-1.5">{sub}</p>
+        </div>
       </section>
-      <section className="container-x pt-6">
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-y py-4">
+      <section className="container-x pt-4">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-y py-3">
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
             <Chip to={href(undefined, mood)} on={!cat}>All</Chip>
             {cats.map((c) => <Chip key={c.id} to={href(c.id, mood)} on={cat === c.id}>{c.name}</Chip>)}
@@ -51,6 +53,7 @@ export default function Shop() {
             {Object.entries(MOODS).map(([k, m]) => <Chip key={k} to={href(cat, k)} on={mood === k}>{m.label}</Chip>)}
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground lg:ml-auto">
+            <span className="mr-3 whitespace-nowrap">{products ? `${products.length} ${products.length === 1 ? "piece" : "pieces"}` : ""}</span>
             Sort
             <Select value={sort} onValueChange={(v) => { const q = new URLSearchParams(params); if (v === "featured") q.delete("sort"); else q.set("sort", v); navigate({ search: q.toString() }) }}>
               <SelectTrigger className="h-9 w-44 bg-paper text-foreground"><SelectValue /></SelectTrigger>
@@ -62,11 +65,10 @@ export default function Shop() {
             </Select>
           </div>
         </div>
-        <p className="my-5 text-sm text-muted-foreground">{products ? `${products.length} ${products.length === 1 ? "piece" : "pieces"}` : " "}</p>
         {isLoading ? (
-          <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)}</div>
+          <div className="mt-5 grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)}</div>
         ) : products?.length ? (
-          <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">{products.map((p) => <ProductCard key={p.id} p={p} />)}</div>
+          <div className="mt-5 grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">{products.map((p) => <ProductCard key={p.id} p={p} />)}</div>
         ) : (
           <div className="flex flex-col items-center gap-5 py-16 text-center">
             <p className="font-heading text-xl italic text-rust">Nothing here just yet.</p>

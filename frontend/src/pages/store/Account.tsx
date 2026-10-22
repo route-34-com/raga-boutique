@@ -55,7 +55,7 @@ export default function Account() {
 
   return (
     <>
-      <section className="container-x pt-8 md:pt-16">
+      <section className="container-x pt-5 md:pt-6">
         <p className="eyebrow"><Link to="/" className="hover:underline">Home</Link> / Account</p>
         <h1 className="mb-2 mt-3.5 text-[clamp(40px,6vw,76px)] leading-none">Hello{me.name ? `, ${me.name.split(" ")[0]}` : ""}.</h1>
         <p className="text-muted-foreground">{me.phone} · <button className="underline" onClick={logout}>Log out</button></p>

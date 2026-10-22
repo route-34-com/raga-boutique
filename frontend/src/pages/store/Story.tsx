@@ -11,7 +11,7 @@ export default function Story() {
   ]
   return (
     <>
-      <section className="container-x pt-8 md:pt-12">
+      <section className="container-x pt-5 md:pt-6">
         <p className="eyebrow">Our story</p>
         <h1 className="mt-3.5 text-[clamp(40px,6vw,76px)] leading-none">The music of colours</h1>
       </section>

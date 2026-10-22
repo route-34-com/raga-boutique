@@ -10,7 +10,7 @@ export default function Wishlist() {
   const { data: products = [] } = useProducts()
   const list = products.filter((p) => ids.includes(p.id))
   return (
-    <section className="container-x pt-8 md:pt-16">
+    <section className="container-x pt-5 md:pt-6">
       <p className="eyebrow"><Link to="/" className="hover:underline">Home</Link> / Wishlist</p>
       <h1 className="mb-8 mt-3.5 text-[clamp(40px,6vw,76px)] leading-none">Saved for later</h1>
       {list.length ? <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">{list.map((p) => <ProductCard key={p.id} p={p} />)}</div> : (

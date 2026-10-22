@@ -58,7 +58,7 @@ export default function ProductPage() {
 
   return (
     <>
-      <section className="container-x grid items-start gap-8 pt-6 md:grid-cols-[1.15fr_1fr] md:gap-16 md:pt-12">
+      <section className="container-x grid items-start gap-8 pt-6 md:grid-cols-[1.15fr_1fr] md:gap-16 md:pt-6">
         <div className="grid gap-3.5 md:sticky md:top-24 md:grid-cols-[76px_1fr]">
           <div className="flex gap-2.5 max-md:order-2 md:flex-col">
             {p.images.map((im, i) => (
