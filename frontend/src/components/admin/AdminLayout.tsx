@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { Boxes, LayoutDashboard, ListTree, LogOut, Settings, ShoppingBag, SquareArrowOutUpRight, Users } from "lucide-react"
+import { Boxes, LayoutDashboard, ListTree, LogOut, Settings, ShoppingBag, SquareArrowOutUpRight, Truck, Users } from "lucide-react"
 import { NavLink, Outlet } from "react-router"
 
 import { LoginForm } from "@/components/common/LoginForm"
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils"
 const NAV = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/admin/orders", label: "Orders", icon: ShoppingBag, badge: true },
+  { to: "/admin/dispatch", label: "Dispatch", icon: Truck },
   { to: "/admin/products", label: "Products", icon: Boxes },
   { to: "/admin/categories", label: "Categories", icon: ListTree },
   { to: "/admin/customers", label: "Customers", icon: Users },

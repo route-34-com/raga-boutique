@@ -66,6 +66,7 @@ export type OrderSummary = {
 
 export type AdminOrderRow = OrderSummary & {
   customer_name: string
+  address: Address
   phone: string
   payment_method: string
   payment_status: string
@@ -81,6 +82,20 @@ export type OrderDetail = AdminOrderRow & {
   note: string
   events: { status: OrderStatus; note: string; created_at: string }[]
 }
+
+export type Notice = {
+  kind: "accepted" | "shipped" | "new_order"
+  channel: "whatsapp" | "email"
+  status: "sending" | "sent" | "tap" | "logged" | "skipped" | "failed"
+  detail: string
+  created_at: string
+}
+
+export type AdminOrderDetail = OrderDetail & { notifications: Notice[] }
+
+export type Courier = { name: string; track_url: string }
+
+export type DispatchResult = { order_id: number; order_no: string; ok: boolean; error: string; whatsapp_link: string }
 
 export type ContactDetails = {
   contact_phone: string

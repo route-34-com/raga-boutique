@@ -8,13 +8,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ApiError, api, del, post, put } from "@/lib/api"
 import { fmtPhone } from "@/lib/format"
-import type { ContactDetails } from "@/lib/types"
+import type { ContactDetails, Courier } from "@/lib/types"
 
-type S = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at: number }
+type S = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at: number; couriers: Courier[] }
 type AdminRow = { id: number; phone: string; name: string; is_you: boolean }
 
 const BLANK: S = { free_ship_above: 5000, ship_fee: 150, low_stock_at: 2, contact_phone: "", contact_whatsapp: "", contact_email: "",
-  contact_address: "", contact_hours: "", instagram_url: "", facebook_url: "" }
+  contact_address: "", contact_hours: "", instagram_url: "", facebook_url: "", couriers: [] }
 
 export default function Settings() {
   const qc = useQueryClient()
@@ -70,6 +70,24 @@ export default function Settings() {
             {num("ship_fee", "Shipping fee below that ₹")}
             {num("low_stock_at", "Warn me when stock is at or below")}
           </div>
+        </section>
+        <section className="rounded-2xl border bg-card p-5 xl:col-span-2">
+          <h3 className="mb-1 text-xl">Couriers</h3>
+          <p className="mb-4 text-sm text-muted-foreground">Used on the Dispatch page. Put <code>{"{id}"}</code> where the tracking ID goes, e.g. https://www.dtdc.in/tracking?awb={"{id}"}. Customers get this link with their tracking ID.</p>
+          <div className="grid gap-2.5">
+            {form.couriers.map((c, i) => {
+              const set = (patch: Partial<Courier>) => setForm({ ...form, couriers: form.couriers.map((x, j) => (j === i ? { ...x, ...patch } : x)) })
+              return (
+                <div key={i} className="grid gap-2.5 sm:grid-cols-[200px_1fr_auto]">
+                  <Input aria-label="Courier name" value={c.name} required placeholder="DTDC" onChange={(e) => set({ name: e.target.value })} />
+                  <Input aria-label="Tracking link" value={c.track_url} type="url" placeholder="https://…{id}" pattern=".*\{id\}.*"
+                    title="Include {id} where the tracking ID goes" onChange={(e) => set({ track_url: e.target.value })} />
+                  <Button type="button" variant="outline" onClick={() => setForm({ ...form, couriers: form.couriers.filter((_, j) => j !== i) })}>Remove</Button>
+                </div>
+              )
+            })}
+          </div>
+          <Button type="button" variant="outline" className="mt-3" onClick={() => setForm({ ...form, couriers: [...form.couriers, { name: "", track_url: "" }] })}>Add courier</Button>
         </section>
         <div className="xl:col-span-2"><Button className="h-10 px-5" disabled={save.isPending}>{save.isPending ? "Saving…" : "Save settings"}</Button></div>
       </form>

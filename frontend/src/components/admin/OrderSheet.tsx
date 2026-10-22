@@ -9,28 +9,37 @@ import { Label } from "@/components/ui/label"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { ApiError, api, post } from "@/lib/api"
 import { STATUS_LABEL, fmtDate, fmtPhone, inr } from "@/lib/format"
-import type { OrderDetail, OrderStatus } from "@/lib/types"
+import type { AdminOrderDetail, Courier, Notice, OrderStatus } from "@/lib/types"
 
 const NEXT: Partial<Record<OrderStatus, OrderStatus>> = { placed: "confirmed", confirmed: "packed", packed: "shipped", shipped: "delivered" }
-export const NEXT_LABEL: Partial<Record<OrderStatus, string>> = { confirmed: "Confirm order", packed: "Mark packed", shipped: "Mark shipped", delivered: "Mark delivered" }
+export const NEXT_LABEL: Partial<Record<OrderStatus, string>> = { confirmed: "Accept order", packed: "Mark packed", shipped: "Mark shipped", delivered: "Mark delivered" }
 export const nextStatus = (s: OrderStatus) => NEXT[s]
 
 export function useAdvanceOrder() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: ({ id, ...body }: { id: number; status: OrderStatus; note?: string; courier?: string; tracking_id?: string }) =>
-      post<OrderDetail>(`/api/admin/orders/${id}/status`, body),
+      post<AdminOrderDetail>(`/api/admin/orders/${id}/status`, body),
     onSuccess: (o) => {
       qc.setQueryData(["admin", "order", o.id], o)
       qc.invalidateQueries({ queryKey: ["admin"] })
-      toast.success(`${o.order_no}: ${STATUS_LABEL[o.status]}`)
+      const kind = o.status === "confirmed" ? "accepted" : o.status === "shipped" ? "shipped" : null
+      const wa = kind && o.notifications.find((n) => n.kind === kind && n.channel === "whatsapp" && n.status === "tap")
+      // Browsers block pop-ups opened after a network wait, so the owner taps the toast to open WhatsApp.
+      const mail = kind && o.notifications.find((n) => n.kind === kind && n.channel === "email")
+      const mailNote = mail?.status === "sent" ? "Email sent" : mail?.status === "failed" ? "Email failed" : mail?.status === "skipped" ? "No email on this order" : "Email not set up yet"
+      if (wa) toast.success(`${o.order_no}: ${STATUS_LABEL[o.status]}. ${mailNote} — now send the WhatsApp message.`,
+        { duration: 20_000, action: { label: "Open WhatsApp", onClick: () => window.open(wa.detail, "_blank", "noopener") } })
+      else toast.success(`${o.order_no}: ${STATUS_LABEL[o.status]}`)
     },
     onError: (e) => toast.error(e instanceof ApiError ? e.message : "Couldn't update."),
   })
 }
 
 export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => void }) {
-  const { data: o } = useQuery({ queryKey: ["admin", "order", id], queryFn: () => api<OrderDetail>(`/api/admin/orders/${id}`), enabled: id !== null })
+  const { data: o } = useQuery({ queryKey: ["admin", "order", id], queryFn: () => api<AdminOrderDetail>(`/api/admin/orders/${id}`), enabled: id !== null })
+  const { data: couriers = [] } = useQuery({ queryKey: ["admin", "settings"], queryFn: () => api<{ couriers: Courier[] }>("/api/admin/settings"),
+    select: (s) => s.couriers })
   const advance = useAdvanceOrder()
   const [note, setNote] = useState("")
   const [courier, setCourier] = useState("")
@@ -63,7 +72,8 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
               <div className="space-y-3 rounded-xl border border-[#f0d9b2] bg-[#fdf3e2] p-4">
                 {next === "shipped" && (
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="grid gap-1.5"><Label>Courier</Label><Input value={courier} onChange={(e) => setCourier(e.target.value)} placeholder="e.g. Delhivery" className="bg-white" /></div>
+                    <div className="grid gap-1.5"><Label>Courier</Label><Input value={courier} onChange={(e) => setCourier(e.target.value)} placeholder="e.g. Delhivery" list="couriers" className="bg-white" />
+                      <datalist id="couriers">{couriers.map((c) => <option key={c.name} value={c.name} />)}</datalist></div>
                     <div className="grid gap-1.5"><Label>Tracking no.</Label><Input value={tracking} onChange={(e) => setTracking(e.target.value)} className="bg-white" /></div>
                   </div>
                 )}
@@ -103,6 +113,12 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
               {o.tracking_id && <p className="mt-2">Courier: <strong>{o.courier}</strong> · {o.tracking_id}</p>}
             </div>
             {o.note && <div><h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Customer note</h4><p>{o.note}</p></div>}
+            {o.notifications.length > 0 && (
+              <div>
+                <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Messages</h4>
+                <ul className="space-y-1.5">{o.notifications.map((n, i) => <NoticeRow key={i} n={n} />)}</ul>
+              </div>
+            )}
             <div>
               <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">History</h4>
               <ol className="list-decimal space-y-1.5 pl-5">
@@ -113,5 +129,18 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
         </>}
       </SheetContent>
     </Sheet>
+  )
+}
+
+const KIND_LABEL: Record<Notice["kind"], string> = { accepted: "Order accepted", shipped: "Shipped with tracking", new_order: "New-order alert to shop" }
+const RESULT: Record<Notice["status"], string> = { sending: "Sending…", sent: "Sent", tap: "Ready to send", logged: "Logged (email not set up yet)", skipped: "Skipped", failed: "Failed" }
+
+function NoticeRow({ n }: { n: Notice }) {
+  return (
+    <li className="flex flex-wrap items-center gap-x-2">
+      <strong>{n.channel === "whatsapp" ? "WhatsApp" : "Email"}</strong> · {KIND_LABEL[n.kind]} ·
+      <span className={n.status === "failed" ? "text-destructive" : "text-muted-foreground"}>{RESULT[n.status]}{n.status !== "tap" && n.detail && `: ${n.detail}`}</span>
+      {n.status === "tap" && <a href={n.detail} target="_blank" rel="noopener" className="font-semibold text-rust underline">Open WhatsApp</a>}
+    </li>
   )
 }
