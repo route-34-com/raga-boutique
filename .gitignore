@@ -1,2 +1,5 @@
 .DS_Store
 .playwright-cli/
+.playwright-mcp/
+.vercel
+.env*.local

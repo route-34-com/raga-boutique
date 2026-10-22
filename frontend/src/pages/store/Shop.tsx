@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCategories, useProducts } from "@/hooks/queries"
+import { useTitle } from "@/hooks/useTitle"
 import { MOODS } from "@/lib/format"
 import { cn } from "@/lib/utils"
+import NotFound from "@/pages/store/NotFound"
 
 function Chip({ to, on, children }: { to: string; on: boolean; children: React.ReactNode }) {
   return (
@@ -21,23 +23,28 @@ export default function Shop() {
   const navigate = useNavigate()
   const mood = params.get("mood") ?? undefined
   const sort = params.get("sort") ?? "featured"
+  const search = params.get("q")?.trim() || undefined
   const { data: cats = [] } = useCategories()
-  const { data: products, isLoading } = useProducts({ cat, mood, sort })
+  const { data: products, isLoading } = useProducts({ cat, mood, sort, q: search })
 
   const href = (nextCat: string | undefined, nextMood: string | undefined) => {
     const q = new URLSearchParams()
+    if (search) q.set("q", search)
     if (nextMood) q.set("mood", nextMood)
     if (sort !== "featured") q.set("sort", sort)
     return `/shop${nextCat ? "/" + nextCat : ""}${q.size ? "?" + q : ""}`
   }
-  const title = mood ? MOODS[mood]?.label : cat ? cats.find((c) => c.id === cat)?.name : "Shop all"
-  const sub = mood ? MOODS[mood]?.note : "Handwoven, small-batch, named for the music they remind us of."
+  const title = search ? `“${search}”` : mood ? MOODS[mood]?.label : cat ? cats.find((c) => c.id === cat)?.name : "Shop all"
+  const sub = search ? <>Search results · <Link to={`/shop${cat ? "/" + cat : ""}`} className="underline hover:text-rust">clear search</Link></>
+    : mood ? MOODS[mood]?.note : "Handwoven, small-batch, named for the music they remind us of."
+  useTitle(search ? `Search: ${search}` : title ?? "Shop")
+
+  if (cat && cats.length && !cats.some((c) => c.id === cat)) return <NotFound />
 
   return (
     <>
-      <section className="container-x pt-8 md:pt-16">
-        <p className="eyebrow"><Link to="/" className="hover:underline">Home</Link> / Shop</p>
-        <h1 className="mb-2.5 mt-3.5 text-[clamp(40px,6vw,76px)] leading-none">{title ?? "Shop"}</h1>
+      <section className="container-x pt-6 md:pt-10">
+        <h1 className="mb-2.5 text-[clamp(36px,4.6vw,60px)] leading-none">{title ?? "Shop"}</h1>
         <p className="text-muted-foreground">{sub}</p>
       </section>
       <section className="container-x pt-6">
@@ -69,7 +76,7 @@ export default function Shop() {
           <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">{products.map((p) => <ProductCard key={p.id} p={p} />)}</div>
         ) : (
           <div className="flex flex-col items-center gap-5 py-16 text-center">
-            <p className="font-heading text-xl italic text-rust">Nothing here just yet.</p>
+            <p className="font-heading text-xl italic text-rust">{search ? `Nothing matches “${search}” yet. Try a colour, a fabric or a raga.` : "Nothing here just yet."}</p>
             <Button asChild className="rounded-full px-6"><Link to="/shop">See everything</Link></Button>
           </div>
         )}

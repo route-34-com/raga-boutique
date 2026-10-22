@@ -15,7 +15,9 @@ MAX_SAVED_ADDRESSES = 5
 
 
 def store_settings(db: Session) -> StoreSettings:
-    return db.get(StoreSettings, 1) or StoreSettings(id=1, free_ship_above=5000, ship_fee=150, low_stock_at=2)
+    return db.get(StoreSettings, 1) or StoreSettings(id=1, free_ship_above=5000, ship_fee=150, low_stock_at=2, contact_phone="",
+                                                     contact_whatsapp="", contact_email="", contact_address="", contact_hours="",
+                                                     instagram_url="", facebook_url="")
 
 
 def _resolve_address(db: Session, user: User, data: PlaceOrderIn) -> dict:

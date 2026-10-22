@@ -50,7 +50,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <PageHead eyebrow={now.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })} title={`Good ${greet}.`} />
+      <PageHead eyebrow={now.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })} title={`Good ${greet}.`} tab="Dashboard" />
       <div className="mb-5 grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         <Kpi label="Orders today" value={d.today.count} sub={inr(d.today.total)} />
         <Kpi label="Sales this month" value={inr(d.month.total)} sub={`${d.month.count} orders`} />
@@ -65,7 +65,7 @@ export default function Dashboard() {
             return (
               <div key={o.id} className="flex cursor-pointer flex-wrap items-center justify-between gap-3 border-b py-3 last:border-0" onClick={() => setOrderId(o.id)}>
                 <div className="text-sm"><strong>{o.order_no}</strong> <span className="text-muted-foreground">· {o.customer_name}</span>
-                  <p className="text-xs text-muted-foreground">{fmtDate(o.created_at, true)} · {o.item_count} item(s) · {inr(o.total)}</p></div>
+                  <p className="text-xs text-muted-foreground">{fmtDate(o.created_at, true)} · {o.item_count} item{o.item_count === 1 ? "" : "s"} · {inr(o.total)}</p></div>
                 <div className="flex items-center gap-2"><StatusBadge status={o.status} />
                   {next !== "shipped"
                     ? <Button size="sm" disabled={advance.isPending} onClick={(e) => { e.stopPropagation(); advance.mutate({ id: o.id, status: next }) }}>{NEXT_LABEL[next]}</Button>

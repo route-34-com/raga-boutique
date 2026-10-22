@@ -12,13 +12,14 @@ router = APIRouter()
 @router.get("/settings")
 def get_settings(_: Admin, db: DB):
     s = store_settings(db)
-    return {"free_ship_above": s.free_ship_above, "ship_fee": s.ship_fee, "low_stock_at": s.low_stock_at}
+    return {k: getattr(s, k) or (0 if k in ("free_ship_above", "ship_fee", "low_stock_at") else "") for k in SettingsIn.model_fields}
 
 
 @router.put("/settings")
 def put_settings(body: SettingsIn, _: Admin, db: DB):
     s = db.get(StoreSettings, 1) or StoreSettings(id=1)
-    s.free_ship_above, s.ship_fee, s.low_stock_at = body.free_ship_above, body.ship_fee, body.low_stock_at
+    for k, v in body.model_dump().items():
+        setattr(s, k, v)
     db.merge(s)
     db.commit()
     return body

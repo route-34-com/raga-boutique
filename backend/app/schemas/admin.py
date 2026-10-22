@@ -67,10 +67,21 @@ class Reorder(BaseModel):
     ids: list[str]
 
 
+Mobile10 = Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\d{10})?$")]
+SocialUrl = Annotated[str, StringConstraints(strip_whitespace=True, max_length=200, pattern=r"^(https://\S+)?$")]
+
+
 class SettingsIn(BaseModel):
     free_ship_above: int = Field(ge=0)
     ship_fee: int = Field(ge=0)
     low_stock_at: int = Field(ge=0)
+    contact_phone: Mobile10 = ""
+    contact_whatsapp: Mobile10 = ""
+    contact_email: Annotated[str, StringConstraints(strip_whitespace=True, max_length=120, pattern=r"^([^@\s]+@[^@\s]+\.[^@\s]+)?$")] = ""
+    contact_address: Annotated[str, StringConstraints(strip_whitespace=True, max_length=300)] = ""
+    contact_hours: Annotated[str, StringConstraints(strip_whitespace=True, max_length=120)] = ""
+    instagram_url: SocialUrl = ""
+    facebook_url: SocialUrl = ""
 
 
 class AdminPhone(BaseModel):

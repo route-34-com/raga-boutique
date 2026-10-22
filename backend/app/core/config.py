@@ -1,6 +1,8 @@
+import re
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -26,7 +28,17 @@ class Settings(BaseSettings):
     msg91_template_id: str = ""
 
     uploads_dir: Path = BASE_DIR / "uploads"
+    # "disk" keeps photos in uploads_dir. "db" keeps them in Postgres, for hosts without a lasting disk (Vercel).
+    image_store: str = "disk"
+    # Serverless hosts open a fresh process per request burst, so they shouldn't hold a connection pool.
+    serverless: bool = False
     cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+
+    @field_validator("database_url")
+    @classmethod
+    def _psycopg_driver(cls, v: str) -> str:
+        # Hosted Postgres (Neon, Vercel) hands out postgres:// URLs; SQLAlchemy needs the driver named.
+        return re.sub(r"^postgres(ql)?://", "postgresql+psycopg://", v)
 
     @property
     def otp_shown_on_screen(self) -> bool:

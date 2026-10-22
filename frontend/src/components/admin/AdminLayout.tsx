@@ -3,9 +3,12 @@ import { Boxes, LayoutDashboard, ListTree, LogOut, Settings, ShoppingBag, Square
 import { NavLink, Outlet } from "react-router"
 
 import { LoginForm } from "@/components/common/LoginForm"
+import { PageLoader } from "@/components/common/PageLoader"
 import { Button } from "@/components/ui/button"
 import { keys, useMe } from "@/hooks/queries"
+import { useTitle } from "@/hooks/useTitle"
 import { api, post } from "@/lib/api"
+import { fmtPhone } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 const NAV = [
@@ -43,34 +46,47 @@ export function AdminLayout() {
   const { data: me, isLoading } = useMe()
   const qc = useQueryClient()
   const { data: counts } = useOrderCounts(!!me?.is_admin)
-  if (isLoading) return null
+  if (isLoading) return <PageLoader />
   if (!me) return <Gate />
-  if (!me.is_admin) return <Gate denied={me.phone} />
+  if (!me.is_admin) return <Gate denied={fmtPhone(me.phone)} />
 
   const pending = counts?.placed ?? 0
+  const logout = async () => { await post("/api/auth/logout"); qc.setQueryData(keys.me, null) }
   return (
     <div className="min-h-screen bg-[#f5f0e8] md:grid md:grid-cols-[236px_1fr]">
-      <aside className="sticky top-0 z-30 flex items-center gap-2 overflow-x-auto bg-sidebar px-3 py-2.5 text-sidebar-foreground md:h-screen md:flex-col md:items-stretch md:px-3.5 md:py-5">
-        <NavLink to="/admin" className="flex shrink-0 items-center gap-2.5 md:px-2 md:pb-5">
-          <img src="/brand/logo-sm.png" alt="Raga" className="w-16 brightness-0 invert-[.9] sepia-[.3] md:w-[92px]" />
-          <span className="hidden rounded-md bg-marigold px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.14em] text-cocoa md:inline">Admin</span>
-        </NavLink>
-        <nav className="flex gap-0.5 md:flex-col">
-          {NAV.map(({ to, label, icon: Icon, end, badge }) => (
-            <NavLink key={to} to={to} end={end} className={({ isActive }) => cn(
-              "flex shrink-0 items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium opacity-80 hover:bg-sidebar-accent hover:opacity-100 md:py-2.5 md:text-sm",
-              isActive && "bg-sidebar-accent text-white opacity-100")}>
-              <Icon className="hidden size-[18px] md:block" strokeWidth={1.6} />{label}
-              {badge && pending > 0 && <span className="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-marigold px-1.5 text-[11px] font-bold text-cocoa">{pending}</span>}
-            </NavLink>
-          ))}
-        </nav>
-        <div className="mt-auto hidden flex-col gap-1.5 px-3 text-[13px] md:flex">
-          <a href="/" target="_blank" rel="noopener" className="flex items-center gap-1.5 hover:text-marigold">View store <SquareArrowOutUpRight className="size-3.5" /></a>
-          <span className="text-[#b89f8a]">{me.phone}</span>
-          <button className="flex items-center gap-1.5 text-left text-marigold" onClick={async () => { await post("/api/auth/logout"); qc.setQueryData(keys.me, null) }}>
-            <LogOut className="size-3.5" />Log out
-          </button>
+      <aside className="sticky top-0 z-30 bg-sidebar text-sidebar-foreground md:h-screen">
+        <div className="flex items-center justify-between px-3 pt-2.5 md:hidden">
+          <NavLink to="/admin" className="flex items-center gap-2">
+            <img src="/brand/logo-sm.png" alt="Raga" className="w-16 brightness-0 invert-[.9] sepia-[.3]" />
+            <span className="rounded-md bg-marigold px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-cocoa">Admin</span>
+          </NavLink>
+          <div className="flex items-center gap-1">
+            <a href="/" target="_blank" rel="noopener" aria-label="View store" className="grid size-9 place-items-center rounded-lg hover:bg-sidebar-accent"><SquareArrowOutUpRight className="size-4" /></a>
+            <button onClick={logout} aria-label="Log out" className="grid size-9 place-items-center rounded-lg text-marigold hover:bg-sidebar-accent"><LogOut className="size-4" /></button>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 overflow-x-auto px-3 py-2.5 md:h-full md:flex-col md:items-stretch md:px-3.5 md:py-5">
+          <NavLink to="/admin" className="hidden shrink-0 items-center gap-2.5 md:flex md:px-2 md:pb-5">
+            <img src="/brand/logo-sm.png" alt="Raga" className="w-16 brightness-0 invert-[.9] sepia-[.3] md:w-[92px]" />
+            <span className="rounded-md bg-marigold px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.14em] text-cocoa">Admin</span>
+          </NavLink>
+          <nav className="flex gap-0.5 md:flex-col">
+            {NAV.map(({ to, label, icon: Icon, end, badge }) => (
+              <NavLink key={to} to={to} end={end} className={({ isActive }) => cn(
+                "flex shrink-0 items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium opacity-80 hover:bg-sidebar-accent hover:opacity-100 md:py-2.5 md:text-sm",
+                isActive && "bg-sidebar-accent text-white opacity-100")}>
+                <Icon className="hidden size-[18px] md:block" strokeWidth={1.6} />{label}
+                {badge && pending > 0 && <span className="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-marigold px-1.5 text-[11px] font-bold text-cocoa">{pending}</span>}
+              </NavLink>
+            ))}
+          </nav>
+          <div className="mt-auto hidden flex-col gap-1.5 px-3 text-[13px] md:flex">
+            <a href="/" target="_blank" rel="noopener" className="flex items-center gap-1.5 hover:text-marigold">View store <SquareArrowOutUpRight className="size-3.5" /></a>
+            <span className="text-[#b89f8a]">{fmtPhone(me.phone)}</span>
+            <button className="flex items-center gap-1.5 text-left text-marigold" onClick={logout}>
+              <LogOut className="size-3.5" />Log out
+            </button>
+          </div>
         </div>
       </aside>
       <main className="min-w-0 px-4 pb-16 pt-6 md:px-10 md:pt-8"><Outlet /></main>
@@ -78,7 +94,8 @@ export function AdminLayout() {
   )
 }
 
-export function PageHead({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
+export function PageHead({ eyebrow, title, tab, children }: { eyebrow: string; title: string; tab?: string; children?: React.ReactNode }) {
+  useTitle(`${tab ?? title} · Admin`)
   return (
     <header className="mb-5 flex flex-wrap items-end justify-between gap-4">
       <div><p className="eyebrow">{eyebrow}</p><h1 className="mt-1 text-[28px] md:text-[34px]">{title}</h1></div>

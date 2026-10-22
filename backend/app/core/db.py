@@ -1,13 +1,16 @@
 from collections.abc import Iterator
 from datetime import datetime
 
-from sqlalchemy import DateTime, create_engine, func
+from sqlalchemy import DateTime, NullPool, create_engine, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
 from app.core.config import get_settings
 
+_s = get_settings()
 # Small pool: the droplet's Postgres runs with max_connections = 20.
-engine = create_engine(get_settings().database_url, pool_size=5, max_overflow=5, pool_pre_ping=True)
+# Serverless: no pool, the provider's pooled endpoint (Neon "-pooler") does the pooling.
+engine = (create_engine(_s.database_url, poolclass=NullPool) if _s.serverless
+          else create_engine(_s.database_url, pool_size=5, max_overflow=5, pool_pre_ping=True))
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
 

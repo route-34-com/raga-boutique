@@ -43,3 +43,10 @@ class ProductDetail(ProductCard):
 class PublicSettings(Out):
     free_ship_above: int
     ship_fee: int
+    contact_phone: str = ""
+    contact_whatsapp: str = ""
+    contact_email: str = ""
+    contact_address: str = ""
+    contact_hours: str = ""
+    instagram_url: str = ""
+    facebook_url: str = ""

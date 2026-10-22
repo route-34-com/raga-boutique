@@ -147,5 +147,259 @@
       "Ankle length"
     ],
     "care": "Gentle hand wash in cold water. Dry in shade."
+  },
+  {
+    "id": "todi",
+    "raga": "Todi",
+    "name": "Pista Green Chanderi Tissue Saree",
+    "cat": "sarees",
+    "mood": "dawn",
+    "price": 8650,
+    "mrp": 9900,
+    "images": [
+      "pista-todi.jpg",
+      "pista-todi-detail.jpg"
+    ],
+    "swatch": "#c9dcc4",
+    "tag": "New",
+    "ragaNote": "Todi is sung in the first hours after sunrise, cool and searching. Pista green tissue with a broad silver-gold border, light enough to wear from a morning pooja straight into lunch.",
+    "details": [
+      "Chanderi silk-cotton tissue",
+      "Woven zari buttis all over",
+      "Contrast blouse piece included",
+      "Length 6.3 m including blouse"
+    ],
+    "care": "Dry clean only. Store folded in muslin, refold every few months."
+  },
+  {
+    "id": "malhar",
+    "raga": "Malhar",
+    "name": "Peacock Blue Kanjivaram with Magenta Border",
+    "cat": "sarees",
+    "mood": "monsoon",
+    "price": 16800,
+    "images": [
+      "peacock-malhar.jpg",
+      "peacock-malhar-detail.jpg"
+    ],
+    "swatch": "#2c5a7a",
+    "tag": "Bestseller",
+    "ragaNote": "Malhar is the raga said to bring the rain. Peacock blue that turns green as it moves, a magenta korvai border and a temple-gold pallu — the colour of a sky just before the first downpour.",
+    "details": [
+      "Pure mulberry silk, Kanchipuram",
+      "Changing-colour (shot) weave",
+      "Contrast magenta korvai border",
+      "Silk Mark certified"
+    ],
+    "care": "Dry clean only. Store folded in muslin, refold every few months."
+  },
+  {
+    "id": "darbari",
+    "raga": "Darbari",
+    "name": "Royal Purple Brocade Silk Saree",
+    "cat": "sarees",
+    "mood": "night",
+    "price": 13400,
+    "mrp": 14900,
+    "images": [
+      "purple-darbari.jpg",
+      "purple-darbari-detail.jpg"
+    ],
+    "swatch": "#6a2c8a",
+    "tag": "",
+    "ragaNote": "Darbari Kanada was sung in Akbar's court after midnight — slow, grave and grand. Royal purple brocade with a gold-shot body, made for evening receptions and long dinners.",
+    "details": [
+      "Silk brocade with all-over jaal",
+      "Gold-shot body, rich pallu",
+      "Running blouse piece",
+      "Length 6.3 m including blouse"
+    ],
+    "care": "Dry clean only. Store folded in muslin, refold every few months."
+  },
+  {
+    "id": "durga",
+    "raga": "Durga",
+    "name": "Ivory and Red Korial Silk Saree",
+    "cat": "sarees",
+    "mood": "festive",
+    "price": 9800,
+    "images": [
+      "ivory-durga.jpg",
+      "ivory-durga-detail.jpg"
+    ],
+    "swatch": "#efe2c8",
+    "tag": "Festive",
+    "ragaNote": "Raag Durga is bright and devotional, sung through the nine nights. Ivory silk with a deep red and gold border, the saree of Pujo mornings, sindoor khela and every new beginning.",
+    "details": [
+      "Pure silk, Bengal korial weave",
+      "Red and gold zari border",
+      "Plain ivory body with woven pallu",
+      "Unstitched blouse piece included"
+    ],
+    "care": "Dry clean only. Store folded in muslin, refold every few months."
+  },
+  {
+    "id": "bihag",
+    "raga": "Bihag",
+    "name": "Sindoor Red Banarasi Katan Silk",
+    "cat": "sarees",
+    "mood": "bridal",
+    "price": 21500,
+    "mrp": 23900,
+    "images": [
+      "sindoor-bihag.jpg",
+      "sindoor-bihag-detail.jpg"
+    ],
+    "swatch": "#c41e24",
+    "tag": "Bridal",
+    "ragaNote": "Bihag is the raga of the wedding night, sweet and full of longing. Sindoor red katan silk from Varanasi with silver-gold buttis and a deep woven border — the one the family will ask to borrow.",
+    "details": [
+      "Pure katan silk, Varanasi",
+      "Silver-gold zari buttis",
+      "Heavy woven border and pallu",
+      "Silk Mark certified"
+    ],
+    "care": "Dry clean only. Store folded in muslin, refold every few months."
+  },
+  {
+    "id": "basant",
+    "raga": "Basant",
+    "name": "Copper Kanjivaram with Chevron Weave",
+    "cat": "sarees",
+    "mood": "festive",
+    "price": 15600,
+    "mrp": 17200,
+    "images": [
+      "copper-basant.jpg",
+      "copper-basant-detail.jpg"
+    ],
+    "swatch": "#c9764a",
+    "tag": "New",
+    "ragaNote": "Basant welcomes spring with a burst of colour. Copper-rose silk woven in a soft chevron, framed by a rani pink and gold border that glows in evening light.",
+    "details": [
+      "Pure mulberry silk, Kanchipuram",
+      "Chevron (zig-zag) body weave",
+      "Rani pink and gold border",
+      "Silk Mark certified"
+    ],
+    "care": "Dry clean only. Store folded in muslin, refold every few months."
+  },
+  {
+    "id": "bahar",
+    "raga": "Bahar",
+    "name": "Haldi Yellow Lehenga with Blush Dupatta",
+    "cat": "lehengas",
+    "mood": "festive",
+    "price": 12900,
+    "mrp": 14500,
+    "images": [
+      "haldi-bahar.jpg",
+      "haldi-bahar-detail.jpg"
+    ],
+    "swatch": "#e8a817",
+    "tag": "New",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "ragaNote": "Bahar is spring in full bloom. A sun-yellow flared lehenga with a crisp white blouse and a blush net dupatta edged in gota — made for haldi mornings and mehendi afternoons.",
+    "details": [
+      "Crepe lehenga with 4 m flare",
+      "Ivory cotton-silk blouse",
+      "Blush net dupatta with gota border",
+      "Made to your size within 10 days"
+    ],
+    "care": "Dry clean only. Store the skirt hung inside-out in a cotton bag; keep the dupatta folded flat."
+  },
+  {
+    "id": "puriya",
+    "raga": "Puriya Dhanashree",
+    "name": "Lilac Chikankari Lehenga",
+    "cat": "lehengas",
+    "mood": "dusk",
+    "price": 18400,
+    "images": [
+      "lilac-puriya.jpg",
+      "lilac-puriya-detail.jpg"
+    ],
+    "swatch": "#b9a3c4",
+    "tag": "",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "ragaNote": "Puriya Dhanashree is sung at sunset, when the sky turns violet. Lilac georgette lehenga with silver chikankari and sequins, a flutter-sleeve blouse and a long, soft trail.",
+    "details": [
+      "Georgette with chikankari and sequin work",
+      "Flutter-sleeve blouse",
+      "Can-can lining for volume",
+      "Made to your size within 10 days"
+    ],
+    "care": "Dry clean only. Store the skirt hung inside-out in a cotton bag; keep the dupatta folded flat."
+  },
+  {
+    "id": "kedar",
+    "raga": "Kedar",
+    "name": "Rose and Teal Bridal Lehenga",
+    "cat": "lehengas",
+    "mood": "bridal",
+    "price": 42000,
+    "images": [
+      "rose-kedar.jpg",
+      "rose-kedar-detail.jpg"
+    ],
+    "swatch": "#c8475e",
+    "tag": "Bridal",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "ragaNote": "Kedar is a night raga of devotion, played at weddings across the north. Rose pink lehenga with zardozi florals, a teal velvet blouse and a heavy red dupatta for the pheras.",
+    "details": [
+      "Raw silk with hand zardozi",
+      "Teal velvet blouse",
+      "Two dupattas: net and heavy silk",
+      "Made to your size within 21 days"
+    ],
+    "care": "Dry clean only. Store the skirt hung inside-out in a cotton bag; keep the dupatta folded flat."
+  },
+  {
+    "id": "bilaval",
+    "raga": "Bilaval",
+    "name": "Mustard Silk Lehenga with Maroon Dupatta",
+    "cat": "lehengas",
+    "mood": "dawn",
+    "price": 24500,
+    "mrp": 27500,
+    "images": [
+      "mustard-bilaval.jpg",
+      "mustard-bilaval-detail.jpg"
+    ],
+    "swatch": "#d99a2b",
+    "tag": "",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "ragaNote": "Bilaval is a bright morning raga, the 'major scale' of Hindustani music. Mustard silk with paisley gota-patti, a velvet border and a maroon bandhani dupatta for daytime weddings.",
+    "details": [
+      "Silk lehenga with gota-patti work",
+      "Velvet hem border",
+      "Maroon bandhani dupatta",
+      "Made to your size within 14 days"
+    ],
+    "care": "Dry clean only. Store the skirt hung inside-out in a cotton bag; keep the dupatta folded flat."
   }
 ]

@@ -6,9 +6,11 @@ import { OrderTimeline } from "@/components/common/OrderTimeline"
 import { StatusBadge } from "@/components/common/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { keys, useMe, useMyOrder } from "@/hooks/queries"
+import { PageLoader } from "@/components/common/PageLoader"
+import { keys, useMe, useMyOrder, useSettings } from "@/hooks/queries"
+import { useTitle } from "@/hooks/useTitle"
 import { ApiError, post } from "@/lib/api"
-import { fmtDate, inr } from "@/lib/format"
+import { fmtDate, fmtPhone, inr, waLink } from "@/lib/format"
 import type { OrderDetail } from "@/lib/types"
 import { LoginPrompt } from "@/pages/store/LoginPrompt"
 
@@ -17,7 +19,9 @@ export default function OrderPage() {
   const [params] = useSearchParams()
   const { data: me, isLoading: meLoading } = useMe()
   const { data: o, isLoading, isError } = useMyOrder(orderNo, !!me)
+  const { data: settings } = useSettings()
   const qc = useQueryClient()
+  useTitle(`Order ${orderNo}`)
 
   const cancel = useMutation({
     mutationFn: () => post<OrderDetail>(`/api/me/orders/${orderNo}/cancel`),
@@ -30,15 +34,21 @@ export default function OrderPage() {
     onError: (e) => toast.error(e instanceof ApiError ? e.message : "Couldn't cancel."),
   })
 
-  if (meLoading) return null
+  if (meLoading) return <PageLoader />
   if (!me) return <LoginPrompt title="Your order" text="Log in to see this order." />
 
   return (
-    <section className="container-x pt-8 md:pt-16">
-      <p className="eyebrow mb-6"><Link to="/" className="hover:underline">Home</Link> / <Link to="/account" className="hover:underline">My orders</Link></p>
+    <section className="container-x pt-6 md:pt-10">
+      <Link to="/account" className="mb-5 inline-block text-sm font-medium text-rust hover:underline">← My orders</Link>
       {isLoading ? <Skeleton className="h-64 rounded-2xl" /> : isError || !o ? <p className="font-heading text-xl italic text-rust">Order not found.</p> : (
         <>
-          {params.get("new") && <div className="mb-6 rounded-2xl bg-emerald-50 px-5 py-4 font-medium text-emerald-900">Thank you! Your order is placed. We'll message you on {o.phone} as it moves.</div>}
+          {params.get("new") && (
+            <div className="mb-6 rounded-2xl bg-emerald-50 px-5 py-4 text-emerald-900">
+              <p className="font-semibold">Thank you! Your order is placed.</p>
+              <p className="mt-1 text-sm">Follow it here or under <Link to="/account" className="underline">My orders</Link>. We'll call {fmtPhone(o.phone)} before delivery.
+                {settings?.contact_whatsapp && <> Questions? <a className="underline" href={waLink(settings.contact_whatsapp, `Hi, about my order ${o.order_no}`)} target="_blank" rel="noopener">WhatsApp us</a>.</>}</p>
+            </div>
+          )}
           <div className="mb-7 flex items-start justify-between gap-4">
             <div><p className="eyebrow">Order</p><h1 className="my-1.5 text-[clamp(34px,4vw,52px)]">{o.order_no}</h1><p className="text-muted-foreground">Placed {fmtDate(o.created_at, true)}</p></div>
             <StatusBadge status={o.status} />
@@ -62,7 +72,7 @@ export default function OrderPage() {
             </div>
             <aside className="rounded-2xl bg-paper p-6">
               <h3 className="mb-2 text-[22px]">Delivering to</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">{o.address.name} · {o.address.phone}<br />{o.address.line1}{o.address.line2 && `, ${o.address.line2}`}<br />{o.address.city}, {o.address.state} {o.address.pincode}</p>
+              <p className="text-sm leading-relaxed text-muted-foreground">{o.address.name} · {fmtPhone(o.address.phone)}<br />{o.address.line1}{o.address.line2 && `, ${o.address.line2}`}<br />{o.address.city}, {o.address.state} {o.address.pincode}</p>
               <h3 className="mb-2 mt-6 text-[22px]">Payment</h3>
               <p className="text-sm">{o.payment_method === "cod" ? "Cash / UPI on delivery" : o.payment_method} · {o.payment_status === "paid" ? "Paid" : "Pending"}</p>
               {["placed", "confirmed"].includes(o.status) && (

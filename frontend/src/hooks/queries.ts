@@ -18,9 +18,9 @@ export const useMe = () => useQuery({ queryKey: keys.me, queryFn: () => api<User
 export const useCategories = () => useQuery({ queryKey: keys.categories, queryFn: () => api<Category[]>("/api/categories"), staleTime: 300_000 })
 export const useSettings = () => useQuery({ queryKey: keys.settings, queryFn: () => api<StoreSettings>("/api/settings"), staleTime: 300_000 })
 
-export function useProducts(params: { cat?: string; mood?: string; sort?: string } = {}) {
+export function useProducts(params: { cat?: string; mood?: string; sort?: string; q?: string } = {}, enabled = true) {
   const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v) as [string, string][]).toString()
-  return useQuery({ queryKey: keys.products(q), queryFn: () => api<Product[]>(`/api/products${q ? "?" + q : ""}`) })
+  return useQuery({ queryKey: keys.products(q), queryFn: () => api<Product[]>(`/api/products${q ? "?" + q : ""}`), enabled, placeholderData: (prev) => prev })
 }
 
 export const useProduct = (slug: string) =>

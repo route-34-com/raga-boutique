@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ArrowLeft, ImagePlus, X } from "lucide-react"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -40,8 +40,16 @@ export function ProductSheet({ product, isNew, onClose }: { product: AdminProduc
   const qc = useQueryClient()
   const { data: cats = [] } = useQuery({ queryKey: ["admin", "categories"], queryFn: () => api<AdminCategory[]>("/api/admin/categories") })
   const [d, setD] = useState<Draft>(() => toDraft(product, cats[0]?.id ?? "sarees"))
-  const [error, setError] = useState("")
-  const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((x) => ({ ...x, [k]: v }))
+  const [error, setErrorText] = useState("")
+  const errorRef = useRef<HTMLParagraphElement>(null)
+  // The message sits at the bottom of a long form, so bring it into view and toast it too.
+  const setError = (msg: string) => {
+    setErrorText(msg)
+    if (!msg) return
+    toast.error(msg)
+    requestAnimationFrame(() => errorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }))
+  }
+  const set =<K extends keyof Draft>(k: K, v: Draft[K]) => setD((x) => ({ ...x, [k]: v }))
   const open = isNew || product !== null
 
   async function upload(files: FileList) {
@@ -73,7 +81,7 @@ export function ProductSheet({ product, isNew, onClose }: { product: AdminProduc
       return isNew ? post<AdminProduct>("/api/admin/products", body) : put<AdminProduct>(`/api/admin/products/${product!.id}`, body)
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin"] }); qc.invalidateQueries({ queryKey: ["products"] }); toast.success("Product saved."); onClose() },
-    onError: (e) => setError(e instanceof ApiError ? [e.message, ...e.details].join(" ") : "Couldn't save."),
+    onError: (e) => setError(e instanceof ApiError ? e.message : "Couldn't save. Please try again."),
   })
 
   const remove = useMutation({
@@ -134,11 +142,12 @@ export function ProductSheet({ product, isNew, onClose }: { product: AdminProduc
                 <SelectContent>{cats.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select></div>
             <div className={field}><Label htmlFor="p-tag">Badge (optional)</Label><Input id="p-tag" value={d.tag} onChange={(e) => set("tag", e.target.value)} placeholder="New, Bestseller, Bridal…" /></div>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-[1fr_1fr_90px]">
-            <div className={field}><Label htmlFor="p-price">Selling price ₹</Label><Input id="p-price" type="number" min={1} required value={d.price} onChange={(e) => set("price", e.target.value)} /></div>
-            <div className={field}><Label htmlFor="p-mrp">MRP ₹ (optional)</Label><Input id="p-mrp" type="number" min={0} value={d.mrp} onChange={(e) => set("mrp", e.target.value)} /></div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-[1fr_1fr_96px]">
+            <div className={field}><Label htmlFor="p-price">Selling price (₹)</Label><Input id="p-price" type="number" min={1} required value={d.price} onChange={(e) => set("price", e.target.value)} /></div>
+            <div className={field}><Label htmlFor="p-mrp">MRP (₹)</Label><Input id="p-mrp" type="number" min={0} value={d.mrp} placeholder="Optional" onChange={(e) => set("mrp", e.target.value)} /></div>
             <div className={field}><Label htmlFor="p-swatch">Colour</Label><Input id="p-swatch" type="color" value={d.swatch} onChange={(e) => set("swatch", e.target.value)} className="p-1" /></div>
           </div>
+          <p className="-mt-2 text-xs text-muted-foreground">MRP shows struck through next to the selling price. It must be higher than the selling price.</p>
 
           <h4 className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Sizes &amp; stock</h4>
           <label className="flex items-center gap-2.5"><Switch checked={d.sized} onCheckedChange={(v) => set("sized", v)} /> This piece comes in sizes</label>
@@ -168,7 +177,7 @@ export function ProductSheet({ product, isNew, onClose }: { product: AdminProduc
           <div className={field}><Label htmlFor="p-care">Care</Label><Textarea id="p-care" rows={2} value={d.care} onChange={(e) => set("care", e.target.value)} /></div>
           <label className="flex items-center gap-2.5"><Switch checked={d.active} onCheckedChange={(v) => set("active", v)} /> Show on store</label>
 
-          {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-red-800">{error}</p>}
+          {error && <p ref={errorRef} role="alert" className="rounded-lg bg-red-50 p-3 text-red-800">{error}</p>}
           <div className="sticky bottom-0 -mx-6 flex gap-2.5 border-t bg-card px-6 py-4">
             <Button type="submit" className="h-10 px-5" disabled={save.isPending}>{save.isPending ? "Saving…" : "Save product"}</Button>
             {!isNew && <Button type="button" variant="destructive" className="h-10 px-4" disabled={remove.isPending}

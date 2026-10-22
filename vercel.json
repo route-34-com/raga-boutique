@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "npm --prefix frontend ci",
+  "buildCommand": "npm --prefix frontend run build && mkdir -p frontend/dist/uploads/products && cp backend/scripts/seed_images/*.jpg frontend/dist/uploads/products/",
+  "outputDirectory": "frontend/dist",
+  "regions": ["sin1"],
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 30,
+      "excludeFiles": "{frontend/**,deploy/**,backend/tests/**,backend/scripts/**,backend/alembic/**,backend/.venv/**,backend/uploads/**,.playwright-mcp/**}"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/uploads/(.*)", "destination": "/api/index" },
+    { "source": "/((?!assets/|brand/).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    }
+  ]
+}

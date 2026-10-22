@@ -15,8 +15,8 @@ function messageFrom(body: unknown, status: number): { message: string; details:
     return { message: d.message, details: d.details ?? [] }
   }
   if (Array.isArray(detail)) {
-    // FastAPI validation errors
-    return { message: "Please check the highlighted details and try again.", details: detail.map((e) => String(e.msg)) }
+    // Raw FastAPI validation errors (the API normally sends plain sentences instead)
+    return { message: "Some details need another look. Please check and try again.", details: [] }
   }
   return { message: status >= 500 ? "Something went wrong on our side. Please try again." : "Request failed.", details: [] }
 }

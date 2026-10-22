@@ -4,6 +4,15 @@ export const ONE_SIZE = "ONE"
 
 export const inr = (n: number) => "₹" + Math.round(n).toLocaleString("en-IN")
 
+// "+919876500011" or "9876500011" → "+91 98765 00011"
+export function fmtPhone(phone: string) {
+  const d = phone.replace(/\D/g, "").replace(/^91(?=\d{10}$)/, "")
+  return d.length === 10 ? `+91 ${d.slice(0, 5)} ${d.slice(5)}` : phone
+}
+
+export const waLink = (mobile: string, text = "") =>
+  `https://wa.me/91${mobile.replace(/\D/g, "").slice(-10)}${text ? `?text=${encodeURIComponent(text)}` : ""}`
+
 export const fmtDate = (iso: string, withTime = false) =>
   new Date(iso).toLocaleDateString("en-IN", {
     day: "numeric",
