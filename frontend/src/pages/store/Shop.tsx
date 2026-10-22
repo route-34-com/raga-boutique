@@ -61,11 +61,13 @@ export default function Shop() {
 
   return (
     <>
-      <section className="container-x pt-6 md:pt-10">
-        <h1 className="mb-2.5 text-[clamp(36px,4.6vw,60px)] leading-none">{title ?? "Shop"}</h1>
-        <p className="text-muted-foreground">{sub}</p>
+      <section className="container-x pt-5 md:pt-6">
+        <div className="flex flex-col gap-x-8 gap-y-1 md:flex-row md:items-end md:justify-between">
+          <h1 className="text-[clamp(36px,4.4vw,56px)] leading-none">{title ?? "Shop"}</h1>
+          <p className="text-muted-foreground md:pb-1.5">{sub}</p>
+        </div>
       </section>
-      <section className="container-x grid items-start gap-10 pt-6 lg:grid-cols-[250px_minmax(0,1fr)]">
+      <section className="container-x grid items-start gap-10 pt-5 lg:grid-cols-[250px_minmax(0,1fr)]">
         <aside className="sticky top-24 hidden max-h-[calc(100vh-7rem)] overflow-y-auto pr-3 [scrollbar-color:#ece1d1_transparent] [scrollbar-width:thin] hover:[scrollbar-color:var(--border)_transparent] lg:block">{panel}</aside>
 
         <div>
@@ -92,11 +94,11 @@ export default function Shop() {
           )}
 
           <p className="my-4 text-sm text-muted-foreground sm:hidden">{count}</p>
-          <div className="sm:pt-6">
+          <div className="sm:pt-5">
             {isLoading ? (
-              <div className="grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)}</div>
+              <div className="grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3 3xl:grid-cols-4">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)}</div>
             ) : products?.length ? (
-              <div className="grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3">{products.map((p) => <ProductCard key={p.id} p={p} />)}</div>
+              <div className="grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3 3xl:grid-cols-4">{products.map((p) => <ProductCard key={p.id} p={p} />)}</div>
             ) : (
               <div className="flex flex-col items-center gap-5 py-16 text-center">
                 <p className="font-heading text-xl italic text-rust">

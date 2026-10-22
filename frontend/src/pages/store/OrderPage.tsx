@@ -38,7 +38,7 @@ export default function OrderPage() {
   if (!me) return <LoginPrompt title="Your order" text="Log in to see this order." />
 
   return (
-    <section className="container-x pt-6 md:pt-10">
+    <section className="container-x pt-5 md:pt-6">
       <Link to="/account" className="mb-5 inline-block text-sm font-medium text-rust hover:underline">← My orders</Link>
       {isLoading ? <Skeleton className="h-64 rounded-2xl" /> : isError || !o ? <p className="font-heading text-xl italic text-rust">Order not found.</p> : (
         <>

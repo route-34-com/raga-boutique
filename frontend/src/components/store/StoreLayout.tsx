@@ -135,7 +135,7 @@ function Footer() {
   const { data: cats = [] } = useCategories()
   const a = "block py-1 text-sm opacity-80 hover:text-marigold hover:opacity-100"
   return (
-    <footer className="mt-20 bg-cocoa px-4 pb-7 pt-16 text-sand sm:px-8 lg:mt-36 lg:px-14">
+    <footer className="mt-12 bg-cocoa px-4 pb-7 pt-12 text-sand sm:px-8 lg:mt-12 lg:px-14">
       <div className="mx-auto grid max-w-[1320px] gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_.8fr_.8fr_1.4fr]">
         <div>
           <img src="/brand/logo-sm.png" alt="Raga" className="mb-4 w-[170px] brightness-0 invert-[.9] sepia-[.3]" />
@@ -189,7 +189,7 @@ export function StoreLayout() {
         </div>
       </div>
       <Header />
-      <main><Outlet /></main>
+      <main className="overflow-x-clip"><Outlet /></main>
       <Footer />
       <CartSheet />
       <LoginDialog />

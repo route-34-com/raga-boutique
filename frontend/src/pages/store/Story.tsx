@@ -13,7 +13,7 @@ export default function Story() {
   ]
   return (
     <>
-      <section className="container-x pt-6 md:pt-10">
+      <section className="container-x pt-5 md:pt-6">
         <p className="eyebrow">Our story</p>
         <h1 className="mt-3.5 text-[clamp(36px,4.6vw,60px)] leading-none">The music of colours</h1>
       </section>
@@ -26,7 +26,7 @@ export default function Story() {
           <p className="max-w-[46ch] text-muted-foreground">We work directly with weaving families in Kanchipuram and Varanasi, buy in small batches, and photograph every piece in daylight so the colour you see is the colour you get.</p>
         </div>
       </section>
-      <section className="container-x grid gap-10 pt-20 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="container-x grid gap-8 pt-12 sm:grid-cols-2 lg:grid-cols-4">
         {cols.map(([id, t, b]) => (
           <div key={id} id={id} className="scroll-mt-28"><h3 className="text-[22px]">{t}</h3><p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">{b}</p></div>
         ))}

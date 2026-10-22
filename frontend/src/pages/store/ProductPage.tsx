@@ -64,7 +64,7 @@ export default function ProductPage() {
 
   return (
     <>
-      <section className="container-x grid items-start gap-8 pt-6 md:grid-cols-[1.15fr_1fr] md:gap-16 md:pt-12">
+      <section className="container-x grid items-start gap-8 pt-6 md:grid-cols-[1.15fr_1fr] md:gap-16 md:pt-6">
         <div className="grid gap-3.5 md:sticky md:top-24 md:grid-cols-[76px_1fr]">
           <div className="flex gap-2.5 max-md:order-2 md:flex-col">
             {p.images.map((im, i) => (
@@ -141,7 +141,7 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <section className="container-x pt-20">
+      <section className="container-x pt-12 md:pt-14">
         <p className="eyebrow">Keep listening</p>
         <h2 className="mb-9 mt-2.5 text-[clamp(30px,3.6vw,46px)]">You may also like</h2>
         <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">{related.map((x) => <ProductCard key={x.id} p={x} />)}</div>

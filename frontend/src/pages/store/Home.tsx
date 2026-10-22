@@ -16,7 +16,7 @@ const SERVICES = [
 
 function SectionHead({ eyebrow, title, aside }: { eyebrow: string; title: string; aside?: React.ReactNode }) {
   return (
-    <div className="mb-9 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+    <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
       <div><p className="eyebrow">{eyebrow}</p><h2 className="mt-2.5 text-[clamp(30px,3.6vw,46px)] leading-none">{title}</h2></div>
       {aside}
     </div>
@@ -27,26 +27,50 @@ export default function Home() {
   const { data: products, isLoading } = useProducts()
   const { data: cats = [] } = useCategories()
   const hero = products?.find((p) => p.slug === "hindol")
+  const justIn = products?.filter((p) => p.slug !== "hindol" && p.slug !== "bhairavi").slice(0, 4) ?? []
   const lehengas = products?.filter((p) => p.category_id === "lehengas") ?? []
   useTitle()
 
   return (
     <>
-      <section className="container-x grid items-center gap-10 pt-6 md:grid-cols-[1fr_1.05fr] md:gap-16 md:pt-12">
-        <div className="max-md:order-2">
-          <img src="/brand/logo-sm.png" alt="Raga — The Music of Colours" className="mb-6 h-16 w-auto md:mb-8 md:h-20" />
-          <p className="eyebrow">Festive edit · Autumn 2026</p>
-          <h1 className="my-5 text-[clamp(44px,6vw,76px)] leading-[1.02]">Every weave <br />has a <em className="font-light text-rust">raga.</em></h1>
-          <p className="max-w-[46ch] text-[17px] text-muted-foreground">
-            Handwoven sarees and ethnic wear from Kanchipuram, Varanasi and beyond — each one named after the raga whose mood it carries.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild className="h-12 rounded-full px-7"><Link to="/shop">Shop the edit</Link></Button>
-            {cats[0] && <Button asChild variant="outline" className="h-12 rounded-full border-cocoa bg-transparent px-7"><Link to={`/shop/${cats[0].id}`}>{cats[0].name}</Link></Button>}
+      <section className="container-x grid gap-8 pt-6 md:grid-cols-[1fr_1fr] md:gap-10 md:pt-6">
+        <div className="flex flex-col gap-6 max-md:order-2 md:pb-12 md:pt-2">
+          <div>
+            <img src="/brand/logo-sm.png" alt="Raga — The Music of Colours" className="mb-6 h-16 w-auto md:hidden" />
+            <p className="eyebrow">Festive edit · Autumn 2026</p>
+            <h1 className="mt-4 whitespace-nowrap text-[clamp(44px,6.2vw,92px)] leading-[0.98] 3xl:text-[112px]">Every weave<br />has a <em className="font-light text-rust">raga.</em></h1>
           </div>
+          <div>
+            <p className="max-w-[52ch] text-[17px] text-muted-foreground md:text-lg">
+              Handwoven sarees and ethnic wear from Kanchipuram, Varanasi and beyond — each one named after the raga whose mood it carries.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button asChild className="h-12 rounded-full px-7"><Link to="/shop">Shop the edit</Link></Button>
+              {cats[0] && <Button asChild variant="outline" className="h-12 rounded-full border-cocoa bg-transparent px-7"><Link to={`/shop/${cats[0].id}`}>{cats[0].name}</Link></Button>}
+            </div>
+          </div>
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 border-t border-cocoa/15 pt-4 text-[13px] font-medium text-cocoa/80">
+            <li>Silk Mark certified</li><li>Fall &amp; pico on request</li><li>Ships across India</li>
+          </ul>
+          {justIn.length > 0 && (
+            <div className="hidden xl:block">
+              <div className="mb-2.5 flex items-baseline justify-between">
+                <p className="eyebrow">Just in</p>
+                <Link to="/shop" className="text-[13px] font-semibold text-cocoa hover:text-rust">See all →</Link>
+              </div>
+              <div className="grid grid-cols-4 gap-2.5">
+                {justIn.map((p) => (
+                  <Link key={p.id} to={`/p/${p.slug}`} title={p.name} className="group relative block aspect-square overflow-hidden rounded-xl bg-sand">
+                    <img src={cover(p)} alt={p.name} loading="lazy" className="size-full object-cover object-top transition duration-500 group-hover:scale-105" />
+                    <span className="absolute bottom-1.5 left-1.5 rounded-full bg-paper/95 px-2 py-0.5 text-[11px] font-semibold text-cocoa">{inr(p.price)}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-        <div className="relative pb-9 pl-7 md:pb-12 md:pl-12">
-          <figure className="aspect-[4/4.4] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-[4/4.6] md:rounded-t-[220px]">
+        <div className="relative self-start pb-9 pl-7 md:pb-12 md:pl-12">
+          <figure className="aspect-[4/4.4] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-[4/4.6] md:rounded-t-[220px] 3xl:-mr-[calc((100vw-100rem)/2+3.5rem)] 3xl:aspect-auto 3xl:h-[min(76vh,780px)] 3xl:rounded-r-none 3xl:rounded-tl-[260px]">
             <img src="/brand/hero-marigold.jpg" alt="Model in a marigold Kanjivaram saree with royal blue border in a temple courtyard"
               className="size-full animate-[drift_18s_ease-in-out_infinite_alternate] object-cover object-[55%_30%]" />
           </figure>
@@ -61,7 +85,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container-x pt-16 md:pt-28">
+      <section className="container-x pt-8 md:pt-12">
         <SectionHead eyebrow="Shop by mood" title="Dress for the hour"
           aside={<p className="max-w-[40ch] text-muted-foreground">Indian classical music gives each raga a time of day and a feeling. We do the same with colour.</p>} />
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6 lg:gap-3.5">
@@ -80,28 +104,28 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container-x pt-16 md:pt-28">
+      <section className="container-x pt-8 md:pt-12">
         <SectionHead eyebrow="The collection" title="New in the edit"
           aside={<Link to="/shop" className="border-b-[1.5px] border-cocoa pb-0.5 font-semibold text-cocoa hover:text-rust">Shop all →</Link>} />
-        <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4 3xl:grid-cols-5">
           {isLoading ? Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)
-            : products?.slice(0, 4).map((p) => <ProductCard key={p.id} p={p} />)}
+            : products?.slice(0, 5).map((p, i) => <div key={p.id} className={i === 4 ? "hidden 3xl:block" : undefined}><ProductCard p={p} /></div>)}
         </div>
       </section>
 
-      <section className="container-x grid items-center gap-8 pt-16 md:grid-cols-[1.1fr_1fr] md:gap-24 md:pt-28">
-        <figure className="aspect-[4/3.4] overflow-hidden rounded-2xl md:aspect-square">
+      <section className="container-x grid items-center gap-8 pt-10 md:grid-cols-[1.1fr_1fr] md:gap-16 md:pt-16">
+        <figure className="aspect-[4/3.4] overflow-hidden rounded-2xl md:aspect-square 3xl:aspect-[5/4]">
           <img src="/brand/hero-peach.jpg" alt="Model in a peach saree on a garden path" loading="lazy" className="size-full object-cover" />
         </figure>
         <div>
           <p className="eyebrow">Raag Bhairavi</p>
-          <h2 className="my-5 text-[clamp(30px,3.6vw,46px)] leading-[1.05]">Soft light, <br /><em className="text-rust">quiet gold.</em></h2>
+          <h2 className="my-4 text-[clamp(30px,3.6vw,46px)] leading-none">Soft light,<br /><em className="text-rust">quiet gold.</em></h2>
           <p className="mb-6 max-w-[46ch] text-muted-foreground">Blush tissue silk with a zari border that catches the morning rather than demanding it. The saree we reach for when the occasion is close family and good coffee.</p>
           <Button asChild className="h-12 rounded-full px-7"><Link to="/p/bhairavi">See the saree</Link></Button>
         </div>
       </section>
 
-      <section className="container-x pt-16 md:pt-28">
+      <section className="container-x pt-8 md:pt-12">
         <div className="grid overflow-hidden rounded-2xl border bg-border sm:grid-cols-2 lg:grid-cols-4" style={{ gap: 1 }}>
           {SERVICES.map(([icon, title, body]) => (
             <div key={title} className="bg-paper p-7">
@@ -114,7 +138,7 @@ export default function Home() {
       </section>
 
       {products && products.length > 4 && (
-        <section className="container-x pt-16 md:pt-28">
+        <section className="container-x pt-8 md:pt-12">
           <SectionHead eyebrow="Also in the edit" title="For the evening after" />
           <div className="grid grid-cols-2 gap-3 md:gap-7">
             {products.slice(4, 6).map((p) => <ProductCard key={p.id} p={p} tall />)}
@@ -123,11 +147,11 @@ export default function Home() {
       )}
 
       {lehengas.length > 0 && (
-        <section className="container-x pt-16 md:pt-28">
+        <section className="container-x pt-8 md:pt-12">
           <SectionHead eyebrow="Lehengas" title="For the sangeet and the pheras"
             aside={<Link to="/shop/lehengas" className="border-b-[1.5px] border-cocoa pb-0.5 font-semibold text-cocoa hover:text-rust">See all lehengas →</Link>} />
-          <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">
-            {lehengas.slice(0, 4).map((p) => <ProductCard key={p.id} p={p} />)}
+          <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4 3xl:grid-cols-5">
+            {lehengas.slice(0, 5).map((p, i) => <div key={p.id} className={i === 4 ? "hidden 3xl:block" : undefined}><ProductCard p={p} /></div>)}
           </div>
         </section>
       )}

@@ -94,7 +94,7 @@ export default function Checkout() {
   })
 
   if (!rows.length) return (
-    <section className="container-x pt-6 md:pt-10">
+    <section className="container-x pt-5 md:pt-6">
       <h1 className="text-[clamp(36px,4.6vw,60px)]">Checkout</h1>
       <div className="flex flex-col items-center gap-5 py-16"><p className="font-heading text-xl italic text-rust">Your bag is empty.</p>
         <Button asChild className="rounded-full px-6"><Link to="/shop">Shop the edit</Link></Button></div>
@@ -105,7 +105,7 @@ export default function Checkout() {
 
   return (
     <>
-      <section className="container-x pt-6 md:pt-10">
+      <section className="container-x pt-5 md:pt-6">
         <h1 className="text-[clamp(36px,4.6vw,60px)] leading-none">Checkout</h1>
       </section>
       <section className="container-x grid items-start gap-8 pt-6 lg:grid-cols-[1.3fr_1fr] lg:gap-16">

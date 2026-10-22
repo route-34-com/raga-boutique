@@ -59,7 +59,7 @@ export default function Account() {
 
   return (
     <>
-      <section className="container-x flex flex-wrap items-end justify-between gap-x-8 gap-y-5 pt-6 md:pt-10">
+      <section className="container-x flex flex-wrap items-end justify-between gap-x-8 gap-y-5 pt-5 md:pt-6">
         <div>
           <h1 className="mb-2 text-[clamp(36px,4.6vw,60px)] leading-none">Hello{me.name ? `, ${me.name.split(" ")[0]}` : ""}.</h1>
           <p className="text-muted-foreground">Signed in as <span className="font-medium text-foreground">{fmtPhone(me.phone)}</span></p>
