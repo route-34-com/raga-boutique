@@ -8,7 +8,6 @@ from app.core.db import Base, TimestampMixin
 ORDER_FLOW = ["placed", "confirmed", "packed", "shipped", "delivered"]
 ORDER_STATUSES = [*ORDER_FLOW, "cancelled"]
 ONGOING = ["placed", "confirmed", "packed", "shipped"]
-CUSTOMER_CANCELLABLE = ["placed", "confirmed"]
 
 order_no_seq = Sequence("order_no_seq", start=1001)
 

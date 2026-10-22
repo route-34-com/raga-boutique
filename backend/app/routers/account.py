@@ -56,14 +56,3 @@ def my_orders(user: CurrentUser, db: DB):
 @router.get("/me/orders/{order_no}", response_model=OrderDetail)
 def my_order(order_no: str, user: CurrentUser, db: DB):
     return _own_order(db, user, order_no)
-
-
-@router.post("/me/orders/{order_no}/cancel", response_model=OrderDetail)
-def cancel(order_no: str, user: CurrentUser, db: DB):
-    o = _own_order(db, user, order_no)
-    try:
-        svc.cancel_by_customer(db, user, o.id)
-    except ServiceError as e:
-        raise e.http() from None
-    db.expire_all()
-    return _own_order(db, user, order_no)

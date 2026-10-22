@@ -35,6 +35,14 @@ class OrderSummary(Out):
         return sum(i.qty for i in self.items)
 
 
+class NotificationOut(Out):
+    kind: str
+    channel: str
+    status: str
+    detail: str
+    created_at: datetime
+
+
 class OrderDetail(OrderSummary):
     phone: str
     customer_name: str
@@ -48,6 +56,10 @@ class OrderDetail(OrderSummary):
     tracking_id: str
     note: str
     events: list[OrderEventOut]
+
+
+class AdminOrderDetail(OrderDetail):
+    notifications: list[NotificationOut]
 
 
 class OrderPlaced(BaseModel):

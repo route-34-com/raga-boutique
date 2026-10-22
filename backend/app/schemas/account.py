@@ -68,6 +68,6 @@ class PlaceOrderIn(BaseModel):
     items: list[CartLine] = Field(min_length=1, max_length=20)
     address_id: int | None = None
     address: AddressIn | None = None
-    email: EmailStr | None = None
+    email: EmailStr
     payment_method: str = "cod"
     note: Annotated[str, StringConstraints(strip_whitespace=True, max_length=500)] = ""

@@ -11,6 +11,7 @@ Attr = Annotated[str, StringConstraints(strip_whitespace=True, max_length=40)]
 
 class AdminOrderRow(OrderSummary):
     customer_name: str
+    address: dict
     phone: str
     payment_method: str
     payment_status: str
@@ -21,6 +22,24 @@ class StatusChange(BaseModel):
     note: Annotated[str, StringConstraints(strip_whitespace=True, max_length=300)] = ""
     courier: Short = ""
     tracking_id: Short = ""
+
+
+class DispatchItem(BaseModel):
+    order_id: int
+    courier: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=60)]
+    tracking_id: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=60)]
+
+
+class DispatchIn(BaseModel):
+    items: list[DispatchItem] = Field(min_length=1, max_length=100)
+
+
+class DispatchResult(BaseModel):
+    order_id: int
+    order_no: str
+    ok: bool
+    error: str = ""
+    whatsapp_link: str = ""
 
 
 class VariantIn(BaseModel):
@@ -77,6 +96,12 @@ Mobile10 = Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\
 SocialUrl = Annotated[str, StringConstraints(strip_whitespace=True, max_length=200, pattern=r"^(https://\S+)?$")]
 
 
+class CourierIn(BaseModel):
+    name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=60)]
+    # Where the tracking ID goes, e.g. https://www.dtdc.in/tracking?awb={id}. Empty = no link in messages.
+    track_url: Annotated[str, StringConstraints(strip_whitespace=True, max_length=300, pattern=r"^(https?://\S*\{id\}\S*)?$")] = ""
+
+
 class SettingsIn(BaseModel):
     free_ship_above: int = Field(ge=0)
     ship_fee: int = Field(ge=0)
@@ -88,6 +113,7 @@ class SettingsIn(BaseModel):
     contact_hours: Annotated[str, StringConstraints(strip_whitespace=True, max_length=120)] = ""
     instagram_url: SocialUrl = ""
     facebook_url: SocialUrl = ""
+    couriers: list[CourierIn] = Field(default_factory=list, max_length=20)
 
 
 class AdminPhone(BaseModel):

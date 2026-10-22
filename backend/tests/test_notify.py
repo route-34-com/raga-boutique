@@ -106,10 +106,12 @@ def test_smtp_failure_recorded(order_id, monkeypatch):
         assert db.get(Order, order_id).status == "placed"
 
 
-def test_new_order_tap_mode_emails_shop_only(order_id):
+def test_new_order_tap_mode_emails_shop_only(customer):
     with SessionLocal() as db:
         db.get(StoreSettings, 1).contact_email = "shop@example.com"
         db.commit()
-    run(order_id, "new_order")
-    r = rows(order_id, "new_order")
+    customer.post("/api/orders", json={"items": [{"product_id": 1, "qty": 1}], "address": ADDRESS, "email": "priya@example.com"})
+    with SessionLocal() as db:
+        oid = db.scalar(select(Order.id))
+    r = rows(oid, "new_order")
     assert set(r) == {"email"} and r["email"].status == "logged"

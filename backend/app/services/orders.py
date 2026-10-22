@@ -7,11 +7,13 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.core.errors import ServiceError
 from app.models import ONE_SIZE, Address, Order, OrderEvent, OrderItem, Product, StoreSettings, User, Variant
-from app.models.order import CUSTOMER_CANCELLABLE, ORDER_FLOW
+from app.models.order import ORDER_FLOW
 from app.schemas.account import PlaceOrderIn
+from app.services.notify import notify
 
 PAYMENT_METHODS = {"cod"}  # add "razorpay" when online payments are integrated
 MAX_SAVED_ADDRESSES = 5
+NOTIFY_ON = {"confirmed": "accepted", "shipped": "shipped"}  # status reached → customer message
 
 
 def store_settings(db: Session) -> StoreSettings:
@@ -78,18 +80,19 @@ def place_order(db: Session, user: User, data: PlaceOrderIn) -> Order:
     cfg = store_settings(db)
     subtotal = sum(i.price * i.qty for i in items)
     shipping = 0 if subtotal >= cfg.free_ship_above else cfg.ship_fee
-    if data.email and not user.email:
+    if not user.email:
         user.email = str(data.email)
     if not user.name:
         user.name = address["name"]
 
-    order = Order(user_id=user.id, phone=user.phone, customer_name=address["name"], email=str(data.email or user.email or ""),
+    order = Order(user_id=user.id, phone=user.phone, customer_name=address["name"], email=str(data.email),
                   address=address, subtotal=subtotal, shipping=shipping, total=subtotal + shipping,
                   payment_method=data.payment_method, note=data.note, items=items,
                   events=[OrderEvent(status="placed")])
     db.add(order)
     db.commit()
     db.refresh(order)
+    notify(db, order, "new_order")
     return order
 
 
@@ -106,19 +109,6 @@ def _lock_order(db: Session, order_id: int) -> Order:
     order = db.scalar(select(Order).where(Order.id == order_id).with_for_update())
     if not order:
         raise ServiceError("Order not found.", 404)
-    return order
-
-
-def cancel_by_customer(db: Session, user: User, order_id: int) -> Order:
-    order = _lock_order(db, order_id)
-    if order.user_id != user.id:
-        raise ServiceError("Order not found.", 404)
-    if order.status not in CUSTOMER_CANCELLABLE:
-        raise ServiceError("This order has already been packed, so it can't be cancelled online. Please contact us.", 409)
-    _restock(db, order)
-    order.status = "cancelled"
-    order.events.append(OrderEvent(status="cancelled", note="Cancelled by customer"))
-    db.commit()
     return order
 
 
@@ -140,4 +130,6 @@ def set_status(db: Session, order_id: int, status: str, note: str = "", courier:
     order.status = status
     order.events.append(OrderEvent(status=status, note=note))
     db.commit()
+    if status in NOTIFY_ON:
+        notify(db, order, NOTIFY_ON[status])
     return order

@@ -6,8 +6,8 @@ from app.core.deps import DB, Admin
 from app.core.errors import ServiceError
 from app.models import Order
 from app.models.order import ONGOING
-from app.schemas.admin import AdminOrderRow, StatusChange
-from app.schemas.order import OrderDetail
+from app.schemas.admin import AdminOrderRow, DispatchIn, DispatchResult, StatusChange
+from app.schemas.order import AdminOrderDetail
 from app.services import orders as svc
 
 router = APIRouter(prefix="/orders")
@@ -37,18 +37,19 @@ def counts(_: Admin, db: DB):
 
 
 def _load(db, order_id: int) -> Order:
-    o = db.scalar(select(Order).where(Order.id == order_id).options(selectinload(Order.items), selectinload(Order.events)))
+    o = db.scalar(select(Order).where(Order.id == order_id).options(selectinload(Order.items), selectinload(Order.events),
+                                                                          selectinload(Order.notifications)))
     if not o:
         raise HTTPException(404, {"message": "Order not found."})
     return o
 
 
-@router.get("/{order_id}", response_model=OrderDetail)
+@router.get("/{order_id}", response_model=AdminOrderDetail)
 def get_order(order_id: int, _: Admin, db: DB):
     return _load(db, order_id)
 
 
-@router.post("/{order_id}/status", response_model=OrderDetail)
+@router.post("/{order_id}/status", response_model=AdminOrderDetail)
 def change_status(order_id: int, body: StatusChange, _: Admin, db: DB):
     try:
         svc.set_status(db, order_id, body.status, body.note, body.courier, body.tracking_id)
@@ -56,3 +57,22 @@ def change_status(order_id: int, body: StatusChange, _: Admin, db: DB):
         raise e.http() from None
     db.expire_all()
     return _load(db, order_id)
+
+
+@router.post("/dispatch", response_model=list[DispatchResult])
+def dispatch(body: DispatchIn, _: Admin, db: DB):
+    """Ship many orders at once, each with its own tracking ID. One bad row doesn't stop the rest."""
+    results = []
+    for it in body.items:
+        try:
+            order = svc.set_status(db, it.order_id, "shipped", courier=it.courier, tracking_id=it.tracking_id)
+        except ServiceError as e:
+            db.rollback()
+            o = db.get(Order, it.order_id)
+            results.append(DispatchResult(order_id=it.order_id, order_no=o.order_no if o else "", ok=False, error=e.message))
+            continue
+        db.expire_all()
+        wa = next((n for n in _load(db, order.id).notifications if n.kind == "shipped" and n.channel == "whatsapp"), None)
+        results.append(DispatchResult(order_id=order.id, order_no=order.order_no, ok=True,
+                                      whatsapp_link=wa.detail if wa and wa.status == "tap" else ""))
+    return results
