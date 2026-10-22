@@ -17,6 +17,7 @@ const AdminLayout = lazy(() => import("@/components/admin/AdminLayout").then((m)
 const Dashboard = lazy(() => import("@/pages/admin/Dashboard"))
 const AdminOrders = lazy(() => import("@/pages/admin/Orders"))
 const AdminDispatch = lazy(() => import("@/pages/admin/Dispatch"))
+const AdminReviews = lazy(() => import("@/pages/admin/Reviews"))
 const AdminProducts = lazy(() => import("@/pages/admin/Products"))
 const AdminCategories = lazy(() => import("@/pages/admin/Categories"))
 const AdminCustomers = lazy(() => import("@/pages/admin/Customers"))
@@ -45,6 +46,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Dashboard /> },
       { path: "orders", element: <AdminOrders /> },
       { path: "dispatch", element: <AdminDispatch /> },
+      { path: "reviews", element: <AdminReviews /> },
       { path: "products", element: <AdminProducts /> },
       { path: "categories", element: <AdminCategories /> },
       { path: "customers", element: <AdminCustomers /> },

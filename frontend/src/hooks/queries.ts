@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 
 import { api } from "@/lib/api"
-import type { Address, Category, OrderDetail, OrderSummary, Product, ProductDetail, StoreSettings, User } from "@/lib/types"
+import type { Address, Category, MyReview, OrderDetail, OrderSummary, Product, ProductDetail, ReviewList, ReviewWithProduct, StoreSettings, User } from "@/lib/types"
 
 export const keys = {
   me: ["me"] as const,
@@ -12,6 +12,9 @@ export const keys = {
   myOrders: ["my-orders"] as const,
   myOrder: (no: string) => ["my-order", no] as const,
   addresses: ["addresses"] as const,
+  productReviews: (slug: string) => ["reviews", "product", slug] as const,
+  shopReviews: ["reviews", "shop"] as const,
+  myReviews: ["reviews", "mine"] as const,
 }
 
 export const useMe = () => useQuery({ queryKey: keys.me, queryFn: () => api<User | null>("/api/auth/me"), staleTime: 60_000 })
@@ -34,3 +37,10 @@ export const useMyOrder = (orderNo: string, enabled: boolean) =>
 
 export const useAddresses = (enabled: boolean) =>
   useQuery({ queryKey: keys.addresses, queryFn: () => api<Address[]>("/api/me/addresses"), enabled })
+
+export const useProductReviews = (slug: string) =>
+  useQuery({ queryKey: keys.productReviews(slug), queryFn: () => api<ReviewList>(`/api/products/${slug}/reviews`), enabled: !!slug })
+export const useShopReviews = () =>
+  useQuery({ queryKey: keys.shopReviews, queryFn: () => api<ReviewList<ReviewWithProduct>>("/api/reviews?limit=4"), staleTime: 60_000 })
+export const useMyReviews = (enabled: boolean) =>
+  useQuery({ queryKey: keys.myReviews, queryFn: () => api<MyReview[]>("/api/me/reviews"), enabled })

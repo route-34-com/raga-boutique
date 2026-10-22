@@ -1,6 +1,7 @@
 import { Link } from "react-router"
 
 import { ProductCard } from "@/components/store/ProductCard"
+import { Testimonials } from "@/components/store/Reviews"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCategories, useProducts } from "@/hooks/queries"
@@ -155,6 +156,7 @@ export default function Home() {
           </div>
         </section>
       )}
+      <Testimonials />
     </>
   )
 }

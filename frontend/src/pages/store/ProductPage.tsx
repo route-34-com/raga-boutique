@@ -4,6 +4,7 @@ import { toast } from "sonner"
 
 import { QtyStepper } from "@/components/common/QtyStepper"
 import { ProductCard, WishButton } from "@/components/store/ProductCard"
+import { ProductReviews, RatingSummary } from "@/components/store/Reviews"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -90,6 +91,7 @@ export default function ProductPage() {
               <span className="ml-2 rounded-md bg-emerald-50 px-2 py-0.5 align-middle text-xs font-bold text-emerald-700">Save {inr(p.mrp - p.price)}</span>
             </>}
           </p>
+          <RatingSummary slug={p.slug} />
           <p className="text-sm text-muted-foreground">Inclusive of all taxes. {p.price >= freeAbove ? "Ships free." : `Free shipping above ${inr(freeAbove)}.`}</p>
 
           {p.raga_note && (
@@ -141,6 +143,7 @@ export default function ProductPage() {
         </div>
       </section>
 
+      <ProductReviews slug={p.slug} />
       <section className="container-x pt-12 md:pt-14">
         <p className="eyebrow">Keep listening</p>
         <h2 className="mb-9 mt-2.5 text-[clamp(30px,3.6vw,46px)]">You may also like</h2>

@@ -6,6 +6,7 @@ import { PageHead } from "@/components/admin/AdminLayout"
 import { OrderSheet, NEXT_LABEL, nextStatus, useAdvanceOrder } from "@/components/admin/OrderSheet"
 import { OrdersTable } from "@/components/admin/OrdersTable"
 import { ProductSheet } from "@/components/admin/ProductSheet"
+import { ReviewRow, useAdminReviews } from "@/pages/admin/Reviews"
 import { StatusBadge } from "@/components/common/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -37,6 +38,7 @@ function Kpi({ label, value, sub, tone }: { label: string; value: React.ReactNod
 }
 
 export default function Dashboard() {
+  const { data: reviews } = useAdminReviews(3)
   const { data: d } = useQuery({ queryKey: ["admin", "dashboard"], queryFn: () => api<Dash>("/api/admin/dashboard"), refetchInterval: 20_000 })
   const [orderId, setOrderId] = useState<number | null>(null)
   const [edit, setEdit] = useState<AdminProduct | null>(null)
@@ -95,6 +97,12 @@ export default function Dashboard() {
             <span className="text-[13px] text-muted-foreground">Cash on delivery still to collect: <strong className="text-foreground">{inr(d.cod_due)}</strong></span></div>
           <div className="-mx-5 overflow-x-auto px-5"><OrdersTable orders={d.recent} onOpen={setOrderId} /></div>
         </section>
+        {reviews && reviews.length > 0 && (
+          <section className="rounded-2xl border bg-card p-5 xl:col-span-2">
+            <div className="mb-1 flex items-baseline justify-between"><h3 className="text-xl">Latest reviews</h3><Link to="/admin/reviews" className="text-[13px] font-semibold text-rust hover:underline">All reviews →</Link></div>
+            {reviews.map((r) => <ReviewRow key={r.id} r={r} />)}
+          </section>
+        )}
       </div>
       <OrderSheet key={orderId ?? "none"} id={orderId} onClose={() => setOrderId(null)} />
       {edit && <ProductSheet key={edit.id} product={edit} isNew={false} onClose={() => setEdit(null)} />}

@@ -4,8 +4,9 @@ import { OrderTimeline } from "@/components/common/OrderTimeline"
 import { StatusBadge } from "@/components/common/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { RateButton } from "@/components/store/Reviews"
 import { PageLoader } from "@/components/common/PageLoader"
-import { useMe, useMyOrder, useSettings } from "@/hooks/queries"
+import { useMe, useMyOrder, useMyReviews, useSettings } from "@/hooks/queries"
 import { useTitle } from "@/hooks/useTitle"
 import { fmtDate, fmtPhone, inr, waLink } from "@/lib/format"
 import { LoginPrompt } from "@/pages/store/LoginPrompt"
@@ -16,6 +17,7 @@ export default function OrderPage() {
   const { data: me, isLoading: meLoading } = useMe()
   const { data: o, isLoading, isError } = useMyOrder(orderNo, !!me)
   const { data: settings } = useSettings()
+  const { data: mine } = useMyReviews(o?.status === "delivered")
   useTitle(`Order ${orderNo}`)
   const courier = o && settings?.couriers?.find((c) => c.name.trim().toLowerCase() === o.courier.trim().toLowerCase())
   const trackUrl = o?.tracking_id && courier?.track_url.includes("{id}") ? courier.track_url.replace("{id}", encodeURIComponent(o.tracking_id)) : ""
@@ -53,7 +55,8 @@ export default function OrderPage() {
               {o.items.map((it, i) => (
                 <div key={i} className="grid grid-cols-[56px_1fr_auto] items-center gap-3 border-b py-2.5 text-sm">
                   <img src={it.image} alt="" className="aspect-[4/5] w-14 rounded-lg object-cover" />
-                  <div><strong className="block">{it.name}</strong><span className="text-xs text-muted-foreground">Raag {it.raga}{it.size && ` · ${it.size}`} · Qty {it.qty}</span></div>
+                  <div><strong className="block">{it.name}</strong><span className="text-xs text-muted-foreground">Raag {it.raga}{it.size && ` · ${it.size}`} · Qty {it.qty}</span>
+                    {o.status === "delivered" && <RateButton item={it} mine={mine?.find((m) => m.product_id === it.product_id)} />}</div>
                   <span>{inr(it.price * it.qty)}</span>
                 </div>
               ))}
