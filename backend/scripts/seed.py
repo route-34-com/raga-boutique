@@ -1,4 +1,4 @@
-"""Loads the starter catalog, an admin and (with --demo) a test customer with sample orders.
+"""Loads the starter catalog, an admin and (with --demo) test customers with sample orders.
 
     uv run python -m scripts.seed --demo          # local demo data
     uv run python -m scripts.seed --demo --reset  # wipe everything first (local only!)
@@ -19,30 +19,39 @@ from app.core.db import SessionLocal
 from app.models import (
     ONE_SIZE, Address, Category, Order, OrderEvent, OrderItem, Product, ProductImage, StoreSettings, User, Variant,
 )
+from app.services.images import store_image_file
 
 HERE = Path(__file__).parent
-CATEGORIES = [("sarees", "Sarees"), ("ethnic", "Anarkalis & dresses")]
-SAREE_STOCK = {"bhairavi": 4, "hindol": 2, "yaman": 3, "kalyani": 1}
+CATEGORIES = [("sarees", "Sarees"), ("ethnic", "Anarkalis & dresses"), ("lehengas", "Lehengas")]
+SAREE_STOCK = {"bhairavi": 4, "hindol": 2, "yaman": 3, "kalyani": 1, "bihag": 2, "malhar": 1}
+# Placeholders until the owner fills in real details under Admin → Settings.
+CONTACT = dict(contact_phone="9000000000", contact_whatsapp="9000000000", contact_email="hello@ragaboutique.in",
+               contact_address="12, Kutchery Road, Mylapore, Chennai 600004", contact_hours="Mon–Sat, 10am–8pm")
+
+
+def seed_settings(db) -> None:
+    s = db.get(StoreSettings, 1)
+    if not s:
+        db.add(StoreSettings(id=1, free_ship_above=5000, ship_fee=150, low_stock_at=2, **CONTACT))
+        return
+    for k, v in CONTACT.items():
+        if not getattr(s, k):
+            setattr(s, k, v)
 
 
 def seed_catalog(db) -> dict[str, Product]:
-    dest = get_settings().uploads_dir / "products"
-    dest.mkdir(parents=True, exist_ok=True)
     for i, (cid, name) in enumerate(CATEGORIES):
         db.merge(Category(id=cid, name=name, sort=i, active=True))
-    db.merge(StoreSettings(id=1, free_ship_above=5000, ship_fee=150, low_stock_at=2))
+    seed_settings(db)
     db.flush()
 
     products = {}
-    for i, raw in enumerate(json.loads((HERE / "seed_catalog.json").read_text())):
+    for i, raw in enumerate(json.loads((HERE / "seed_catalog.json").read_text(encoding="utf-8"))):
         p = db.scalar(select(Product).where(Product.slug == raw["id"]))
         if p:
             products[p.slug] = p
             continue
-        urls = []
-        for img in raw["images"]:
-            shutil.copy(HERE / "seed_images" / img, dest / img)
-            urls.append(f"/uploads/products/{img}")
+        urls = [store_image_file(img, (HERE / "seed_images" / img).read_bytes()) for img in raw["images"]]
         sizes = raw.get("sizes") or []
         variants = ([Variant(size=s, stock=0 if j == 0 else 3, sort=j) for j, s in enumerate(sizes)]
                     or [Variant(size=ONE_SIZE, stock=SAREE_STOCK.get(raw["id"], 3))])
@@ -63,43 +72,83 @@ def make_admin(db, mobile: str) -> None:
     db.add(u)
 
 
-def seed_demo_orders(db, products: dict[str, Product]) -> None:
-    phone = "+919000000002"
-    if db.scalar(select(User).where(User.phone == phone)):
-        return
-    addr = dict(name="Meera Iyer", phone="9000000002", line1="14, North Mada Street", line2="Mylapore",
-                city="Chennai", state="Tamil Nadu", pincode="600004")
-    user = User(phone=phone, name="Meera Iyer", email="meera@example.com", addresses=[Address(**addr)])
-    db.add(user)
-    db.flush()
+FULL = ["placed", "confirmed", "packed", "shipped", "delivered"]
+# (mobile, name, email, address, [(lines, status flow, days ago, (courier, tracking) | None)])
+DEMO_CUSTOMERS = [
+    ("9000000002", "Meera Iyer", "meera@example.com",
+     dict(line1="14, North Mada Street", line2="Mylapore", city="Chennai", state="Tamil Nadu", pincode="600004"), [
+         ([("yaman", None)], FULL, 21, ("Delhivery", "DL88213409")),
+         ([("megh", "M")], ["placed", "cancelled"], 9, None),
+         ([("hindol", None), ("chandrakauns", "S")], FULL[:4], 2, ("Blue Dart", "BD5521907")),
+         ([("bhairavi", None)], ["placed"], 0.05, None),
+     ]),
+    ("9000000003", "Ananya Rao", "ananya@example.com",
+     dict(line1="221, 8th Cross, Indiranagar", line2="HAL 2nd Stage", city="Bengaluru", state="Karnataka", pincode="560038"), [
+         ([("malhar", None)], FULL, 18, ("Delhivery", "DL88219951")),
+         ([("bahar", "M"), ("todi", None)], FULL[:3], 1.2, None),
+     ]),
+    ("9000000004", "Priya Menon", "priya.menon@example.com",
+     dict(line1="Flat 4B, Sea Breeze Apartments", line2="Panampilly Nagar", city="Kochi", state="Kerala", pincode="682036"), [
+         ([("basant", None)], FULL, 14, ("India Post", "EK123456789IN")),
+         ([("puriya", "S")], FULL[:2], 0.6, None),
+     ]),
+    ("9000000005", "Kavya Sharma", "kavya.s@example.com",
+     dict(line1="B-17, Vasant Vihar", line2="Near Priya Cinema", city="New Delhi", state="Delhi", pincode="110057"), [
+         ([("kedar", "M")], FULL[:4], 4, ("Blue Dart", "BD5530018")),
+         ([("bihag", None)], FULL, 25, ("Blue Dart", "BD5401120")),
+         ([("darbari", None)], ["placed"], 0.2, None),
+     ]),
+    ("9000000006", "Sneha Banerjee", "sneha.b@example.com",
+     dict(line1="32/1, Hindustan Park", line2="Gariahat", city="Kolkata", state="West Bengal", pincode="700029"), [
+         ([("durga", None)], FULL, 11, ("Delhivery", "DL88230476")),
+         ([("bilaval", "L")], ["placed", "confirmed", "cancelled"], 6, None),
+         ([("megh", "S"), ("todi", None)], FULL[:3], 3, None),
+     ]),
+]
 
+
+def seed_demo_orders(db, products: dict[str, Product]) -> None:
     now = datetime.now(UTC)
-    samples = [
-        ([("yaman", None)], ["placed", "confirmed", "packed", "shipped", "delivered"], 21, ("Delhivery", "DL88213409")),
-        ([("megh", "M")], ["placed", "cancelled"], 9, None),
-        ([("hindol", None), ("chandrakauns", "S")], ["placed", "confirmed", "packed", "shipped"], 2, ("Blue Dart", "BD5521907")),
-        ([("bhairavi", None)], ["placed"], 0.05, None),
-    ]
-    for lines, flow, age_days, tracking in samples:
-        items = [OrderItem(product_id=products[s].id, name=products[s].name, raga=products[s].raga,
-                           image=products[s].images[0].url, size=size, qty=1, price=products[s].price) for s, size in lines]
+    pending = []
+    for mobile, name, email, place, orders in DEMO_CUSTOMERS:
+        phone = "+91" + mobile
+        if db.scalar(select(User).where(User.phone == phone)):
+            continue
+        addr = dict(name=name, phone=mobile, **place)
+        user = User(phone=phone, name=name, email=email, addresses=[Address(**addr)])
+        db.add(user)
+        db.flush()
+        pending += [(user, addr, *o) for o in orders]
+
+    # Oldest first, so order numbers rise with the date like real orders do.
+    for user, addr, lines, flow, age_days, tracking in sorted(pending, key=lambda o: -o[4]):
+        picked = [(products[s], size) for s, size in lines]
+        items = [OrderItem(product_id=p.id, name=p.name, raga=p.raga, image=p.images[0].url, size=size, qty=1, price=p.price)
+                 for p, size in picked]
         subtotal = sum(i.price for i in items)
         created = now - timedelta(days=age_days)
         shipping = 0 if subtotal >= 5000 else 150
-        o = Order(user_id=user.id, phone=phone, customer_name=addr["name"], email=user.email, address=addr,
+        step = timedelta(hours=min(18, age_days * 24 / len(flow)))
+        o = Order(user_id=user.id, phone=user.phone, customer_name=user.name, email=user.email, address=addr,
                   subtotal=subtotal, shipping=shipping, total=subtotal + shipping, status=flow[-1],
                   payment_status="paid" if flow[-1] == "delivered" else "pending",
                   courier=tracking[0] if tracking else "", tracking_id=tracking[1] if tracking else "",
                   items=items, created_at=created,
-                  events=[OrderEvent(status=s, created_at=created + timedelta(hours=18 * k),
+                  events=[OrderEvent(status=s, created_at=created + step * k,
                                      note="Cancelled by customer" if s == "cancelled" else "") for k, s in enumerate(flow)])
         db.add(o)
+        db.flush()
+        if flow[-1] != "cancelled":
+            for p, size in picked:
+                v = next((v for v in p.variants if v.size == (size or ONE_SIZE)), None)
+                if v and v.stock > 0:
+                    v.stock -= 1
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--admin", default="9000000001", help="10-digit mobile of the first admin")
-    ap.add_argument("--demo", action="store_true", help="also add a test customer with sample orders")
+    ap.add_argument("--demo", action="store_true", help="also add test customers with sample orders")
     ap.add_argument("--reset", action="store_true", help="drop all data and uploads first (refused when ENV=prod)")
     args = ap.parse_args()
     if args.reset:
@@ -118,7 +167,7 @@ def main() -> None:
         db.commit()
         db.execute(text("SELECT setval('order_no_seq', GREATEST((SELECT COALESCE(MAX(seq), 1000) FROM orders), 1000))"))
         db.commit()
-    print(f"Seeded {len(products)} products, admin +91{args.admin}" + (", demo customer +919000000002" if args.demo else ""))
+    print(f"Seeded {len(products)} products, admin +91{args.admin}" + (f", {len(DEMO_CUSTOMERS)} demo customers" if args.demo else ""))
 
 
 if __name__ == "__main__":
