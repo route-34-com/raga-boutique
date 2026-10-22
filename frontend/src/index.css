@@ -7,6 +7,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+    --breakpoint-3xl: 100rem;
     --font-heading: 'Fraunces Variable', Georgia, serif;
     --font-sans: 'Manrope Variable', system-ui, sans-serif;
     --color-cocoa: var(--cocoa);
@@ -116,7 +117,7 @@
 
 @layer components {
   .eyebrow { @apply text-[11px] font-bold uppercase tracking-[0.16em] text-rust; }
-  .container-x { @apply mx-auto w-full max-w-[1320px] px-4 sm:px-8 lg:px-14; }
+  .container-x { @apply mx-auto w-full max-w-[1320px] px-4 sm:px-8 lg:px-14 3xl:max-w-[1600px]; }
 }
 
 @keyframes marquee { to { transform: translateX(-50%); } }

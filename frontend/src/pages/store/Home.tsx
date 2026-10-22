@@ -34,7 +34,7 @@ export default function Home() {
         <div className="flex flex-col gap-6 max-md:order-2 md:pb-12 md:pt-2">
           <div>
             <p className="eyebrow">Festive edit · Autumn 2026</p>
-            <h1 className="mt-4 whitespace-nowrap text-[clamp(44px,6.2vw,92px)] leading-[0.98]">Every weave<br />has a <em className="font-light text-rust">raga.</em></h1>
+            <h1 className="mt-4 whitespace-nowrap text-[clamp(44px,6.2vw,92px)] leading-[0.98] 3xl:text-[112px]">Every weave<br />has a <em className="font-light text-rust">raga.</em></h1>
           </div>
           <div>
             <p className="max-w-[52ch] text-[17px] text-muted-foreground md:text-lg">
@@ -66,7 +66,7 @@ export default function Home() {
           )}
         </div>
         <div className="relative self-start pb-9 pl-7 md:pb-12 md:pl-12">
-          <figure className="aspect-[4/4.4] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-[4/4.6] md:rounded-t-[220px]">
+          <figure className="aspect-[4/4.4] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-[4/4.6] md:rounded-t-[220px] 3xl:-mr-[calc((100vw-100rem)/2+3.5rem)] 3xl:aspect-auto 3xl:h-[min(76vh,780px)] 3xl:rounded-r-none 3xl:rounded-tl-[260px]">
             <img src="/brand/hero-marigold.jpg" alt="Model in a marigold Kanjivaram saree with royal blue border in a temple courtyard"
               className="size-full animate-[drift_18s_ease-in-out_infinite_alternate] object-cover object-[55%_30%]" />
           </figure>
@@ -103,14 +103,14 @@ export default function Home() {
       <section className="container-x pt-8 md:pt-12">
         <SectionHead eyebrow="The collection" title="New in the edit"
           aside={<Link to="/shop" className="border-b-[1.5px] border-cocoa pb-0.5 font-semibold text-cocoa hover:text-rust">Shop all →</Link>} />
-        <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4 3xl:grid-cols-5">
           {isLoading ? Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)
-            : products?.slice(0, 4).map((p) => <ProductCard key={p.id} p={p} />)}
+            : products?.slice(0, 5).map((p, i) => <div key={p.id} className={i === 4 ? "hidden 3xl:block" : undefined}><ProductCard p={p} /></div>)}
         </div>
       </section>
 
       <section className="container-x grid items-center gap-8 pt-10 md:grid-cols-[1.1fr_1fr] md:gap-16 md:pt-16">
-        <figure className="aspect-[4/3.4] overflow-hidden rounded-2xl md:aspect-square">
+        <figure className="aspect-[4/3.4] overflow-hidden rounded-2xl md:aspect-square 3xl:aspect-[5/4]">
           <img src="/brand/hero-peach.jpg" alt="Model in a peach saree on a garden path" loading="lazy" className="size-full object-cover" />
         </figure>
         <div>

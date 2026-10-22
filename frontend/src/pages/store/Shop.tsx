@@ -66,9 +66,9 @@ export default function Shop() {
           </div>
         </div>
         {isLoading ? (
-          <div className="mt-5 grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)}</div>
+          <div className="mt-5 grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4 3xl:grid-cols-5">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)}</div>
         ) : products?.length ? (
-          <div className="mt-5 grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">{products.map((p) => <ProductCard key={p.id} p={p} />)}</div>
+          <div className="mt-5 grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4 3xl:grid-cols-5">{products.map((p) => <ProductCard key={p.id} p={p} />)}</div>
         ) : (
           <div className="flex flex-col items-center gap-5 py-16 text-center">
             <p className="font-heading text-xl italic text-rust">Nothing here just yet.</p>

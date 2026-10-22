@@ -124,7 +124,7 @@ export function StoreLayout() {
         </div>
       </div>
       <Header />
-      <main><Outlet /></main>
+      <main className="overflow-x-clip"><Outlet /></main>
       <Footer />
       <CartSheet />
       <LoginDialog />
