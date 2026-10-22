@@ -19,7 +19,7 @@ def send(to: str, subject: str, text: str, html: str) -> tuple[str, str]:
     msg.set_content(text)
     msg.add_alternative(html, subtype="html")
     try:
-        with smtplib.SMTP(s.smtp_host, s.smtp_port, timeout=15) as smtp:
+        with smtplib.SMTP(s.smtp_host, s.smtp_port, timeout=8) as smtp:
             smtp.starttls()
             if s.smtp_user:
                 smtp.login(s.smtp_user, s.smtp_password)

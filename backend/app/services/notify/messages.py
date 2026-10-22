@@ -1,5 +1,7 @@
 """The words customers and the owner receive. Kept short: WhatsApp templates must match these."""
 
+from urllib.parse import quote
+
 
 def inr(n: int) -> str:
     s = str(n)
@@ -16,7 +18,7 @@ def inr(n: int) -> str:
 def track_link(courier: str, tracking_id: str, couriers: list[dict]) -> str:
     for c in couriers:
         if c.get("name", "").strip().lower() == courier.strip().lower() and "{id}" in c.get("track_url", ""):
-            return c["track_url"].replace("{id}", tracking_id)
+            return c["track_url"].replace("{id}", quote(tracking_id, safe=""))
     return ""
 
 

@@ -115,3 +115,37 @@ def test_new_order_tap_mode_emails_shop_only(customer):
         oid = db.scalar(select(Order.id))
     r = rows(oid, "new_order")
     assert set(r) == {"email"} and r["email"].status == "logged"
+
+
+def test_unexpected_send_error_marks_failed_and_still_emails(order_id, monkeypatch):
+    def boom(*a, **k):
+        raise ValueError("not json")
+    monkeypatch.setattr(whatsapp, "send", boom)
+    run(order_id, "accepted")
+    r = rows(order_id, "accepted")
+    assert r["whatsapp"].status == "failed" and "not json" in r["whatsapp"].detail
+    assert r["email"].status == "logged"
+
+
+def test_cloud_uses_configured_template_names(monkeypatch):
+    import httpx
+    sent = {}
+
+    class Resp:
+        status_code = 200
+        text = "{}"
+
+        def json(self):
+            return {"messages": [{"id": "wamid.1"}]}
+
+    def fake_post(url, json, headers, timeout):
+        sent.update(json)
+        return Resp()
+    monkeypatch.setattr(get_settings(), "whatsapp_mode", "cloud")
+    monkeypatch.setattr(httpx, "post", fake_post)
+    assert whatsapp.send("+919876543210", "accepted", "Hi", ["Priya"]) == ("sent", "wamid.1")
+    assert sent["template"]["name"] == "order_accepted" and sent["to"] == "919876543210"
+
+
+def test_track_link_encodes_tracking_id():
+    assert messages.track_link("DTDC", "A 1&2", [DTDC]) == "https://t.example/?awb=A%201%262"

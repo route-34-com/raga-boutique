@@ -106,12 +106,12 @@ Until set up, WhatsApp runs in **tap** mode (admin gets "Open WhatsApp" with the
 **console** mode (logged only).
 
 - Email: `EMAIL_PROVIDER=smtp`, `SMTP_HOST`, `SMTP_PORT` (587), `SMTP_USER`, `SMTP_PASSWORD`, `EMAIL_FROM`.
-  Brevo free plan: host `smtp-relay.brevo.com`, 300 emails/day. Also set the shop email under Admin → Settings for new-order alerts.
+  Brevo free plan: host `smtp-relay.brevo.com`, port 587 (STARTTLS; port 465 is not supported), 300 emails/day. Also set the shop email under Admin → Settings for new-order alerts.
 - WhatsApp Cloud API (Meta): `WHATSAPP_MODE=cloud`, `WHATSAPP_PHONE_ID`, `WHATSAPP_TOKEN` (permanent system-user token),
   `WHATSAPP_LANG` (`en`). Create three **Utility** templates with these names and body variables, in this order:
-  - `accepted`: `Hi {{1}}, your Raga order {{2}} is confirmed. We'll message you the tracking details once it ships. Total {{3}} (cash on delivery).`
-  - `shipped`: `Hi {{1}}, your Raga order {{2}} is on its way with {{3}}. Tracking ID: {{4}}. Track it here: {{5}}`
-  - `new_order`: `New order {{1}}: {{2}} item(s), {{3}}, {{4}}, {{5}}.`
+  - `order_accepted`: `Hi {{1}}, your Raga order {{2}} is confirmed. We'll message you the tracking details once it ships. Total {{3}} (cash on delivery).`
+  - `order_shipped`: `Hi {{1}}, your Raga order {{2}} is on its way with {{3}}. Tracking ID: {{4}}. Track it here: {{5}}`
+  - `new_order_owner`: `New order {{1}}: {{2}} item(s), {{3}}, {{4}}, {{5}}.`
   The sender can be the shop's WhatsApp Business number (Meta "coexistence") or any other verified number.
 - Couriers and their tracking links (`{id}` = tracking ID) are set under Admin → Settings.
 

@@ -58,7 +58,7 @@ export default function Dispatch() {
       const ok = r.filter((x) => x.ok).length
       toast.success(`${ok} of ${r.length} marked shipped. Customers are emailed automatically.`)
     },
-    onError: (e) => toast.error(e instanceof ApiError ? e.message : "Couldn't send. Nothing was changed."),
+    onError: (e) => { qc.invalidateQueries({ queryKey: ["admin"] }); toast.error(e instanceof ApiError ? e.message : "Couldn't confirm the send. Check the Orders page before sending again — some may have shipped.") },
   })
 
   return (

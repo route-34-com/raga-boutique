@@ -38,9 +38,9 @@ def _notify(db: Session, order: Order, kind: str) -> list[Notification]:
 
     made = []
     if want_wa and "whatsapp" not in done and (n := _claim(db, order, kind, "whatsapp")):
-        made.append(_finish(db, n, whatsapp.send(wa_to, kind, text, params)))
+        made.append(_finish(db, n, _safely(whatsapp.send, wa_to, kind, text, params)))
     if "email" not in done and (n := _claim(db, order, kind, "email")):
-        result = email.send(mail_to, templates.subject(kind, order), text, templates.html(text, order, link)) if mail_to \
+        result = _safely(email.send, mail_to, templates.subject(kind, order), text, templates.html(text, order, link)) if mail_to \
             else ("skipped", "No email address")
         made.append(_finish(db, n, result))
     return made
@@ -58,7 +58,16 @@ def _claim(db: Session, order: Order, kind: str, channel: str) -> Notification |
     return n
 
 
+def _safely(send, *args) -> tuple[str, str]:
+    """A sender bug must end as a visible 'failed' row, never a row stuck on 'sending'."""
+    try:
+        return send(*args)
+    except Exception as e:
+        log.exception("send failed")
+        return "failed", str(e)[:300] or type(e).__name__
+
+
 def _finish(db: Session, n: Notification, result: tuple[str, str]) -> Notification:
-    n.status, n.detail = result
+    n.status, n.detail = result[0], result[1][:1200]
     db.commit()
     return n
