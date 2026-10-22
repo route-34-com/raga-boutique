@@ -18,7 +18,7 @@ function usePromos() {
     s ? `Free shipping across India above ${inr(s.free_ship_above)}` : "Free shipping across India",
     "Fall, pico & blouse stitching on request",
     "Silk Mark certified weaves",
-    s?.contact_hours ? `Video-call shopping, ${s.contact_hours}` : "Video-call shopping",
+    "Video-call shopping on WhatsApp",
   ]
 }
 
@@ -105,7 +105,14 @@ export function ContactList({ className, linkClass }: { className?: string; link
       {s.contact_whatsapp && <li><a className={row} href={waLink(s.contact_whatsapp, "Hi Raga Boutique,")} target="_blank" rel="noopener"><MessageCircle className="mt-0.5 size-4 shrink-0" />WhatsApp {fmtPhone(s.contact_whatsapp)}</a></li>}
       {s.contact_phone && <li><a className={row} href={`tel:+91${s.contact_phone}`}><Phone className="mt-0.5 size-4 shrink-0" />Call {fmtPhone(s.contact_phone)}</a></li>}
       {s.contact_email && <li><a className={row} href={`mailto:${s.contact_email}`}><Mail className="mt-0.5 size-4 shrink-0" />{s.contact_email}</a></li>}
-      {s.contact_address && <li className={row}><MapPin className="mt-0.5 size-4 shrink-0" /><span>{s.contact_address}{s.contact_hours && <><br />{s.contact_hours}</>}</span></li>}
+      {s.contact_address && (
+        <li>
+          <a className={row} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("Raga Boutique, " + s.contact_address)}`} target="_blank" rel="noopener">
+            <MapPin className="mt-0.5 size-4 shrink-0" />
+            <span>{s.contact_address}{s.contact_hours && <><br />{s.contact_hours}</>}<br /><span className="underline underline-offset-2">Get directions</span></span>
+          </a>
+        </li>
+      )}
     </ul>
   )
 }
