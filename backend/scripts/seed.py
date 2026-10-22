@@ -42,6 +42,13 @@ def seed_settings(db) -> None:
             setattr(s, k, v)
 
 
+def filter_fields(raw: dict) -> dict:
+    """Shop-filter attributes, plus a launch date spread over past months so "Launched in" has something to show."""
+    return dict(color=raw.get("color", ""), material=raw.get("material", ""), work=raw.get("work", ""),
+                pattern=raw.get("pattern", ""), occasions=raw.get("occasions", []),
+                created_at=datetime.now(UTC) - timedelta(days=raw.get("addedDaysAgo", 0)))
+
+
 def seed_catalog(db) -> dict[str, Product]:
     for i, (cid, name) in enumerate(CATEGORIES):
         db.merge(Category(id=cid, name=name, sort=i, active=True))
@@ -60,7 +67,7 @@ def seed_catalog(db) -> dict[str, Product]:
                     or [Variant(size=ONE_SIZE, stock=LOW_STOCK.get(raw["id"], 6))])
         p = Product(slug=raw["id"], name=raw["name"], raga=raw["raga"], category_id=raw["cat"], mood=raw["mood"],
                     price=raw["price"], mrp=raw.get("mrp"), tag=raw.get("tag", ""), swatch=raw["swatch"],
-                    raga_note=raw["ragaNote"], details=raw["details"], care=raw["care"], sort=i,
+                    raga_note=raw["ragaNote"], details=raw["details"], care=raw["care"], sort=i, **filter_fields(raw),
                     images=[ProductImage(url=u, position=j) for j, u in enumerate(urls)], variants=variants)
         db.add(p)
         products[p.slug] = p

@@ -33,6 +33,12 @@ class Product(TimestampMixin, Base):
     raga_note: Mapped[str] = mapped_column(Text, default="")
     details: Mapped[list[str]] = mapped_column(JSON, default=list)
     care: Mapped[str] = mapped_column(Text, default="")
+    # Shop filters. Free text so the owner can add new values; the shop lists whatever is in use.
+    color: Mapped[str] = mapped_column(String(30), default="")
+    material: Mapped[str] = mapped_column(String(40), default="")
+    work: Mapped[str] = mapped_column(String(40), default="")
+    pattern: Mapped[str] = mapped_column(String(40), default="")
+    occasions: Mapped[list[str]] = mapped_column(JSON, default=list)
     active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     sort: Mapped[int] = mapped_column(Integer, default=0)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

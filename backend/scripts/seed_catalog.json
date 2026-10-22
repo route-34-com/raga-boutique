@@ -20,7 +20,17 @@
       "Unstitched blouse piece included",
       "Length 6.3 m including blouse"
     ],
-    "care": "Dry clean only. Store folded in muslin, refold every few months."
+    "care": "Dry clean only. Store folded in muslin, refold every few months.",
+    "color": "Peach",
+    "material": "Tissue silk",
+    "work": "Zari",
+    "pattern": "Woven buttis",
+    "occasions": [
+      "Festive",
+      "Pooja",
+      "Family function"
+    ],
+    "addedDaysAgo": 95
   },
   {
     "id": "hindol",
@@ -42,7 +52,17 @@
       "Rich zari pallu",
       "Silk Mark certified"
     ],
-    "care": "Dry clean only. Wrap zari sections in cotton before storing."
+    "care": "Dry clean only. Wrap zari sections in cotton before storing.",
+    "color": "Yellow",
+    "material": "Kanjivaram silk",
+    "work": "Zari",
+    "pattern": "Contrast border",
+    "occasions": [
+      "Wedding",
+      "Festive",
+      "Reception"
+    ],
+    "addedDaysAgo": 120
   },
   {
     "id": "yaman",
@@ -65,7 +85,17 @@
       "Contrast blouse piece",
       "Length 6.3 m including blouse"
     ],
-    "care": "Dry clean only. Avoid spraying perfume directly on zari."
+    "care": "Dry clean only. Avoid spraying perfume directly on zari.",
+    "color": "Purple",
+    "material": "Banarasi silk",
+    "work": "Zari",
+    "pattern": "Contrast border",
+    "occasions": [
+      "Reception",
+      "Party",
+      "Festive"
+    ],
+    "addedDaysAgo": 110
   },
   {
     "id": "kalyani",
@@ -87,7 +117,16 @@
       "Brocade blouse piece",
       "Silk Mark certified"
     ],
-    "care": "Dry clean only. Air it out after every wear before folding."
+    "care": "Dry clean only. Air it out after every wear before folding.",
+    "color": "Pink",
+    "material": "Kanjivaram silk",
+    "work": "Zari",
+    "pattern": "Woven buttis",
+    "occasions": [
+      "Wedding",
+      "Engagement"
+    ],
+    "addedDaysAgo": 100
   },
   {
     "id": "chandrakauns",
@@ -116,7 +155,17 @@
       "Matching churidar",
       "Made to your size within 7 days"
     ],
-    "care": "Dry clean recommended. Steam, don't iron, the dupatta."
+    "care": "Dry clean recommended. Steam, don't iron, the dupatta.",
+    "color": "Ivory",
+    "material": "Organza",
+    "work": "Sequins",
+    "pattern": "Solid",
+    "occasions": [
+      "Sangeet",
+      "Party",
+      "Reception"
+    ],
+    "addedDaysAgo": 75
   },
   {
     "id": "megh",
@@ -146,7 +195,17 @@
       "Tiered flared hem",
       "Ankle length"
     ],
-    "care": "Gentle hand wash in cold water. Dry in shade."
+    "care": "Gentle hand wash in cold water. Dry in shade.",
+    "color": "Teal",
+    "material": "Georgette",
+    "work": "Plain",
+    "pattern": "Tiered",
+    "occasions": [
+      "Party",
+      "Casual",
+      "Vacation"
+    ],
+    "addedDaysAgo": 70
   },
   {
     "id": "todi",
@@ -169,7 +228,17 @@
       "Contrast blouse piece included",
       "Length 6.3 m including blouse"
     ],
-    "care": "Dry clean only. Store folded in muslin, refold every few months."
+    "care": "Dry clean only. Store folded in muslin, refold every few months.",
+    "color": "Green",
+    "material": "Chanderi tissue",
+    "work": "Zari",
+    "pattern": "Woven buttis",
+    "occasions": [
+      "Festive",
+      "Pooja",
+      "Office"
+    ],
+    "addedDaysAgo": 12
   },
   {
     "id": "malhar",
@@ -191,7 +260,17 @@
       "Contrast magenta korvai border",
       "Silk Mark certified"
     ],
-    "care": "Dry clean only. Store folded in muslin, refold every few months."
+    "care": "Dry clean only. Store folded in muslin, refold every few months.",
+    "color": "Blue",
+    "material": "Kanjivaram silk",
+    "work": "Zari",
+    "pattern": "Contrast border",
+    "occasions": [
+      "Wedding",
+      "Festive",
+      "Reception"
+    ],
+    "addedDaysAgo": 20
   },
   {
     "id": "darbari",
@@ -214,7 +293,16 @@
       "Running blouse piece",
       "Length 6.3 m including blouse"
     ],
-    "care": "Dry clean only. Store folded in muslin, refold every few months."
+    "care": "Dry clean only. Store folded in muslin, refold every few months.",
+    "color": "Purple",
+    "material": "Silk brocade",
+    "work": "Zari",
+    "pattern": "Brocade",
+    "occasions": [
+      "Reception",
+      "Party"
+    ],
+    "addedDaysAgo": 26
   },
   {
     "id": "durga",
@@ -236,7 +324,17 @@
       "Plain ivory body with woven pallu",
       "Unstitched blouse piece included"
     ],
-    "care": "Dry clean only. Store folded in muslin, refold every few months."
+    "care": "Dry clean only. Store folded in muslin, refold every few months.",
+    "color": "Ivory",
+    "material": "Korial silk",
+    "work": "Zari",
+    "pattern": "Contrast border",
+    "occasions": [
+      "Festive",
+      "Pooja",
+      "Wedding"
+    ],
+    "addedDaysAgo": 9
   },
   {
     "id": "bihag",
@@ -259,7 +357,17 @@
       "Heavy woven border and pallu",
       "Silk Mark certified"
     ],
-    "care": "Dry clean only. Store folded in muslin, refold every few months."
+    "care": "Dry clean only. Store folded in muslin, refold every few months.",
+    "color": "Red",
+    "material": "Banarasi silk",
+    "work": "Zari",
+    "pattern": "Woven buttis",
+    "occasions": [
+      "Wedding",
+      "Reception",
+      "Engagement"
+    ],
+    "addedDaysAgo": 5
   },
   {
     "id": "basant",
@@ -282,7 +390,17 @@
       "Rani pink and gold border",
       "Silk Mark certified"
     ],
-    "care": "Dry clean only. Store folded in muslin, refold every few months."
+    "care": "Dry clean only. Store folded in muslin, refold every few months.",
+    "color": "Orange",
+    "material": "Kanjivaram silk",
+    "work": "Zari",
+    "pattern": "Chevron",
+    "occasions": [
+      "Festive",
+      "Wedding",
+      "Family function"
+    ],
+    "addedDaysAgo": 3
   },
   {
     "id": "bahar",
@@ -312,7 +430,17 @@
       "Blush net dupatta with gota border",
       "Made to your size within 10 days"
     ],
-    "care": "Dry clean only. Store the skirt hung inside-out in a cotton bag; keep the dupatta folded flat."
+    "care": "Dry clean only. Store the skirt hung inside-out in a cotton bag; keep the dupatta folded flat.",
+    "color": "Yellow",
+    "material": "Crepe",
+    "work": "Gota-patti",
+    "pattern": "Solid",
+    "occasions": [
+      "Haldi",
+      "Mehendi",
+      "Festive"
+    ],
+    "addedDaysAgo": 7
   },
   {
     "id": "puriya",
@@ -341,7 +469,17 @@
       "Can-can lining for volume",
       "Made to your size within 10 days"
     ],
-    "care": "Dry clean only. Store the skirt hung inside-out in a cotton bag; keep the dupatta folded flat."
+    "care": "Dry clean only. Store the skirt hung inside-out in a cotton bag; keep the dupatta folded flat.",
+    "color": "Lilac",
+    "material": "Georgette",
+    "work": "Chikankari",
+    "pattern": "Floral",
+    "occasions": [
+      "Sangeet",
+      "Reception",
+      "Party"
+    ],
+    "addedDaysAgo": 15
   },
   {
     "id": "kedar",
@@ -370,7 +508,16 @@
       "Two dupattas: net and heavy silk",
       "Made to your size within 21 days"
     ],
-    "care": "Dry clean only. Store the skirt hung inside-out in a cotton bag; keep the dupatta folded flat."
+    "care": "Dry clean only. Store the skirt hung inside-out in a cotton bag; keep the dupatta folded flat.",
+    "color": "Pink",
+    "material": "Raw silk",
+    "work": "Zardozi",
+    "pattern": "Floral",
+    "occasions": [
+      "Wedding",
+      "Engagement"
+    ],
+    "addedDaysAgo": 2
   },
   {
     "id": "bilaval",
@@ -400,6 +547,16 @@
       "Maroon bandhani dupatta",
       "Made to your size within 14 days"
     ],
-    "care": "Dry clean only. Store the skirt hung inside-out in a cotton bag; keep the dupatta folded flat."
+    "care": "Dry clean only. Store the skirt hung inside-out in a cotton bag; keep the dupatta folded flat.",
+    "color": "Yellow",
+    "material": "Silk",
+    "work": "Gota-patti",
+    "pattern": "Paisley",
+    "occasions": [
+      "Wedding",
+      "Haldi",
+      "Festive"
+    ],
+    "addedDaysAgo": 33
   }
 ]

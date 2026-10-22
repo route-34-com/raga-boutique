@@ -6,6 +6,7 @@ from app.schemas.order import OrderSummary
 
 Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=160)]
 Short = Annotated[str, StringConstraints(strip_whitespace=True, max_length=60)]
+Attr = Annotated[str, StringConstraints(strip_whitespace=True, max_length=40)]
 
 
 class AdminOrderRow(OrderSummary):
@@ -40,6 +41,11 @@ class ProductIn(BaseModel):
     details: list[Annotated[str, StringConstraints(strip_whitespace=True, max_length=200)]] = []
     care: Annotated[str, StringConstraints(strip_whitespace=True, max_length=1000)] = ""
     active: bool = True
+    color: Attr = ""
+    material: Attr = ""
+    work: Attr = ""
+    pattern: Attr = ""
+    occasions: list[Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=30)]] = Field(default=[], max_length=8)
     variants: list[VariantIn] = Field(min_length=1, max_length=12)
     images: list[Annotated[str, StringConstraints(pattern=r"^/uploads/products/[\w.-]+$")]] = Field(min_length=1, max_length=12)  # first is the cover
 
