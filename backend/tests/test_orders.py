@@ -88,3 +88,17 @@ def test_admin_cancel_restocks(customer, admin):
 
 def test_admin_routes_need_admin(customer):
     assert customer.get("/api/admin/dashboard").status_code == 403
+
+
+def test_bad_pincode_gets_a_plain_message(customer):
+    r = place(customer, [{"product_id": 1, "size": None, "qty": 1}], address={**ADDRESS, "pincode": "60001"})
+    assert r.status_code == 422
+    assert r.json()["detail"]["message"] == "Pincode should be 6 digits, like 600004."
+
+
+def test_public_settings_include_contact_details(admin):
+    body = {"free_ship_above": 5000, "ship_fee": 150, "low_stock_at": 2, "contact_phone": "9876500000",
+            "contact_whatsapp": "9876500000", "contact_email": "hi@example.com", "contact_address": "Chennai", "contact_hours": "10–8"}
+    assert admin.put("/api/admin/settings", json=body).status_code == 200
+    assert admin.get("/api/settings").json()["contact_whatsapp"] == "9876500000"
+    assert admin.put("/api/admin/settings", json={**body, "contact_phone": "12"}).status_code == 422

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, LargeBinary, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base, TimestampMixin
@@ -57,6 +57,15 @@ class ProductImage(Base):
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id", ondelete="CASCADE"), index=True)
     url: Mapped[str] = mapped_column(String(300))
     position: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class ImageFile(Base):
+    """Photo bytes, used when IMAGE_STORE=db (hosts without a lasting disk). Served at /uploads/products/{name}."""
+
+    __tablename__ = "image_files"
+
+    name: Mapped[str] = mapped_column(String(80), primary_key=True)
+    data: Mapped[bytes] = mapped_column(LargeBinary)
 
 
 class Variant(Base):

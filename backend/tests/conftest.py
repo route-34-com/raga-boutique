@@ -1,7 +1,7 @@
 import os
 import tempfile
 
-os.environ["DATABASE_URL"] = "postgresql+psycopg://raga:raga_dev@127.0.0.1:5432/raga_test"
+os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL", "postgresql+psycopg://raga:raga_dev@127.0.0.1:5432/raga_test")
 os.environ["OTP_PROVIDER"] = "console"
 os.environ["OTP_RESEND_SECONDS"] = "0"
 os.environ["UPLOADS_DIR"] = tempfile.mkdtemp(prefix="raga-test-uploads-")
