@@ -34,6 +34,7 @@ export default function Home() {
     <>
       <section className="container-x grid items-center gap-10 pt-6 md:grid-cols-[1fr_1.05fr] md:gap-16 md:pt-12">
         <div className="max-md:order-2">
+          <img src="/brand/logo-sm.png" alt="Raga — The Music of Colours" className="mb-6 h-16 w-auto md:mb-8 md:h-20" />
           <p className="eyebrow">Festive edit · Autumn 2026</p>
           <h1 className="my-5 text-[clamp(44px,6vw,76px)] leading-[1.02]">Every weave <br />has a <em className="font-light text-rust">raga.</em></h1>
           <p className="max-w-[46ch] text-[17px] text-muted-foreground">

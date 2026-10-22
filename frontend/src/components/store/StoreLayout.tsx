@@ -23,7 +23,7 @@ function usePromos() {
 function NavLinks({ className, onClick }: { className?: string; onClick?: () => void }) {
   const { data: cats = [] } = useCategories()
   const link = ({ isActive }: { isActive: boolean }) =>
-    cn("relative py-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[1.5px] after:origin-left after:scale-x-0 after:bg-rust after:transition-transform hover:after:scale-x-100", isActive && "after:scale-x-100")
+    cn("relative whitespace-nowrap py-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[1.5px] after:origin-left after:scale-x-0 after:bg-rust after:transition-transform hover:after:scale-x-100", isActive && "after:scale-x-100")
   return (
     <nav className={className} aria-label="Main">
       <NavLink to="/shop" end className={link} onClick={onClick}>Shop all</NavLink>
@@ -55,13 +55,13 @@ function Header() {
   return (
     <header className={cn("sticky top-0 z-30 bg-background/90 backdrop-blur-md transition-shadow", scrolled && "shadow-[0_1px_0_var(--border)]")}>
       <div className="container-x grid grid-cols-[1fr_auto_1fr] items-center py-2.5">
-        <button className="-ml-2 grid size-10 place-items-center justify-self-start lg:hidden" aria-label="Menu" onClick={() => setMenu(true)}><Menu className="size-5" /></button>
-        <NavLinks className="hidden gap-7 text-sm font-medium lg:flex" />
+        <button className="-ml-2 grid size-10 place-items-center justify-self-start xl:hidden" aria-label="Menu" onClick={() => setMenu(true)}><Menu className="size-5" /></button>
+        <NavLinks className="hidden items-center gap-6 text-sm font-medium xl:flex 2xl:gap-8" />
         <Link to="/" className="justify-self-center px-2" aria-label="Raga Boutique home">
           <img src="/brand/logo-sm.png" alt="Raga — The Music of Colours" className={cn("w-auto transition-[height]", scrolled ? "h-10" : "h-11 md:h-[52px]")} />
         </Link>
         <div className="flex items-center justify-end gap-1">
-          {me?.is_admin && <Link to="/admin" className="mr-1 hidden rounded-full bg-marigold px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-cocoa lg:block">Admin</Link>}
+          {me?.is_admin && <Link to="/admin" className="mr-1 hidden rounded-full bg-marigold px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-cocoa xl:block">Admin</Link>}
           <Link to="/account" className={icon} aria-label="Account">
             <User className="size-5" strokeWidth={1.6} />
             {me && <span className="absolute right-2 top-2 size-2 rounded-full bg-emerald-600" />}
