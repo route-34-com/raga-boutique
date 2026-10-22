@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String
+from sqlalchemy import JSON, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.db import Base
@@ -21,3 +21,5 @@ class StoreSettings(Base):
     contact_hours: Mapped[str] = mapped_column(String(120), default="")
     instagram_url: Mapped[str] = mapped_column(String(200), default="")
     facebook_url: Mapped[str] = mapped_column(String(200), default="")
+    # [{"name": "DTDC", "track_url": "https://www.dtdc.in/tracking?awb={id}"}], edited under Admin → Settings.
+    couriers: Mapped[list] = mapped_column(JSON, default=list, server_default="[]")

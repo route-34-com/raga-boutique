@@ -27,6 +27,20 @@ class Settings(BaseSettings):
     msg91_authkey: str = ""
     msg91_template_id: str = ""
 
+    # "tap": admin opens WhatsApp with the message typed, owner taps send. "cloud": Meta WhatsApp Cloud API sends it.
+    whatsapp_mode: str = "tap"
+    whatsapp_phone_id: str = ""
+    whatsapp_token: str = ""
+    whatsapp_lang: str = "en"
+    # "console" logs emails (demo). "smtp" sends them (Brevo, Gmail app password, any SMTP).
+    email_provider: str = "console"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    email_from: str = ""
+    public_site_url: str = "http://localhost:5173"
+
     uploads_dir: Path = BASE_DIR / "uploads"
     # "disk" keeps photos in uploads_dir. "db" keeps them in Postgres, for hosts without a lasting disk (Vercel).
     image_store: str = "disk"

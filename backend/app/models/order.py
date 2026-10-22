@@ -36,6 +36,7 @@ class Order(TimestampMixin, Base):
 
     items: Mapped[list["OrderItem"]] = relationship(cascade="all, delete-orphan", order_by="OrderItem.id")
     events: Mapped[list["OrderEvent"]] = relationship(cascade="all, delete-orphan", order_by="OrderEvent.id")
+    notifications: Mapped[list["Notification"]] = relationship(cascade="all, delete-orphan", order_by="Notification.id")  # noqa: F821
 
     @property
     def order_no(self) -> str:
