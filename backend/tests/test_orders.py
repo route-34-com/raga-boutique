@@ -102,3 +102,11 @@ def test_public_settings_include_contact_details(admin):
     assert admin.put("/api/admin/settings", json=body).status_code == 200
     assert admin.get("/api/settings").json()["contact_whatsapp"] == "9876500000"
     assert admin.put("/api/admin/settings", json={**body, "contact_phone": "12"}).status_code == 422
+
+
+def test_product_search_matches_every_word(customer):
+    names = lambda q: [p["slug"] for p in customer.get("/api/products", params={"q": q}).json()]  # noqa: E731
+    assert names("banarasi") == ["yaman"]
+    assert names("teal megh") == ["megh"]
+    assert names("teal yaman") == []
+    assert sorted(names("sarees")) == ["megh", "yaman"]

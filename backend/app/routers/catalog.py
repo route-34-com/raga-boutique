@@ -1,7 +1,7 @@
-from typing import Literal
+from typing import Annotated, Literal
 
-from fastapi import APIRouter, HTTPException
-from sqlalchemy import select
+from fastapi import APIRouter, HTTPException, Query
+from sqlalchemy import or_, select
 from sqlalchemy.orm import selectinload
 
 from app.core.deps import DB
@@ -19,14 +19,20 @@ def categories(db: DB):
 
 
 @router.get("/products", response_model=list[ProductCard])
-def products(db: DB, cat: str | None = None, mood: str | None = None, sort: Literal["featured", "low", "high"] = "featured"):
-    q = select(Product).join(Category).where(Product.active.is_(True), Category.active.is_(True)).options(*LOAD)
+def products(db: DB, cat: str | None = None, mood: str | None = None, sort: Literal["featured", "low", "high"] = "featured",
+             q: Annotated[str | None, Query(max_length=80)] = None):
+    query = select(Product).join(Category).where(Product.active.is_(True), Category.active.is_(True)).options(*LOAD)
     if cat:
-        q = q.where(Product.category_id == cat)
+        query = query.where(Product.category_id == cat)
     if mood:
-        q = q.where(Product.mood == mood)
+        query = query.where(Product.mood == mood)
+    # Every word must match somewhere: "red silk" finds red pieces that are also silk.
+    for word in (q or "").split()[:6]:
+        like = f"%{word}%"
+        query = query.where(or_(Product.name.ilike(like), Product.raga.ilike(like), Product.mood.ilike(like),
+                                Product.tag.ilike(like), Category.name.ilike(like)))
     order = {"featured": (Product.sort, Product.id), "low": (Product.price,), "high": (Product.price.desc(),)}[sort]
-    return db.scalars(q.order_by(*order)).all()
+    return db.scalars(query.order_by(*order)).all()
 
 
 @router.get("/products/{slug}", response_model=ProductDetail)
