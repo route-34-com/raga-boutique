@@ -1,17 +1,12 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Link, useParams, useSearchParams } from "react-router"
-import { toast } from "sonner"
 
 import { OrderTimeline } from "@/components/common/OrderTimeline"
 import { StatusBadge } from "@/components/common/StatusBadge"
-import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PageLoader } from "@/components/common/PageLoader"
-import { keys, useMe, useMyOrder, useSettings } from "@/hooks/queries"
+import { useMe, useMyOrder, useSettings } from "@/hooks/queries"
 import { useTitle } from "@/hooks/useTitle"
-import { ApiError, post } from "@/lib/api"
 import { fmtDate, fmtPhone, inr, waLink } from "@/lib/format"
-import type { OrderDetail } from "@/lib/types"
 import { LoginPrompt } from "@/pages/store/LoginPrompt"
 
 export default function OrderPage() {
@@ -20,19 +15,7 @@ export default function OrderPage() {
   const { data: me, isLoading: meLoading } = useMe()
   const { data: o, isLoading, isError } = useMyOrder(orderNo, !!me)
   const { data: settings } = useSettings()
-  const qc = useQueryClient()
   useTitle(`Order ${orderNo}`)
-
-  const cancel = useMutation({
-    mutationFn: () => post<OrderDetail>(`/api/me/orders/${orderNo}/cancel`),
-    onSuccess: (d) => {
-      qc.setQueryData(keys.myOrder(orderNo), d)
-      qc.invalidateQueries({ queryKey: keys.myOrders })
-      qc.invalidateQueries({ queryKey: ["products"] })
-      toast("Order cancelled.")
-    },
-    onError: (e) => toast.error(e instanceof ApiError ? e.message : "Couldn't cancel."),
-  })
 
   if (meLoading) return <PageLoader />
   if (!me) return <LoginPrompt title="Your order" text="Log in to see this order." />
@@ -75,10 +58,6 @@ export default function OrderPage() {
               <p className="text-sm leading-relaxed text-muted-foreground">{o.address.name} · {fmtPhone(o.address.phone)}<br />{o.address.line1}{o.address.line2 && `, ${o.address.line2}`}<br />{o.address.city}, {o.address.state} {o.address.pincode}</p>
               <h3 className="mb-2 mt-6 text-[22px]">Payment</h3>
               <p className="text-sm">{o.payment_method === "cod" ? "Cash / UPI on delivery" : o.payment_method} · {o.payment_status === "paid" ? "Paid" : "Pending"}</p>
-              {["placed", "confirmed"].includes(o.status) && (
-                <Button variant="outline" className="mt-5 h-11 w-full rounded-full border-cocoa bg-transparent" disabled={cancel.isPending}
-                  onClick={() => confirm("Cancel this order?") && cancel.mutate()}>Cancel order</Button>
-              )}
             </aside>
           </div>
         </>

@@ -11,7 +11,7 @@ const SERVICES = [
   ["✦", "Silk Mark certified", "Pure silk weaves come with their certificate."],
   ["✂", "Ready to wear", "Fall, pico and blouse stitching on request."],
   ["◐", "Video-call shopping", "See the drape and the true colour before you buy."],
-  ["↺", "7-day returns", "Unworn, with tags, no questions asked."],
+  ["✉", "Updates on WhatsApp", "Order confirmation and tracking, straight to your phone."],
 ]
 
 function SectionHead({ eyebrow, title, aside }: { eyebrow: string; title: string; aside?: React.ReactNode }) {

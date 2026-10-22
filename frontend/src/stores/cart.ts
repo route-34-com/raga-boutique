@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { persist, type PersistStorage } from "zustand/middleware"
 
 export type CartLine = { productId: number; slug: string; size: string | null; qty: number }
 
@@ -12,6 +12,22 @@ type CartState = {
   setQty: (productId: number, size: string | null, qty: number) => void
   clear: () => void
   toggleWish: (productId: number) => boolean
+}
+
+type Saved = { lines: CartLine[]; wishlist: number[] }
+
+// The bag lives in this tab only (sessionStorage: survives reloads, not closing the tab).
+// The wishlist stays in localStorage, across visits.
+function read<T>(store: Storage, key: string, fallback: T): T {
+  try { return JSON.parse(store.getItem(key) ?? "null") ?? fallback } catch { return fallback }
+}
+function write(store: Storage, key: string, value: unknown) {
+  try { store.setItem(key, JSON.stringify(value)) } catch { /* private mode or full: keep it in memory */ }
+}
+const splitStorage: PersistStorage<Saved> = {
+  getItem: () => ({ state: { lines: read(sessionStorage, "raga-bag", []), wishlist: read(localStorage, "raga-wishlist", []) } }),
+  setItem: (_, { state }) => { write(sessionStorage, "raga-bag", state.lines); write(localStorage, "raga-wishlist", state.wishlist) },
+  removeItem: () => { sessionStorage.removeItem("raga-bag"); localStorage.removeItem("raga-wishlist") },
 }
 
 const same = (a: CartLine, productId: number, size: string | null) => a.productId === productId && a.size === size
@@ -45,6 +61,6 @@ export const useCart = create<CartState>()(
         return on
       },
     }),
-    { name: "raga-cart", partialize: (s) => ({ lines: s.lines, wishlist: s.wishlist }) },
+    { name: "raga-cart", storage: splitStorage, partialize: (s) => ({ lines: s.lines, wishlist: s.wishlist }) },
   ),
 )

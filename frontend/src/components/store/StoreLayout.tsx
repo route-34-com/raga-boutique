@@ -170,6 +170,14 @@ function Footer() {
 export function StoreLayout() {
   const { pathname, hash } = useLocation()
   const promos = usePromos()
+  const bagged = useCart((s) => s.lines.length > 0)
+  useEffect(() => {
+    if (!bagged) return
+    // The bag lives in this tab only, so warn before the tab closes. Browsers show their own "Leave site?" text.
+    const warn = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = "" }
+    window.addEventListener("beforeunload", warn)
+    return () => window.removeEventListener("beforeunload", warn)
+  }, [bagged])
   useEffect(() => {
     if (!hash) {
       window.scrollTo(0, 0)

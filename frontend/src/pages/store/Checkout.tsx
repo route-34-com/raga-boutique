@@ -77,7 +77,7 @@ export default function Checkout() {
     mutationFn: () => post<{ order_no: string }>("/api/orders", {
       items: rows.map((r) => ({ product_id: r.productId, size: r.size, qty: r.qty })),
       ...(pick === "new" ? { address: { ...addr, line2: addr.line2 || "" } } : { address_id: Number(pick) }),
-      email: email || null,
+      email,
       payment_method: "cod",
     }),
     onSuccess: ({ order_no }) => {
@@ -111,8 +111,8 @@ export default function Checkout() {
       <section className="container-x grid items-start gap-8 pt-6 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
         <form className="max-lg:order-2" onSubmit={(e) => { e.preventDefault(); setError([]); placeOrder.mutate() }}>
           <p className="text-sm text-muted-foreground">Ordering as <strong className="text-foreground">{fmtPhone(me.phone)}</strong></p>
-          <h3 className="mb-3.5 mt-7 text-[22px]">Email for receipt</h3>
-          <Input type="email" autoComplete="email" placeholder="Optional" value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 bg-paper" />
+          <h3 className="mb-3.5 mt-7 text-[22px]">Email</h3>
+          <Input type="email" required autoComplete="email" placeholder="For your order confirmation" value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 bg-paper" />
 
           <h3 className="mb-3.5 mt-7 text-[22px]">Delivery address</h3>
           {saved.length > 0 && (

@@ -8,7 +8,7 @@ export default function Story() {
   const { data: s } = useSettings()
   const cols = [
     ["shipping", "Shipping", `Dispatched in 2–3 days and delivered across India in 3–6 working days. Free above ${inr(s?.free_ship_above ?? 5000)}, otherwise ${inr(s?.ship_fee ?? 150)}. Every parcel is insured.`],
-    ["returns", "Returns", "Within 7 days of delivery, unworn and with tags. Stitched and made-to-size pieces can be altered, but not returned."],
+    ["orders", "Orders", "We confirm every order on WhatsApp and email, then send the tracking ID once it ships. All sales are final."],
     ["care", "Saree care", "Dry clean silks. Store folded in muslin, never plastic. Refold along new lines every few months so the zari doesn't crack."],
   ]
   return (

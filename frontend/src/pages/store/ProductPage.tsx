@@ -135,8 +135,8 @@ export default function ProductPage() {
             {p.details.length > 0 && <AccordionItem value="details"><AccordionTrigger className="text-[15px] font-semibold">Details</AccordionTrigger>
               <AccordionContent><ul className="list-disc space-y-1 pl-5 text-muted-foreground">{p.details.map((d) => <li key={d}>{d}</li>)}</ul></AccordionContent></AccordionItem>}
             {p.care && <AccordionItem value="care"><AccordionTrigger className="text-[15px] font-semibold">Care</AccordionTrigger><AccordionContent className="text-muted-foreground">{p.care}</AccordionContent></AccordionItem>}
-            <AccordionItem value="ship"><AccordionTrigger className="text-[15px] font-semibold">Shipping &amp; returns</AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">Dispatched in 2–3 days (made-to-size pieces when ready), then 3–6 working days across India. Returns within 7 days of delivery if unworn with tags. Stitched and made-to-size pieces can be altered, but not returned.</AccordionContent></AccordionItem>
+            <AccordionItem value="ship"><AccordionTrigger className="text-[15px] font-semibold">Shipping</AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">Dispatched in 2–3 days (made-to-size pieces when ready), then 3–6 working days across India.</AccordionContent></AccordionItem>
           </Accordion>
         </div>
       </section>
