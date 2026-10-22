@@ -17,7 +17,7 @@ from sqlalchemy import select, text
 from app.core.config import get_settings
 from app.core.db import SessionLocal
 from app.models import (
-    ONE_SIZE, Address, Category, Order, OrderEvent, OrderItem, Product, ProductImage, StoreSettings, User, Variant,
+    ONE_SIZE, Address, Category, Order, OrderEvent, OrderItem, Product, ProductImage, StoreSettings, User, Variant, Review
 )
 from app.services.images import store_image_file
 
@@ -156,6 +156,40 @@ def seed_demo_orders(db, products: dict[str, Product]) -> None:
                     v.stock -= 1
 
 
+# (product slug, first name, city, stars, comment, days ago). The first five match demo customers' delivered orders.
+DEMO_REVIEWS = [
+    ("yaman", "Meera", "Chennai", 5, "The aubergine is even richer in person. Wore it to my cousin's reception and three aunties asked where it was from.", 16),
+    ("malhar", "Ananya", "Bengaluru", 5, "Light enough for a Bengaluru afternoon, and the colour photographs beautifully. Packed with so much care.", 12),
+    ("basant", "Priya", "Kochi", 4, "Lovely weave and the pallu is gorgeous. Took a day longer than expected to reach Kochi, but worth the wait.", 9),
+    ("bihag", "Kavya", "New Delhi", 5, "Exactly the shade on the website. The video call before buying helped me decide.", 20),
+    ("durga", "Sneha", "Kolkata", 5, "My mother cried when she saw it. The zari work is so fine. Thank you, Raga.", 6),
+    ("kalyani", "Deepa", "Coimbatore", 5, "Bought this for my daughter's muhurtham. The pink glows under lights and the buttas are perfect.", 34),
+    ("hindol", "Revathi", "Salem", 5, "Suja amma helped me choose over WhatsApp. The marigold and royal blue together is stunning.", 28),
+    ("bhairavi", "Nandhini", "Erode", 4, "Soft and elegant, perfect for a morning function. Wish it came in one more shade.", 24),
+    ("kalyani", "Janani", "Madurai", 5, "Heavy pallu, rich colour, and they did the fall and pico before sending. Very happy.", 19),
+    ("chandrakauns", "Aishwarya", "Hyderabad", 4, "Fits well and the organza is very pretty. The dupatta is slightly sheer, so plan your inner.", 15),
+    ("megh", "Shruti", "Pune", 5, "Twirled all evening at the sangeet. Comfortable, flowy and the teal is gorgeous.", 11),
+    ("todi", "Lakshmi", "Tiruchengode", 5, "Visited the new showroom after seeing the website. Same warmth in person. Love my saree.", 8),
+    ("hindol", "Harini", "Namakkal", 5, "Gifted this to my mother-in-law. She has worn it twice already!", 5),
+    ("bahar", "Pooja", "Mumbai", 3, "The lehenga is beautiful but the blouse needed alteration. The team was quick to help on WhatsApp.", 4),
+    ("yaman", "Gayathri", "Trichy", 5, "Third purchase from Raga. Quality is consistent every single time.", 2),
+]
+
+
+def seed_demo_reviews(db, products: dict[str, Product]) -> None:
+    now = datetime.now(UTC)
+    by_name = {u.name.split()[0]: u for u in db.scalars(select(User).where(User.name != ""))}
+    for i, (slug, first, city, stars, comment, age) in enumerate(DEMO_REVIEWS):
+        user = by_name.get(first)
+        if not user or user.is_admin:
+            user = User(phone=f"+9190000001{i:02d}", name=first)
+            db.add(user)
+            db.flush()
+        when = now - timedelta(days=age)
+        db.add(Review(product_id=products[slug].id, user_id=user.id, rating=stars, comment=comment, name=first, city=city,
+                      created_at=when, updated_at=when))
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--admin", default="9000000001", help="10-digit mobile of the first admin")
@@ -175,6 +209,7 @@ def main() -> None:
         make_admin(db, args.admin)
         if args.demo:
             seed_demo_orders(db, products)
+            seed_demo_reviews(db, products)
         db.commit()
         db.execute(text("SELECT setval('order_no_seq', GREATEST((SELECT COALESCE(MAX(seq), 1000) FROM orders), 1000))"))
         db.commit()

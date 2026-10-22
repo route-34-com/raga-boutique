@@ -7,6 +7,8 @@ from sqlalchemy.orm import selectinload
 from app.core.deps import DB
 from app.models import Category, Order, OrderItem, Product
 from app.schemas.catalog import CategoryOut, ProductCard, ProductDetail, PublicSettings
+from app.schemas.review import ReviewList, ReviewOut
+from app.services import reviews
 from app.services.orders import store_settings
 
 router = APIRouter(prefix="/api", tags=["catalog"])
@@ -58,3 +60,19 @@ def product(slug: str, db: DB):
 @router.get("/settings", response_model=PublicSettings)
 def public_settings(db: DB):
     return store_settings(db)
+
+
+@router.get("/products/{slug}/reviews", response_model=ReviewList)
+def product_reviews(slug: str, db: DB):
+    p = db.scalar(select(Product).where(Product.slug == slug, Product.active.is_(True)))
+    if not p:
+        raise HTTPException(404, {"message": "Product not found."})
+    average, count = reviews.summary(db, p.id)
+    return {"average": average, "count": count, "reviews": [ReviewOut.model_validate(r) for r in reviews.latest(db, 50, p.id)]}
+
+
+@router.get("/reviews", response_model=ReviewList)
+def shop_reviews(db: DB, limit: Annotated[int, Query(ge=1, le=24)] = 8):
+    """Shop-wide rating and the newest reviews, for the home page."""
+    average, count = reviews.summary(db)
+    return {"average": average, "count": count, "reviews": [reviews.with_product(r) for r in reviews.latest(db, limit)]}

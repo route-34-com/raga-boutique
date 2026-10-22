@@ -4,10 +4,12 @@ from sqlalchemy.orm import selectinload
 
 from app.core.deps import DB, CurrentUser
 from app.core.errors import ServiceError
-from app.models import Order
+from app.models import Order, Review
 from app.schemas.account import AddressOut, PlaceOrderIn, ProfileIn, UserOut
 from app.schemas.order import OrderDetail, OrderPlaced, OrderSummary
+from app.schemas.review import MyReview, ReviewIn
 from app.services import orders as svc
+from app.services import reviews
 
 router = APIRouter(prefix="/api", tags=["account"])
 
@@ -56,3 +58,16 @@ def my_orders(user: CurrentUser, db: DB):
 @router.get("/me/orders/{order_no}", response_model=OrderDetail)
 def my_order(order_no: str, user: CurrentUser, db: DB):
     return _own_order(db, user, order_no)
+
+
+@router.get("/me/reviews", response_model=list[MyReview])
+def my_reviews(user: CurrentUser, db: DB):
+    return db.scalars(select(Review).where(Review.user_id == user.id).order_by(Review.id)).all()
+
+
+@router.post("/me/reviews", response_model=MyReview, status_code=201)
+def write_review(body: ReviewIn, user: CurrentUser, db: DB):
+    try:
+        return reviews.save(db, user, body)
+    except ServiceError as e:
+        raise e.http() from None
