@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { ApiError, api, post } from "@/lib/api"
-import { STATUS_LABEL, fmtDate, inr } from "@/lib/format"
+import { STATUS_LABEL, fmtDate, fmtPhone, inr } from "@/lib/format"
 import type { OrderDetail, OrderStatus } from "@/lib/types"
 
 const NEXT: Partial<Record<OrderStatus, OrderStatus>> = { placed: "confirmed", confirmed: "packed", packed: "shipped", shipped: "delivered" }
@@ -42,7 +42,10 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
 
   function go(status: OrderStatus) {
     if (!o) return
-    if (status === "cancelled" && !confirm("Cancel this order? Stock will be put back.")) return
+    const warning = o.status === "shipped"
+      ? "This order has already shipped. Cancel it only if the parcel is coming back to you (RTO). Stock will be put back."
+      : "Cancel this order? Stock will be put back."
+    if (status === "cancelled" && !confirm(warning)) return
     advance.mutate({ id: o.id, status, note, courier, tracking_id: tracking }, { onSuccess: () => setNote("") })
   }
 
@@ -87,7 +90,7 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
             </div>
             <div>
               <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Customer</h4>
-              <p>{o.customer_name}{o.email && <> · <a className="underline" href={`mailto:${o.email}`}>{o.email}</a></>}<br />Login phone {o.phone}</p>
+              <p>{o.customer_name}{o.email && <> · <a className="underline" href={`mailto:${o.email}`}>{o.email}</a></>}<br />Login phone {fmtPhone(o.phone)}</p>
               <div className="mt-2.5 flex flex-wrap gap-2">
                 <Button asChild variant="outline" size="sm"><a href={`tel:+91${mobile}`}>Call</a></Button>
                 <Button asChild variant="outline" size="sm"><a target="_blank" rel="noopener" href={`https://wa.me/91${mobile}?text=${msg}`}>WhatsApp</a></Button>

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { api } from "@/lib/api"
-import { fmtDate, inr } from "@/lib/format"
+import { fmtDate, fmtPhone, inr } from "@/lib/format"
 
 type Customer = { id: number; name: string; phone: string; email: string; is_admin: boolean; orders: number; spent: number; last_order_at: string | null }
 
@@ -27,7 +27,7 @@ export default function Customers() {
               {data.map((c) => (
                 <TableRow key={c.id}>
                   <TableCell><strong>{c.name || "—"}</strong>{c.is_admin && <span className="ml-2 rounded bg-marigold/30 px-1.5 py-0.5 text-[10px] font-bold uppercase">Admin</span>}<br /><span className="text-xs text-muted-foreground">{c.email}</span></TableCell>
-                  <TableCell>{c.phone}</TableCell>
+                  <TableCell className="whitespace-nowrap">{fmtPhone(c.phone)}</TableCell>
                   <TableCell>{c.orders}</TableCell>
                   <TableCell>{inr(c.spent)}</TableCell>
                   <TableCell>{c.last_order_at ? fmtDate(c.last_order_at) : "—"}</TableCell>
