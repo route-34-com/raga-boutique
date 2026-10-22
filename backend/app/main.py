@@ -38,7 +38,9 @@ def create_app() -> FastAPI:
             data = load_image_file(name)
             if data is None:
                 raise HTTPException(404)
-            return Response(data, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=31536000, immutable"})
+            # s-maxage lets Vercel's CDN keep the photo; without it the CDN asks the function every time.
+            return Response(data, media_type="image/jpeg",
+                            headers={"Cache-Control": "public, max-age=31536000, s-maxage=31536000, immutable"})
     else:
         # In production Caddy serves /uploads directly; this is for local dev.
         s.uploads_dir.mkdir(parents=True, exist_ok=True)
