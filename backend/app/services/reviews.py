@@ -37,9 +37,11 @@ def with_product(r: Review) -> dict:
             "product": {"name": p.name, "slug": p.slug, "image": p.images[0].url if p.images else ""}}
 
 
-def latest(db: Session, limit: int, product_id: int | None = None) -> list[Review]:
+def latest(db: Session, limit: int, product_id: int | None = None, best: bool = False) -> list[Review]:
+    """Newest first; with best=True, highest rating first (newest first among equals), as shoppers see them."""
+    newest = (Review.created_at.desc(), Review.id.desc())
     q = select(Review).options(selectinload(Review.product).selectinload(Product.images), selectinload(Review.user)) \
-        .order_by(Review.created_at.desc(), Review.id.desc()).limit(limit)
+        .order_by(*((Review.rating.desc(), *newest) if best else newest)).limit(limit)
     if product_id is not None:
         q = q.where(Review.product_id == product_id)
     return list(db.scalars(q))

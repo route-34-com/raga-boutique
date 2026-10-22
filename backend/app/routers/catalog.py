@@ -68,11 +68,11 @@ def product_reviews(slug: str, db: DB):
     if not p:
         raise HTTPException(404, {"message": "Product not found."})
     average, count = reviews.summary(db, p.id)
-    return {"average": average, "count": count, "reviews": [ReviewOut.model_validate(r) for r in reviews.latest(db, 50, p.id)]}
+    return {"average": average, "count": count, "reviews": [ReviewOut.model_validate(r) for r in reviews.latest(db, 50, p.id, best=True)]}
 
 
 @router.get("/reviews", response_model=ReviewList)
 def shop_reviews(db: DB, limit: Annotated[int, Query(ge=1, le=24)] = 8):
-    """Shop-wide rating and the newest reviews, for the home page."""
+    """Shop-wide rating and the best reviews, for the home page."""
     average, count = reviews.summary(db)
-    return {"average": average, "count": count, "reviews": [reviews.with_product(r) for r in reviews.latest(db, limit)]}
+    return {"average": average, "count": count, "reviews": [reviews.with_product(r) for r in reviews.latest(db, limit, best=True)]}

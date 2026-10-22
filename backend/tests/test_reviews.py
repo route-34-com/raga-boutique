@@ -60,3 +60,18 @@ def test_admin_can_delete_a_review(customer, admin):
     assert len(rows) == 1 and rows[0]["product"]["name"] == "Aubergine Banarasi" and rows[0]["phone"] == "+919876543210"
     assert admin.delete(f"/api/admin/reviews/{rows[0]['id']}").status_code == 204
     assert customer.get("/api/products/yaman/reviews").json()["count"] == 0
+
+
+def test_best_reviews_come_first(customer, admin):
+    from app.core.db import SessionLocal
+    from app.models import Review, User
+    with SessionLocal() as db:
+        for i, stars in enumerate([3, 5, 4]):
+            u = User(phone=f"+91900000020{i}", name=f"R{i}")
+            db.add(u)
+            db.flush()
+            db.add(Review(product_id=1, user_id=u.id, rating=stars, comment="", name=f"R{i}", city=""))
+        db.commit()
+    assert [r["rating"] for r in customer.get("/api/reviews").json()["reviews"]] == [5, 4, 3]
+    assert [r["rating"] for r in customer.get("/api/products/yaman/reviews").json()["reviews"]] == [5, 4, 3]
+    assert [r["rating"] for r in admin.get("/api/admin/reviews").json()] == [4, 5, 3]  # admin: newest first
