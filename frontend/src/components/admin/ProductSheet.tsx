@@ -18,6 +18,24 @@ import { cn } from "@/lib/utils"
 
 const SIZE_SET = ["XS", "S", "M", "L", "XL", "XXL"]
 
+// Phone photos are often 5-12 MB and the host caps uploads at 4.5 MB, so shrink in the browser first.
+// The server resizes to 1600px anyway; this just does it before the upload instead of after.
+async function shrinkPhoto(file: File, maxSide = 1600): Promise<Blob> {
+  try {
+    const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" })
+    const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height))
+    const canvas = document.createElement("canvas")
+    canvas.width = Math.round(bitmap.width * scale)
+    canvas.height = Math.round(bitmap.height * scale)
+    canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+    bitmap.close()
+    const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, "image/jpeg", 0.88))
+    return blob ?? file
+  } catch {
+    return file // formats the browser can't decode (e.g. some HEIC) go up as-is; the server explains if it can't read them
+  }
+}
+
 type Draft = {
   name: string; raga: string; category_id: string; mood: string; price: string; mrp: string; tag: string; swatch: string
   raga_note: string; details: string; care: string; active: boolean; sized: boolean
@@ -57,7 +75,7 @@ export function ProductSheet({ product, isNew, onClose }: { product: AdminProduc
       const slot = { url: URL.createObjectURL(file), uploading: true }
       setD((x) => ({ ...x, images: [...x.images, slot] }))
       const form = new FormData()
-      form.append("file", file)
+      form.append("file", await shrinkPhoto(file), "photo.jpg")
       try {
         const { url } = await api<{ url: string }>("/api/admin/products/upload", { method: "POST", body: form })
         setD((x) => ({ ...x, images: x.images.map((i) => (i === slot ? { url } : i)) }))

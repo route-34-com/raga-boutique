@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useCategories, useProduct, useProducts, useSettings } from "@/hooks/queries"
 import { useTitle } from "@/hooks/useTitle"
 import { ONE_SIZE, inr, isSized, stockOf } from "@/lib/format"
+import type { Product } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/stores/cart"
 import NotFound from "@/pages/store/NotFound"
@@ -50,6 +51,9 @@ export default function ProductPage() {
   const left = stockOf(p, size)
   const inBag = lines.find((l) => l.productId === p.id && l.size === size)?.qty ?? 0
   const freeAbove = settings?.free_ship_above ?? 5000
+  // Same category and mood first, then same category, then same mood, then anything in stock.
+  const score = (x: Product) => (x.category_id === p.category_id ? 2 : 0) + (x.mood === p.mood ? 1 : 0) + (x.total_stock > 0 ? 0.5 : 0)
+  const related = all.filter((x) => x.id !== p.id).sort((a, b) => score(b) - score(a)).slice(0, 4)
 
   function addToBag() {
     const allowed = Math.min(qty, left - inBag)
@@ -140,7 +144,7 @@ export default function ProductPage() {
       <section className="container-x pt-20">
         <p className="eyebrow">Keep listening</p>
         <h2 className="mb-9 mt-2.5 text-[clamp(30px,3.6vw,46px)]">You may also like</h2>
-        <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">{all.filter((x) => x.id !== p.id).slice(0, 4).map((x) => <ProductCard key={x.id} p={x} />)}</div>
+        <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">{related.map((x) => <ProductCard key={x.id} p={x} />)}</div>
       </section>
     </>
   )

@@ -23,7 +23,9 @@ from app.services.images import store_image_file
 
 HERE = Path(__file__).parent
 CATEGORIES = [("sarees", "Sarees"), ("ethnic", "Anarkalis & dresses"), ("lehengas", "Lehengas")]
-SAREE_STOCK = {"bhairavi": 4, "hindol": 2, "yaman": 3, "kalyani": 1, "bihag": 2, "malhar": 1}
+# A few pieces start low so the dashboard's low-stock list has something to show; the rest are comfortably stocked.
+LOW_STOCK = {"hindol": 3, "kalyani": 2, "malhar": 2}
+SIZE_STOCK = {"XS": 3, "S": 4, "M": 5, "L": 5, "XL": 3, "XXL": 3}
 # Placeholders until the owner fills in real details under Admin → Settings.
 CONTACT = dict(contact_phone="9000000000", contact_whatsapp="9000000000", contact_email="hello@ragaboutique.in",
                contact_address="12, Kutchery Road, Mylapore, Chennai 600004", contact_hours="Mon–Sat, 10am–8pm",
@@ -54,8 +56,8 @@ def seed_catalog(db) -> dict[str, Product]:
             continue
         urls = [store_image_file(img, (HERE / "seed_images" / img).read_bytes()) for img in raw["images"]]
         sizes = raw.get("sizes") or []
-        variants = ([Variant(size=s, stock=0 if j == 0 else 3, sort=j) for j, s in enumerate(sizes)]
-                    or [Variant(size=ONE_SIZE, stock=SAREE_STOCK.get(raw["id"], 3))])
+        variants = ([Variant(size=s, stock=SIZE_STOCK.get(s, 3), sort=j) for j, s in enumerate(sizes)]
+                    or [Variant(size=ONE_SIZE, stock=LOW_STOCK.get(raw["id"], 6))])
         p = Product(slug=raw["id"], name=raw["name"], raga=raw["raga"], category_id=raw["cat"], mood=raw["mood"],
                     price=raw["price"], mrp=raw.get("mrp"), tag=raw.get("tag", ""), swatch=raw["swatch"],
                     raga_note=raw["ragaNote"], details=raw["details"], care=raw["care"], sort=i,
