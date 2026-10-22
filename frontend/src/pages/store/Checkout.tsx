@@ -94,8 +94,8 @@ export default function Checkout() {
   })
 
   if (!rows.length) return (
-    <section className="container-x pt-8 md:pt-16">
-      <h1 className="text-[clamp(40px,6vw,76px)]">Checkout</h1>
+    <section className="container-x pt-6 md:pt-10">
+      <h1 className="text-[clamp(36px,4.6vw,60px)]">Checkout</h1>
       <div className="flex flex-col items-center gap-5 py-16"><p className="font-heading text-xl italic text-rust">Your bag is empty.</p>
         <Button asChild className="rounded-full px-6"><Link to="/shop">Shop the edit</Link></Button></div>
     </section>
@@ -105,9 +105,8 @@ export default function Checkout() {
 
   return (
     <>
-      <section className="container-x pt-8 md:pt-16">
-        <p className="eyebrow"><Link to="/" className="hover:underline">Home</Link> / Checkout</p>
-        <h1 className="mt-3.5 text-[clamp(40px,6vw,76px)] leading-none">Checkout</h1>
+      <section className="container-x pt-6 md:pt-10">
+        <h1 className="text-[clamp(36px,4.6vw,60px)] leading-none">Checkout</h1>
       </section>
       <section className="container-x grid items-start gap-8 pt-6 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
         <form className="max-lg:order-2" onSubmit={(e) => { e.preventDefault(); setError([]); placeOrder.mutate() }}>

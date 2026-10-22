@@ -18,6 +18,8 @@ FORMATS = {
     "contact_whatsapp": "WhatsApp number should be a 10-digit number.",
     "email": "Please enter a valid email address.",
     "contact_email": "Please enter a valid contact email address.",
+    "instagram_url": "Instagram link should be a full address starting with https://",
+    "facebook_url": "Facebook link should be a full address starting with https://",
     "code": "The code should be 6 digits.",
 }
 

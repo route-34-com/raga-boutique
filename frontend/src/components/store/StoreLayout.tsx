@@ -1,9 +1,11 @@
-import { Heart, Mail, MapPin, Menu, MessageCircle, Phone, ShoppingBag, User } from "lucide-react"
+import { Heart, Mail, MapPin, Menu, MessageCircle, Phone, Search, ShoppingBag, User } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Link, NavLink, Outlet, useLocation } from "react-router"
 
+import { FacebookIcon, InstagramIcon } from "@/components/common/BrandIcons"
 import { CartSheet, useCartTotals } from "@/components/store/CartSheet"
 import { LoginDialog } from "@/components/store/LoginDialog"
+import { SearchDialog } from "@/components/store/SearchDialog"
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
 import { useCategories, useMe, useSettings } from "@/hooks/queries"
 import { fmtPhone, inr, waLink } from "@/lib/format"
@@ -36,6 +38,7 @@ function NavLinks({ className, onClick }: { className?: string; onClick?: () => 
 function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [menu, setMenu] = useState(false)
+  const [search, setSearch] = useState(false)
   const { count } = useCartTotals()
   const wish = useCart((s) => s.wishlist.length)
   const setOpen = useCart((s) => s.setOpen)
@@ -64,7 +67,8 @@ function Header() {
         </Link>
         <div className="flex items-center justify-end gap-1">
           {me?.is_admin && <Link to="/admin" className="mr-1 hidden rounded-full bg-marigold px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-cocoa xl:block">Admin</Link>}
-          <Link to="/account" className={icon} aria-label="Account">
+          <button className={icon} aria-label="Search" onClick={() => setSearch(true)}><Search className="size-5" strokeWidth={1.6} /></button>
+          <Link to="/account" className={cn(icon, "max-sm:hidden")} aria-label="Account">
             <User className="size-5" strokeWidth={1.6} />
             {me && <span className="absolute right-2 top-2 size-2 rounded-full bg-emerald-600" />}
           </Link>
@@ -72,6 +76,7 @@ function Header() {
           <button className={icon} aria-label="Bag" onClick={() => setOpen(true)}><ShoppingBag className="size-5" strokeWidth={1.6} />{badge(count)}</button>
         </div>
       </div>
+      <SearchDialog open={search} onOpenChange={setSearch} />
       <Sheet open={menu} onOpenChange={setMenu}>
         <SheetContent side="left" className="bg-background px-6 pt-16">
           <SheetTitle className="sr-only">Menu</SheetTitle>
@@ -103,6 +108,18 @@ export function ContactList({ className, linkClass }: { className?: string; link
   )
 }
 
+export function SocialLinks({ className, linkClass }: { className?: string; linkClass?: string }) {
+  const { data: s } = useSettings()
+  if (!s?.instagram_url && !s?.facebook_url) return null
+  const btn = cn("grid size-10 place-items-center rounded-full ring-1 ring-current/25 transition-colors", linkClass)
+  return (
+    <div className={cn("flex gap-2.5", className)}>
+      {s.instagram_url && <a href={s.instagram_url} target="_blank" rel="noopener" aria-label="Raga Boutique on Instagram" className={btn}><InstagramIcon className="size-[18px]" /></a>}
+      {s.facebook_url && <a href={s.facebook_url} target="_blank" rel="noopener" aria-label="Raga Boutique on Facebook" className={btn}><FacebookIcon className="size-[18px]" /></a>}
+    </div>
+  )
+}
+
 function Footer() {
   const { data: cats = [] } = useCategories()
   const a = "block py-1 text-sm opacity-80 hover:text-marigold hover:opacity-100"
@@ -112,6 +129,7 @@ function Footer() {
         <div>
           <img src="/brand/logo-sm.png" alt="Raga" className="mb-4 w-[170px] brightness-0 invert-[.9] sepia-[.3]" />
           <p className="max-w-[34ch] text-sm opacity-80">Handwoven sarees and ethnic wear, chosen the way you'd choose a song: by the mood it leaves you in.</p>
+          <SocialLinks className="mt-5" linkClass="hover:bg-sand hover:text-cocoa" />
         </div>
         <div>
           <h4 className="mb-3 font-heading text-lg text-background">Shop</h4>

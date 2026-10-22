@@ -68,6 +68,7 @@ class Reorder(BaseModel):
 
 
 Mobile10 = Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^(\d{10})?$")]
+SocialUrl = Annotated[str, StringConstraints(strip_whitespace=True, max_length=200, pattern=r"^(https://\S+)?$")]
 
 
 class SettingsIn(BaseModel):
@@ -79,6 +80,8 @@ class SettingsIn(BaseModel):
     contact_email: Annotated[str, StringConstraints(strip_whitespace=True, max_length=120, pattern=r"^([^@\s]+@[^@\s]+\.[^@\s]+)?$")] = ""
     contact_address: Annotated[str, StringConstraints(strip_whitespace=True, max_length=300)] = ""
     contact_hours: Annotated[str, StringConstraints(strip_whitespace=True, max_length=120)] = ""
+    instagram_url: SocialUrl = ""
+    facebook_url: SocialUrl = ""
 
 
 class AdminPhone(BaseModel):

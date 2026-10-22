@@ -1,4 +1,4 @@
-import { ContactList } from "@/components/store/StoreLayout"
+import { ContactList, SocialLinks } from "@/components/store/StoreLayout"
 import { useSettings } from "@/hooks/queries"
 import { useTitle } from "@/hooks/useTitle"
 import { inr } from "@/lib/format"
@@ -13,9 +13,9 @@ export default function Story() {
   ]
   return (
     <>
-      <section className="container-x pt-8 md:pt-16">
+      <section className="container-x pt-6 md:pt-10">
         <p className="eyebrow">Our story</p>
-        <h1 className="mt-3.5 text-[clamp(40px,6vw,76px)] leading-none">The music of colours</h1>
+        <h1 className="mt-3.5 text-[clamp(36px,4.6vw,60px)] leading-none">The music of colours</h1>
       </section>
       <section className="container-x grid items-center gap-8 pt-10 md:grid-cols-[1.1fr_1fr] md:gap-24">
         <figure className="aspect-[4/5] max-h-[640px] overflow-hidden rounded-2xl"><img src="/brand/aubergine-yaman.jpg" alt="Model in an aubergine Banarasi saree" className="size-full object-cover" /></figure>
@@ -34,6 +34,7 @@ export default function Story() {
           <h3 className="text-[22px]">Contact</h3>
           <p className="mb-4 mt-2.5 text-sm leading-relaxed text-muted-foreground">Want to see a drape or the true colour first? Book a video call and we'll walk you through the pieces.</p>
           <ContactList linkClass="text-cocoa hover:text-rust" />
+          <SocialLinks className="mt-5" linkClass="text-cocoa hover:bg-cocoa hover:text-background" />
         </div>
       </section>
     </>

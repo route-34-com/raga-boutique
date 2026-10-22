@@ -19,3 +19,5 @@ class StoreSettings(Base):
     contact_email: Mapped[str] = mapped_column(String(120), default="")
     contact_address: Mapped[str] = mapped_column(String(300), default="")
     contact_hours: Mapped[str] = mapped_column(String(120), default="")
+    instagram_url: Mapped[str] = mapped_column(String(200), default="")
+    facebook_url: Mapped[str] = mapped_column(String(200), default="")

@@ -13,7 +13,8 @@ import type { ContactDetails } from "@/lib/types"
 type S = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at: number }
 type AdminRow = { id: number; phone: string; name: string; is_you: boolean }
 
-const BLANK: S = { free_ship_above: 5000, ship_fee: 150, low_stock_at: 2, contact_phone: "", contact_whatsapp: "", contact_email: "", contact_address: "", contact_hours: "" }
+const BLANK: S = { free_ship_above: 5000, ship_fee: 150, low_stock_at: 2, contact_phone: "", contact_whatsapp: "", contact_email: "",
+  contact_address: "", contact_hours: "", instagram_url: "", facebook_url: "" }
 
 export default function Settings() {
   const qc = useQueryClient()
@@ -38,7 +39,7 @@ export default function Settings() {
         <input id={k} value={form[k]} onChange={(e) => setForm({ ...form, [k]: e.target.value.replace(/\D/g, "").slice(0, 10) })} inputMode="numeric"
           pattern="[0-9]{10}" title="10-digit number" className="h-9 flex-1 px-2.5 text-sm outline-none" /></label></div>
   )
-  const text = (k: "contact_email" | "contact_address" | "contact_hours", label: string, placeholder: string, type = "text") => (
+  const text = (k: "contact_email" | "contact_address" | "contact_hours" | "instagram_url" | "facebook_url", label: string, placeholder: string, type = "text") => (
     <div className="grid gap-1.5"><Label htmlFor={k}>{label}</Label>
       <Input id={k} type={type} value={form[k]} placeholder={placeholder} onChange={(e) => setForm({ ...form, [k]: e.target.value })} /></div>
   )
@@ -58,6 +59,8 @@ export default function Settings() {
             {text("contact_email", "Email", "hello@yourstore.in", "email")}
             {text("contact_address", "Store address", "Street, area, city, pincode")}
             {text("contact_hours", "Opening hours", "Mon–Sat, 10am–8pm")}
+            {text("instagram_url", "Instagram page", "https://www.instagram.com/yourstore/", "url")}
+            {text("facebook_url", "Facebook page", "https://www.facebook.com/yourstore/", "url")}
           </div>
         </section>
         <section className="rounded-2xl border bg-card p-5">

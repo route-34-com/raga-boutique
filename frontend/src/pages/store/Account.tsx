@@ -59,10 +59,9 @@ export default function Account() {
 
   return (
     <>
-      <section className="container-x flex flex-wrap items-end justify-between gap-x-8 gap-y-5 pt-8 md:pt-16">
+      <section className="container-x flex flex-wrap items-end justify-between gap-x-8 gap-y-5 pt-6 md:pt-10">
         <div>
-          <p className="eyebrow"><Link to="/" className="hover:underline">Home</Link> / Account</p>
-          <h1 className="mb-2 mt-3.5 text-[clamp(40px,6vw,76px)] leading-none">Hello{me.name ? `, ${me.name.split(" ")[0]}` : ""}.</h1>
+          <h1 className="mb-2 text-[clamp(36px,4.6vw,60px)] leading-none">Hello{me.name ? `, ${me.name.split(" ")[0]}` : ""}.</h1>
           <p className="text-muted-foreground">Signed in as <span className="font-medium text-foreground">{fmtPhone(me.phone)}</span></p>
         </div>
         <Button variant="outline" className="h-11 rounded-full border-cocoa bg-transparent px-5" onClick={logout}>

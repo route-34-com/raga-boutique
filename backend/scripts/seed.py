@@ -26,7 +26,8 @@ CATEGORIES = [("sarees", "Sarees"), ("ethnic", "Anarkalis & dresses"), ("lehenga
 SAREE_STOCK = {"bhairavi": 4, "hindol": 2, "yaman": 3, "kalyani": 1, "bihag": 2, "malhar": 1}
 # Placeholders until the owner fills in real details under Admin → Settings.
 CONTACT = dict(contact_phone="9000000000", contact_whatsapp="9000000000", contact_email="hello@ragaboutique.in",
-               contact_address="12, Kutchery Road, Mylapore, Chennai 600004", contact_hours="Mon–Sat, 10am–8pm")
+               contact_address="12, Kutchery Road, Mylapore, Chennai 600004", contact_hours="Mon–Sat, 10am–8pm",
+               instagram_url="https://www.instagram.com/ragaboutique_/", facebook_url="https://www.facebook.com/ragatheboutique/")
 
 
 def seed_settings(db) -> None:

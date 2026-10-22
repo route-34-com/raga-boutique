@@ -48,3 +48,5 @@ class PublicSettings(Out):
     contact_email: str = ""
     contact_address: str = ""
     contact_hours: str = ""
+    instagram_url: str = ""
+    facebook_url: str = ""
