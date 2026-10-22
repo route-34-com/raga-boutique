@@ -26,11 +26,12 @@ export default function Home() {
   const { data: products, isLoading } = useProducts()
   const { data: cats = [] } = useCategories()
   const hero = products?.find((p) => p.slug === "hindol")
+  const justIn = products?.filter((p) => p.slug !== "hindol" && p.slug !== "bhairavi").slice(0, 4) ?? []
 
   return (
     <>
       <section className="container-x grid gap-8 pt-6 md:grid-cols-[1fr_1fr] md:gap-10 md:pt-6">
-        <div className="flex flex-col gap-7 max-md:order-2 md:pb-12 md:pt-2">
+        <div className="flex flex-col gap-6 max-md:order-2 md:pb-12 md:pt-2">
           <div>
             <p className="eyebrow">Festive edit · Autumn 2026</p>
             <h1 className="mt-4 whitespace-nowrap text-[clamp(44px,6.2vw,92px)] leading-[0.98]">Every weave<br />has a <em className="font-light text-rust">raga.</em></h1>
@@ -44,11 +45,27 @@ export default function Home() {
               {cats[0] && <Button asChild variant="outline" className="h-12 rounded-full border-cocoa bg-transparent px-7"><Link to={`/shop/${cats[0].id}`}>{cats[0].name}</Link></Button>}
             </div>
           </div>
-          <ul className="flex flex-wrap gap-x-6 gap-y-2 border-t border-cocoa/15 pt-5 text-[13px] font-medium text-cocoa/80">
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 border-t border-cocoa/15 pt-4 text-[13px] font-medium text-cocoa/80">
             <li>Silk Mark certified</li><li>Fall &amp; pico on request</li><li>Ships across India</li>
           </ul>
+          {justIn.length > 0 && (
+            <div className="hidden xl:block">
+              <div className="mb-2.5 flex items-baseline justify-between">
+                <p className="eyebrow">Just in</p>
+                <Link to="/shop" className="text-[13px] font-semibold text-cocoa hover:text-rust">See all →</Link>
+              </div>
+              <div className="grid grid-cols-4 gap-2.5">
+                {justIn.map((p) => (
+                  <Link key={p.id} to={`/p/${p.slug}`} title={p.name} className="group relative block aspect-square overflow-hidden rounded-xl bg-sand">
+                    <img src={cover(p)} alt={p.name} loading="lazy" className="size-full object-cover object-top transition duration-500 group-hover:scale-105" />
+                    <span className="absolute bottom-1.5 left-1.5 rounded-full bg-paper/95 px-2 py-0.5 text-[11px] font-semibold text-cocoa">{inr(p.price)}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-        <div className="relative pb-9 pl-7 md:pb-12 md:pl-12">
+        <div className="relative self-start pb-9 pl-7 md:pb-12 md:pl-12">
           <figure className="aspect-[4/4.4] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-[4/4.6] md:rounded-t-[220px]">
             <img src="/brand/hero-marigold.jpg" alt="Model in a marigold Kanjivaram saree with royal blue border in a temple courtyard"
               className="size-full animate-[drift_18s_ease-in-out_infinite_alternate] object-cover object-[55%_30%]" />
