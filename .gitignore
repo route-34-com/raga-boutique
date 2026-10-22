@@ -3,3 +3,4 @@
 .playwright-mcp/
 .vercel
 .env*.local
+demo/
