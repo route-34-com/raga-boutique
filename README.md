@@ -89,14 +89,31 @@ If backend dependencies change, regenerate `requirements.txt` (command at the to
 ## Rules worth knowing
 - Prices and stock are always read from the database at checkout; the browser only sends product, size and quantity.
 - Stock rows are locked while an order is placed, so two people can't buy the last piece.
-- Order flow: placed → confirmed → packed → shipped (courier + tracking required) → delivered. Admins can skip ahead, never go back.
-  Customers can cancel until it's packed. Any cancellation puts stock back. COD orders are marked paid on delivery.
+- Order flow: placed → confirmed (owner presses Accept) → packed → shipped (courier + tracking required) → delivered.
+  Admins can skip ahead, never go back. Only admins can cancel; it puts stock back. No returns. COD orders are marked paid on delivery.
+- The bag lives in the browser tab only (sessionStorage); closing the tab asks first. Login happens at checkout; email is required.
+- Messages: new order → shop email (+ WhatsApp in cloud mode); Accept → customer WhatsApp + email; shipped (Admin → Dispatch,
+  one tracking ID per order) → customer WhatsApp + email with the tracking link. Each message goes out once per order and shows on the order.
 - Orders keep their own copy of the address, product name, price and photo, so editing or deleting a product never changes old orders.
 - OTP: 6 digits, valid 5 minutes, 5 wrong tries max, 30 s between resends, 5 per hour per number.
 
 ## Switching on real SMS
 Set in `backend/.env`: `OTP_PROVIDER=msg91`, `MSG91_AUTHKEY`, `MSG91_TEMPLATE_ID` (a DLT-approved template with an `##otp##` variable).
 Another provider = one new file in `app/services/otp/` + one line in its `__init__.py`.
+
+## Switching on WhatsApp and email
+Until set up, WhatsApp runs in **tap** mode (admin gets "Open WhatsApp" with the message typed; owner taps send) and email in
+**console** mode (logged only).
+
+- Email: `EMAIL_PROVIDER=smtp`, `SMTP_HOST`, `SMTP_PORT` (587), `SMTP_USER`, `SMTP_PASSWORD`, `EMAIL_FROM`.
+  Brevo free plan: host `smtp-relay.brevo.com`, 300 emails/day. Also set the shop email under Admin → Settings for new-order alerts.
+- WhatsApp Cloud API (Meta): `WHATSAPP_MODE=cloud`, `WHATSAPP_PHONE_ID`, `WHATSAPP_TOKEN` (permanent system-user token),
+  `WHATSAPP_LANG` (`en`). Create three **Utility** templates with these names and body variables, in this order:
+  - `accepted`: `Hi {{1}}, your Raga order {{2}} is confirmed. We'll message you the tracking details once it ships. Total {{3}} (cash on delivery).`
+  - `shipped`: `Hi {{1}}, your Raga order {{2}} is on its way with {{3}}. Tracking ID: {{4}}. Track it here: {{5}}`
+  - `new_order`: `New order {{1}}: {{2}} item(s), {{3}}, {{4}}, {{5}}.`
+  The sender can be the shop's WhatsApp Business number (Meta "coexistence") or any other verified number.
+- Couriers and their tracking links (`{id}` = tracking ID) are set under Admin → Settings.
 
 ## Store details
 Contact phone, WhatsApp, email, address, hours and Instagram/Facebook links are edited under
