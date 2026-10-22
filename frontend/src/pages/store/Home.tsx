@@ -29,24 +29,31 @@ export default function Home() {
 
   return (
     <>
-      <section className="container-x grid items-center gap-8 pt-6 md:grid-cols-[1fr_1fr] md:gap-10 md:pt-4">
-        <div className="max-md:order-2">
-          <p className="eyebrow">Festive edit · Autumn 2026</p>
-          <h1 className="my-4 text-[clamp(42px,5.6vw,72px)] leading-[1.02]">Every weave<br />has a <em className="font-light text-rust">raga.</em></h1>
-          <p className="max-w-[46ch] text-[17px] text-muted-foreground">
-            Handwoven sarees and ethnic wear from Kanchipuram, Varanasi and beyond — each one named after the raga whose mood it carries.
-          </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <Button asChild className="h-12 rounded-full px-7"><Link to="/shop">Shop the edit</Link></Button>
-            {cats[0] && <Button asChild variant="outline" className="h-12 rounded-full border-cocoa bg-transparent px-7"><Link to={`/shop/${cats[0].id}`}>{cats[0].name}</Link></Button>}
+      <section className="container-x grid gap-8 pt-6 md:grid-cols-[1fr_1fr] md:gap-10 md:pt-6">
+        <div className="flex flex-col gap-7 max-md:order-2 md:justify-center md:pb-12">
+          <div>
+            <p className="eyebrow">Festive edit · Autumn 2026</p>
+            <h1 className="mt-4 whitespace-nowrap text-[clamp(44px,6.2vw,92px)] leading-[0.98]">Every weave<br />has a <em className="font-light text-rust">raga.</em></h1>
+          </div>
+          <div>
+            <p className="max-w-[52ch] text-[17px] text-muted-foreground md:text-lg">
+              Handwoven sarees and ethnic wear from Kanchipuram, Varanasi and beyond — each one named after the raga whose mood it carries.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button asChild className="h-12 rounded-full px-7"><Link to="/shop">Shop the edit</Link></Button>
+              {cats[0] && <Button asChild variant="outline" className="h-12 rounded-full border-cocoa bg-transparent px-7"><Link to={`/shop/${cats[0].id}`}>{cats[0].name}</Link></Button>}
+            </div>
+            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-cocoa/15 pt-5 text-[13px] font-medium text-cocoa/80">
+              <li>Silk Mark certified</li><li>Fall &amp; pico on request</li><li>Ships across India</li>
+            </ul>
           </div>
         </div>
-        <div className="relative pb-8 pl-7 md:pb-8 md:pl-10">
-          <figure className="aspect-[4/4.2] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-auto md:h-[min(58vh,480px)] md:rounded-t-[200px]">
+        <div className="relative pb-9 pl-7 md:pb-12 md:pl-12">
+          <figure className="aspect-[4/4.4] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-[4/4.6] md:rounded-t-[220px]">
             <img src="/brand/hero-marigold.jpg" alt="Model in a marigold Kanjivaram saree with royal blue border in a temple courtyard"
               className="size-full animate-[drift_18s_ease-in-out_infinite_alternate] object-cover object-[55%_30%]" />
           </figure>
-          <figure className="absolute bottom-0 left-0 aspect-[4/5] w-[30%] overflow-hidden rounded-2xl border-[6px] border-background shadow-[0_20px_40px_-18px_rgba(61,29,15,.45)]">
+          <figure className="absolute bottom-0 left-0 aspect-[4/5] w-[36%] overflow-hidden rounded-2xl border-[6px] border-background shadow-[0_20px_40px_-18px_rgba(61,29,15,.45)]">
             <img src="/brand/peach-bhairavi.jpg" alt="Model in a peach tissue silk saree" className="size-full object-cover" />
           </figure>
           {hero && (
@@ -86,7 +93,7 @@ export default function Home() {
       </section>
 
       <section className="container-x grid items-center gap-8 pt-10 md:grid-cols-[1.1fr_1fr] md:gap-16 md:pt-16">
-        <figure className="aspect-[4/3.4] overflow-hidden rounded-2xl md:aspect-auto md:h-[400px]">
+        <figure className="aspect-[4/3.4] overflow-hidden rounded-2xl md:aspect-square">
           <img src="/brand/hero-peach.jpg" alt="Model in a peach saree on a garden path" loading="lazy" className="size-full object-cover" />
         </figure>
         <div>

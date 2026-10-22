@@ -24,9 +24,9 @@ export function ProductCard({ p, tall }: { p: Product; tall?: boolean }) {
   const tag = sold ? "Sold out" : p.tag
   return (
     <article className="group relative">
-      <Link to={`/p/${p.slug}`} className={cn("relative block overflow-hidden rounded-2xl bg-sand", tall ? "aspect-[4/5] sm:aspect-[5/4]" : "aspect-[4/5]")}>
+      <Link to={`/p/${p.slug}`} className={cn("relative block overflow-hidden rounded-2xl bg-sand", tall ? "aspect-[4/5] sm:aspect-[5/5.2]" : "aspect-[4/5]")}>
         <img src={cover(p)} alt={p.name} loading="lazy"
-          className={cn("absolute inset-0 size-full object-cover object-top transition duration-700 group-hover:scale-[1.04]", sold && "opacity-75 grayscale-[.6]")} />
+          className={cn("absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-[1.04]", sold && "opacity-75 grayscale-[.6]")} />
         {p.images[1] && <img src={p.images[1].url} alt="" loading="lazy"
           className="absolute inset-0 size-full object-cover opacity-0 transition duration-700 group-hover:scale-[1.04] group-hover:opacity-100" />}
         {tag && <span className="absolute left-3 top-3 rounded-full bg-paper px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-cocoa">{tag}</span>}
