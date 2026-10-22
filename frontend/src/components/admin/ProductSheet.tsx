@@ -17,6 +17,13 @@ import type { AdminCategory, AdminProduct } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
 const SIZE_SET = ["XS", "S", "M", "L", "XL", "XXL"]
+const ATTRS: ["color" | "material" | "work" | "pattern", string, string[]][] = [
+  ["color", "Colour", ["Red", "Pink", "Peach", "Orange", "Yellow", "Green", "Teal", "Blue", "Purple", "Lilac", "Ivory", "Black", "Gold", "Maroon"]],
+  ["material", "Material", ["Kanjivaram silk", "Banarasi silk", "Tissue silk", "Soft silk", "Cotton", "Linen", "Organza", "Georgette", "Chiffon", "Crepe", "Raw silk"]],
+  ["work", "Work", ["Zari", "Zardozi", "Embroidery", "Chikankari", "Gota-patti", "Sequins", "Printed", "Plain"]],
+  ["pattern", "Pattern", ["Woven buttis", "Contrast border", "Brocade", "Floral", "Paisley", "Checks", "Stripes", "Solid"]],
+]
+const OCCASIONS = ["Wedding", "Engagement", "Reception", "Festive", "Pooja", "Haldi", "Mehendi", "Sangeet", "Party", "Office", "Casual"]
 
 // Phone photos are often 5-12 MB and the host caps uploads at 4.5 MB, so shrink in the browser first.
 // The server resizes to 1600px anyway; this just does it before the upload instead of after.
@@ -39,16 +46,19 @@ async function shrinkPhoto(file: File, maxSide = 1600): Promise<Blob> {
 type Draft = {
   name: string; raga: string; category_id: string; mood: string; price: string; mrp: string; tag: string; swatch: string
   raga_note: string; details: string; care: string; active: boolean; sized: boolean
+  color: string; material: string; work: string; pattern: string; occasions: string[]
   stock: Record<string, number>; sizes: string[]; images: { url: string; uploading?: boolean }[]
 }
 
 function toDraft(p: AdminProduct | null, firstCat: string): Draft {
   if (!p) return { name: "", raga: "", category_id: firstCat, mood: "festive", price: "", mrp: "", tag: "", swatch: "#c08040",
-    raga_note: "", details: "", care: "", active: true, sized: false, stock: { [ONE_SIZE]: 1 }, sizes: [], images: [] }
+    raga_note: "", details: "", care: "", active: true, sized: false, stock: { [ONE_SIZE]: 1 }, sizes: [], images: [],
+    color: "", material: "", work: "", pattern: "", occasions: [] }
   const sized = p.variants.some((v) => v.size !== ONE_SIZE)
   return {
     name: p.name, raga: p.raga, category_id: p.category_id, mood: p.mood, price: String(p.price), mrp: p.mrp ? String(p.mrp) : "",
     tag: p.tag, swatch: p.swatch, raga_note: p.raga_note, details: p.details.join("\n"), care: p.care, active: p.active, sized,
+    color: p.color, material: p.material, work: p.work, pattern: p.pattern, occasions: p.occasions,
     stock: Object.fromEntries(p.variants.map((v) => [v.size, v.stock])), sizes: sized ? p.variants.map((v) => v.size) : [],
     images: p.images.map((i) => ({ url: i.url })),
   }
@@ -94,6 +104,7 @@ export function ProductSheet({ product, isNew, onClose }: { product: AdminProduc
       const body = {
         name: d.name, raga: d.raga, category_id: d.category_id, mood: d.mood, price: Number(d.price), mrp: d.mrp ? Number(d.mrp) : null,
         tag: d.tag, swatch: d.swatch, raga_note: d.raga_note, care: d.care, active: d.active,
+        color: d.color, material: d.material, work: d.work, pattern: d.pattern, occasions: d.occasions,
         details: d.details.split("\n").map((s) => s.trim()).filter(Boolean), variants, images: d.images.map((i) => i.url),
       }
       return isNew ? post<AdminProduct>("/api/admin/products", body) : put<AdminProduct>(`/api/admin/products/${product!.id}`, body)
@@ -188,6 +199,25 @@ export function ProductSheet({ product, isNew, onClose }: { product: AdminProduc
             <div className={cn(field, "max-w-48")}><Label htmlFor="p-stock">Pieces in stock</Label>
               <Input id="p-stock" type="number" min={0} value={d.stock[ONE_SIZE] ?? 0} onChange={(e) => set("stock", { ...d.stock, [ONE_SIZE]: Math.max(0, Number(e.target.value)) })} /></div>
           )}
+
+          <h4 className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Shop filters</h4>
+          <p className="-mt-2 text-xs text-muted-foreground">Shoppers filter the collection by these. Pick a suggestion or type your own.</p>
+          <div className="grid grid-cols-2 gap-3">
+            {ATTRS.map(([k, label, hints]) => (
+              <div key={k} className={field}><Label htmlFor={`p-${k}`}>{label}</Label>
+                <Input id={`p-${k}`} list={`hints-${k}`} value={d[k]} maxLength={40} onChange={(e) => set(k, e.target.value)} placeholder={hints[0]} />
+                <datalist id={`hints-${k}`}>{hints.map((h) => <option key={h} value={h} />)}</datalist></div>
+            ))}
+          </div>
+          <div className={field}><Label>Occasions</Label>
+            <div className="flex flex-wrap gap-2">
+              {[...new Set([...OCCASIONS, ...d.occasions])].map((o) => {
+                const on = d.occasions.includes(o)
+                return <button key={o} type="button" onClick={() => set("occasions", on ? d.occasions.filter((x) => x !== o) : [...d.occasions, o])}
+                  className={cn("rounded-full px-3 py-1 text-xs font-medium ring-1 transition", on ? "bg-cocoa text-background ring-cocoa" : "bg-white ring-border hover:ring-cocoa")}>{o}</button>
+              })}
+            </div>
+          </div>
 
           <h4 className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Story &amp; details</h4>
           <div className={field}><Label htmlFor="p-note">Raga note (shown on the product page)</Label><Textarea id="p-note" rows={4} value={d.raga_note} onChange={(e) => set("raga_note", e.target.value)} /></div>

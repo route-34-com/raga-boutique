@@ -6,6 +6,7 @@ import { FacebookIcon, InstagramIcon } from "@/components/common/BrandIcons"
 import { CartSheet, useCartTotals } from "@/components/store/CartSheet"
 import { LoginDialog } from "@/components/store/LoginDialog"
 import { SearchDialog } from "@/components/store/SearchDialog"
+import { StoreLocation } from "@/components/store/StoreLocation"
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
 import { useCategories, useMe, useSettings } from "@/hooks/queries"
 import { fmtPhone, inr, waLink } from "@/lib/format"
@@ -70,6 +71,7 @@ function Header() {
         <div className="flex items-center justify-end gap-1">
           {me?.is_admin && <Link to="/admin" className="mr-1 hidden rounded-full bg-marigold px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-cocoa xl:block">Admin</Link>}
           <button className={icon} aria-label="Search" onClick={() => setSearch(true)}><Search className="size-5" strokeWidth={1.6} /></button>
+          <StoreLocation className={cn(icon, "max-sm:hidden")} />
           <Link to="/account" className={cn(icon, "max-sm:hidden")} aria-label="Account">
             <User className="size-5" strokeWidth={1.6} />
             {me && <span className="absolute right-2 top-2 size-2 rounded-full bg-emerald-600" />}

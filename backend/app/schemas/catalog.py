@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from app.schemas.common import Out
 
 
@@ -32,6 +34,12 @@ class ProductCard(Out):
     images: list[ImageOut]
     variants: list[VariantOut]
     total_stock: int
+    color: str = ""
+    material: str = ""
+    work: str = ""
+    pattern: str = ""
+    occasions: list[str] = []
+    created_at: datetime
 
 
 class ProductDetail(ProductCard):

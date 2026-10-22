@@ -1,11 +1,11 @@
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, HTTPException, Query
-from sqlalchemy import or_, select
+from sqlalchemy import case, func, or_, select
 from sqlalchemy.orm import selectinload
 
 from app.core.deps import DB
-from app.models import Category, Product
+from app.models import Category, Order, OrderItem, Product
 from app.schemas.catalog import CategoryOut, ProductCard, ProductDetail, PublicSettings
 from app.services.orders import store_settings
 
@@ -19,7 +19,8 @@ def categories(db: DB):
 
 
 @router.get("/products", response_model=list[ProductCard])
-def products(db: DB, cat: str | None = None, mood: str | None = None, sort: Literal["featured", "low", "high"] = "featured",
+def products(db: DB, cat: str | None = None, mood: str | None = None,
+             sort: Literal["featured", "popular", "new", "discount", "low", "high"] = "featured",
              q: Annotated[str | None, Query(max_length=80)] = None):
     query = select(Product).join(Category).where(Product.active.is_(True), Category.active.is_(True)).options(*LOAD)
     if cat:
@@ -31,7 +32,18 @@ def products(db: DB, cat: str | None = None, mood: str | None = None, sort: Lite
         like = f"%{word}%"
         query = query.where(or_(Product.name.ilike(like), Product.raga.ilike(like), Product.mood.ilike(like),
                                 Product.tag.ilike(like), Category.name.ilike(like)))
-    order = {"featured": (Product.sort, Product.id), "low": (Product.price,), "high": (Product.price.desc(),)}[sort]
+    if sort == "popular":
+        # Units ordered, cancelled orders excluded; never-ordered pieces fall back to the shop's own order.
+        sold = (select(OrderItem.product_id, func.sum(OrderItem.qty).label("units")).join(Order)
+                .where(Order.status != "cancelled").group_by(OrderItem.product_id).subquery())
+        query = query.outerjoin(sold, sold.c.product_id == Product.id)
+        order = (func.coalesce(sold.c.units, 0).desc(), Product.sort, Product.id)
+    elif sort == "discount":
+        saving = case((Product.mrp > Product.price, (Product.mrp - Product.price) * 1.0 / Product.mrp), else_=0)
+        order = (saving.desc(), Product.sort)
+    else:
+        order = {"featured": (Product.sort, Product.id), "new": (Product.created_at.desc(), Product.id.desc()),
+                 "low": (Product.price,), "high": (Product.price.desc(),)}[sort]
     return db.scalars(query.order_by(*order)).all()
 
 

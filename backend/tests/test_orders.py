@@ -110,3 +110,22 @@ def test_product_search_matches_every_word(customer):
     assert names("teal megh") == ["megh"]
     assert names("teal yaman") == []
     assert sorted(names("sarees")) == ["megh", "yaman"]
+
+
+def test_sort_by_popularity_and_filter_fields(customer):
+    slugs = lambda sort: [p["slug"] for p in customer.get("/api/products", params={"sort": sort}).json()]  # noqa: E731
+    assert slugs("featured") == ["yaman", "megh"]
+    assert place(customer, [{"product_id": 2, "size": "S", "qty": 1}]).status_code == 201
+    assert slugs("popular") == ["megh", "yaman"]
+    card = customer.get("/api/products").json()[0]
+    assert {"color", "material", "work", "pattern", "occasions", "created_at"} <= card.keys()
+
+
+def test_admin_saves_filter_fields(admin):
+    p = admin.get("/api/admin/products").json()[0]
+    body = {k: p[k] for k in ("name", "raga", "category_id", "mood", "price", "mrp", "tag", "swatch", "raga_note", "details", "care", "active")}
+    body |= {"variants": p["variants"], "images": [i["url"] for i in p["images"]],
+             "color": "Red", "material": "Banarasi silk", "work": "Zari", "pattern": "Brocade", "occasions": ["Wedding"]}
+    assert admin.put(f"/api/admin/products/{p['id']}", json=body).status_code == 200
+    saved = admin.get(f"/api/products/{p['slug']}").json()
+    assert (saved["color"], saved["occasions"]) == ("Red", ["Wedding"])
