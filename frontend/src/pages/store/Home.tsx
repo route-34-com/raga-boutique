@@ -4,6 +4,7 @@ import { ProductCard } from "@/components/store/ProductCard"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCategories, useProducts } from "@/hooks/queries"
+import { useTitle } from "@/hooks/useTitle"
 import { MOODS, cover, inr } from "@/lib/format"
 
 const SERVICES = [
@@ -26,13 +27,15 @@ export default function Home() {
   const { data: products, isLoading } = useProducts()
   const { data: cats = [] } = useCategories()
   const hero = products?.find((p) => p.slug === "hindol")
+  const lehengas = products?.filter((p) => p.category_id === "lehengas") ?? []
+  useTitle()
 
   return (
     <>
       <section className="container-x grid items-center gap-10 pt-6 md:grid-cols-[1fr_1.05fr] md:gap-16 md:pt-12">
         <div className="max-md:order-2">
           <p className="eyebrow">Festive edit · Autumn 2026</p>
-          <h1 className="my-5 text-[clamp(44px,6vw,76px)] leading-[1.02]">Every weave<br />has a <em className="font-light text-rust">raga.</em></h1>
+          <h1 className="my-5 text-[clamp(44px,6vw,76px)] leading-[1.02]">Every weave <br />has a <em className="font-light text-rust">raga.</em></h1>
           <p className="max-w-[46ch] text-[17px] text-muted-foreground">
             Handwoven sarees and ethnic wear from Kanchipuram, Varanasi and beyond — each one named after the raga whose mood it carries.
           </p>
@@ -91,7 +94,7 @@ export default function Home() {
         </figure>
         <div>
           <p className="eyebrow">Raag Bhairavi</p>
-          <h2 className="my-5 text-[clamp(30px,3.6vw,46px)] leading-none">Soft light,<br /><em className="text-rust">quiet gold.</em></h2>
+          <h2 className="my-5 text-[clamp(30px,3.6vw,46px)] leading-[1.05]">Soft light, <br /><em className="text-rust">quiet gold.</em></h2>
           <p className="mb-6 max-w-[46ch] text-muted-foreground">Blush tissue silk with a zari border that catches the morning rather than demanding it. The saree we reach for when the occasion is close family and good coffee.</p>
           <Button asChild className="h-12 rounded-full px-7"><Link to="/p/bhairavi">See the saree</Link></Button>
         </div>
@@ -114,6 +117,16 @@ export default function Home() {
           <SectionHead eyebrow="Also in the edit" title="For the evening after" />
           <div className="grid grid-cols-2 gap-3 md:gap-7">
             {products.slice(4, 6).map((p) => <ProductCard key={p.id} p={p} tall />)}
+          </div>
+        </section>
+      )}
+
+      {lehengas.length > 0 && (
+        <section className="container-x pt-16 md:pt-28">
+          <SectionHead eyebrow="Lehengas" title="For the sangeet and the pheras"
+            aside={<Link to="/shop/lehengas" className="border-b-[1.5px] border-cocoa pb-0.5 font-semibold text-cocoa hover:text-rust">See all lehengas →</Link>} />
+          <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4">
+            {lehengas.slice(0, 4).map((p) => <ProductCard key={p.id} p={p} />)}
           </div>
         </section>
       )}

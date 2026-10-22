@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCategories, useProducts } from "@/hooks/queries"
+import { useTitle } from "@/hooks/useTitle"
 import { MOODS } from "@/lib/format"
 import { cn } from "@/lib/utils"
+import NotFound from "@/pages/store/NotFound"
 
 function Chip({ to, on, children }: { to: string; on: boolean; children: React.ReactNode }) {
   return (
@@ -32,6 +34,9 @@ export default function Shop() {
   }
   const title = mood ? MOODS[mood]?.label : cat ? cats.find((c) => c.id === cat)?.name : "Shop all"
   const sub = mood ? MOODS[mood]?.note : "Handwoven, small-batch, named for the music they remind us of."
+  useTitle(title ?? "Shop")
+
+  if (cat && cats.length && !cats.some((c) => c.id === cat)) return <NotFound />
 
   return (
     <>

@@ -76,4 +76,12 @@ export type OrderDetail = AdminOrderRow & {
   events: { status: OrderStatus; note: string; created_at: string }[]
 }
 
-export type StoreSettings = { free_ship_above: number; ship_fee: number; low_stock_at?: number }
+export type ContactDetails = {
+  contact_phone: string
+  contact_whatsapp: string
+  contact_email: string
+  contact_address: string
+  contact_hours: string
+}
+
+export type StoreSettings = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at?: number }

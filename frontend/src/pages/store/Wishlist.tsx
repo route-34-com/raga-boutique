@@ -3,9 +3,11 @@ import { Link } from "react-router"
 import { ProductCard } from "@/components/store/ProductCard"
 import { Button } from "@/components/ui/button"
 import { useProducts } from "@/hooks/queries"
+import { useTitle } from "@/hooks/useTitle"
 import { useCart } from "@/stores/cart"
 
 export default function Wishlist() {
+  useTitle("Wishlist")
   const ids = useCart((s) => s.wishlist)
   const { data: products = [] } = useProducts()
   const list = products.filter((p) => ids.includes(p.id))

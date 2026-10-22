@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCategories, useProduct, useProducts, useSettings } from "@/hooks/queries"
+import { useTitle } from "@/hooks/useTitle"
 import { ONE_SIZE, inr, isSized, stockOf } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/stores/cart"
@@ -32,6 +33,7 @@ export default function ProductPage() {
   const [qty, setQty] = useState(1)
   const [pin, setPin] = useState("")
   const [pinMsg, setPinMsg] = useState("")
+  useTitle(p?.name)
 
   useEffect(() => {
     if (!p) return
@@ -111,7 +113,12 @@ export default function ProductPage() {
             <WishButton productId={p.id} className="size-12 ring-1 ring-border" />
           </div>
 
-          <form className="mb-6" onSubmit={(e) => { e.preventDefault(); if (/^[1-9]\d{5}$/.test(pin)) setPinMsg(`Delivers to ${pin} in ${pin.startsWith("6") ? "2–3" : "4–6"} working days.`) }}>
+          <form className="mb-6" onSubmit={(e) => {
+            e.preventDefault()
+            setPinMsg(/^[1-9]\d{5}$/.test(pin)
+              ? `We deliver to ${pin}. Usually ${pin.startsWith("6") ? "3–4" : "4–6"} working days after dispatch.`
+              : "Enter a 6-digit pincode, like 600004.")
+          }}>
             <label htmlFor="pin" className="mb-2.5 block text-xs font-bold uppercase tracking-[0.12em]">Check delivery</label>
             <div className="flex gap-2">
               <Input id="pin" value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" placeholder="6-digit pincode" className="h-12 rounded-full bg-paper px-5" />
@@ -125,7 +132,7 @@ export default function ProductPage() {
               <AccordionContent><ul className="list-disc space-y-1 pl-5 text-muted-foreground">{p.details.map((d) => <li key={d}>{d}</li>)}</ul></AccordionContent></AccordionItem>}
             {p.care && <AccordionItem value="care"><AccordionTrigger className="text-[15px] font-semibold">Care</AccordionTrigger><AccordionContent className="text-muted-foreground">{p.care}</AccordionContent></AccordionItem>}
             <AccordionItem value="ship"><AccordionTrigger className="text-[15px] font-semibold">Shipping &amp; returns</AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">Dispatched in 2–3 days (made-to-size pieces in 7). Returns within 7 days of delivery if unworn with tags. Stitching services are non-returnable.</AccordionContent></AccordionItem>
+              <AccordionContent className="text-muted-foreground">Dispatched in 2–3 days (made-to-size pieces when ready), then 3–6 working days across India. Returns within 7 days of delivery if unworn with tags. Stitched and made-to-size pieces can be altered, but not returned.</AccordionContent></AccordionItem>
           </Accordion>
         </div>
       </section>

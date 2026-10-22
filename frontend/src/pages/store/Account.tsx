@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { LogOut } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router"
 import { toast } from "sonner"
 
+import { PageLoader } from "@/components/common/PageLoader"
 import { StatusBadge } from "@/components/common/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,7 +12,8 @@ import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { keys, useAddresses, useMe, useMyOrders } from "@/hooks/queries"
 import { ApiError, patch, post } from "@/lib/api"
-import { ONGOING, fmtDate, inr } from "@/lib/format"
+import { useTitle } from "@/hooks/useTitle"
+import { ONGOING, fmtDate, fmtPhone, inr } from "@/lib/format"
 import type { OrderSummary, User } from "@/lib/types"
 import { LoginPrompt } from "@/pages/store/LoginPrompt"
 
@@ -25,6 +28,7 @@ function OrderRow({ o }: { o: OrderSummary }) {
 }
 
 export default function Account() {
+  useTitle("My account")
   const { data: me, isLoading } = useMe()
   const { data: orders, isLoading: loadingOrders } = useMyOrders(!!me)
   const { data: addresses = [] } = useAddresses(!!me)
@@ -48,17 +52,22 @@ export default function Account() {
     navigate("/")
   }
 
-  if (isLoading) return null
+  if (isLoading) return <PageLoader />
   if (!me) return <LoginPrompt title="My account" text="Log in with your mobile number to see your orders." />
   const ongoing = orders?.filter((o) => ONGOING.includes(o.status)) ?? []
   const past = orders?.filter((o) => !ONGOING.includes(o.status)) ?? []
 
   return (
     <>
-      <section className="container-x pt-8 md:pt-16">
-        <p className="eyebrow"><Link to="/" className="hover:underline">Home</Link> / Account</p>
-        <h1 className="mb-2 mt-3.5 text-[clamp(40px,6vw,76px)] leading-none">Hello{me.name ? `, ${me.name.split(" ")[0]}` : ""}.</h1>
-        <p className="text-muted-foreground">{me.phone} · <button className="underline" onClick={logout}>Log out</button></p>
+      <section className="container-x flex flex-wrap items-end justify-between gap-x-8 gap-y-5 pt-8 md:pt-16">
+        <div>
+          <p className="eyebrow"><Link to="/" className="hover:underline">Home</Link> / Account</p>
+          <h1 className="mb-2 mt-3.5 text-[clamp(40px,6vw,76px)] leading-none">Hello{me.name ? `, ${me.name.split(" ")[0]}` : ""}.</h1>
+          <p className="text-muted-foreground">Signed in as <span className="font-medium text-foreground">{fmtPhone(me.phone)}</span></p>
+        </div>
+        <Button variant="outline" className="h-11 rounded-full border-cocoa bg-transparent px-5" onClick={logout}>
+          <LogOut className="size-4" />Log out
+        </Button>
       </section>
       <section className="container-x grid items-start gap-8 pt-8 lg:grid-cols-[1.6fr_1fr] lg:gap-16">
         <div>
@@ -85,7 +94,12 @@ export default function Account() {
           </form>
           {addresses.length > 0 && <>
             <h3 className="mb-3 mt-7 text-xl">Saved addresses</h3>
-            {addresses.map((a) => <p key={a.id} className="mb-3 text-sm leading-relaxed text-muted-foreground">{a.name} · {a.phone}<br />{a.line1}, {a.city} {a.pincode}</p>)}
+            {addresses.map((a) => (
+              <p key={a.id} className="mb-3 rounded-xl border bg-background px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+                <strong className="text-foreground">{a.name}</strong> · {fmtPhone(a.phone)}<br />
+                {a.line1}{a.line2 && `, ${a.line2}`}<br />{a.city}, {a.state} {a.pincode}
+              </p>
+            ))}
           </>}
         </aside>
       </section>

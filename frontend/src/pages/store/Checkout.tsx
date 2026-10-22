@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router"
 
+import { PageLoader } from "@/components/common/PageLoader"
 import { useCartTotals } from "@/components/store/CartSheet"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,7 +10,8 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { keys, useAddresses, useMe } from "@/hooks/queries"
 import { ApiError, post } from "@/lib/api"
-import { cover, inr } from "@/lib/format"
+import { useTitle } from "@/hooks/useTitle"
+import { cover, fmtPhone, inr } from "@/lib/format"
 import type { Address } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/stores/cart"
@@ -22,6 +24,19 @@ const FIELDS: [keyof Address, string, string, boolean][] = [
   ["city", "City", "address-level2", false], ["state", "State", "address-level1", false], ["pincode", "Pincode", "postal-code", false],
 ]
 
+const STATES = [
+  "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh",
+  "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir",
+  "Jharkhand", "Karnataka", "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya",
+  "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+  "Uttar Pradesh", "Uttarakhand", "West Bengal",
+]
+// The browser checks these before submitting, so the shopper sees the problem on the field itself.
+const FORMAT: Partial<Record<keyof Address, [string, string]>> = {
+  phone: ["[6-9][0-9]{9}", "Enter a 10-digit mobile number"],
+  pincode: ["[1-9][0-9]{5}", "Enter a 6-digit pincode, like 600004"],
+}
+
 export function AddressFields({ value, onChange }: { value: Address; onChange: (a: Address) => void }) {
   return (
     <div className="grid gap-3.5 sm:grid-cols-2">
@@ -31,14 +46,17 @@ export function AddressFields({ value, onChange }: { value: Address; onChange: (
           <Input id={`addr-${k}`} autoComplete={ac} required={k !== "line2"} value={value[k] ?? ""} className="h-12 bg-paper"
             inputMode={k === "phone" || k === "pincode" ? "numeric" : undefined}
             maxLength={k === "phone" ? 10 : k === "pincode" ? 6 : undefined}
+            pattern={FORMAT[k]?.[0]} title={FORMAT[k]?.[1]} list={k === "state" ? "in-states" : undefined}
             onChange={(e) => onChange({ ...value, [k]: k === "phone" || k === "pincode" ? e.target.value.replace(/\D/g, "") : e.target.value })} />
         </div>
       ))}
+      <datalist id="in-states">{STATES.map((s) => <option key={s} value={s} />)}</datalist>
     </div>
   )
 }
 
 export default function Checkout() {
+  useTitle("Checkout")
   const { data: me, isLoading } = useMe()
   const { data: saved = [] } = useAddresses(!!me)
   const { rows, subtotal, shipping, total } = useCartTotals()
@@ -70,7 +88,7 @@ export default function Checkout() {
       navigate(`/orders/${order_no}?new=1`)
     },
     onError: (e) => {
-      setError(e instanceof ApiError ? (e.details.length ? e.details : [e.message]) : ["Couldn't place the order."])
+      setError(e instanceof ApiError ? (e.details.length ? e.details : [e.message]) : ["Couldn't place the order. Please try again."])
       qc.invalidateQueries({ queryKey: ["products"] })
     },
   })
@@ -82,7 +100,7 @@ export default function Checkout() {
         <Button asChild className="rounded-full px-6"><Link to="/shop">Shop the edit</Link></Button></div>
     </section>
   )
-  if (isLoading) return null
+  if (isLoading) return <PageLoader />
   if (!me) return <LoginPrompt title="Checkout" text="Log in with your mobile number so we can link this order to you and send updates." />
 
   return (
@@ -93,7 +111,7 @@ export default function Checkout() {
       </section>
       <section className="container-x grid items-start gap-8 pt-6 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
         <form className="max-lg:order-2" onSubmit={(e) => { e.preventDefault(); setError([]); placeOrder.mutate() }}>
-          <p className="text-sm text-muted-foreground">Ordering as <strong className="text-foreground">{me.phone}</strong></p>
+          <p className="text-sm text-muted-foreground">Ordering as <strong className="text-foreground">{fmtPhone(me.phone)}</strong></p>
           <h3 className="mb-3.5 mt-7 text-[22px]">Email for receipt</h3>
           <Input type="email" autoComplete="email" placeholder="Optional" value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 bg-paper" />
 
@@ -103,7 +121,7 @@ export default function Checkout() {
               {saved.map((a) => (
                 <Label key={a.id} className={cn("flex cursor-pointer items-start gap-3 rounded-xl border bg-paper p-4 font-normal leading-relaxed", pick === String(a.id) && "border-cocoa ring-1 ring-cocoa")}>
                   <RadioGroupItem value={String(a.id)} className="mt-1" />
-                  <span><strong>{a.name}</strong> · {a.phone}<br />{a.line1}{a.line2 && `, ${a.line2}`}, {a.city}, {a.state} {a.pincode}</span>
+                  <span><strong>{a.name}</strong> · {fmtPhone(a.phone)}<br />{a.line1}{a.line2 && `, ${a.line2}`}, {a.city}, {a.state} {a.pincode}</span>
                 </Label>
               ))}
               <Label className={cn("flex cursor-pointer items-center gap-3 rounded-xl border bg-paper p-4 font-normal", pick === "new" && "border-cocoa ring-1 ring-cocoa")}>
