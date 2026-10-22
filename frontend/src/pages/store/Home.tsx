@@ -30,7 +30,7 @@ export default function Home() {
   return (
     <>
       <section className="container-x grid gap-8 pt-6 md:grid-cols-[1fr_1fr] md:gap-10 md:pt-6">
-        <div className="flex flex-col gap-7 max-md:order-2 md:justify-center md:pb-12">
+        <div className="flex flex-col gap-7 max-md:order-2 md:pb-12 md:pt-2">
           <div>
             <p className="eyebrow">Festive edit · Autumn 2026</p>
             <h1 className="mt-4 whitespace-nowrap text-[clamp(44px,6.2vw,92px)] leading-[0.98]">Every weave<br />has a <em className="font-light text-rust">raga.</em></h1>
@@ -43,10 +43,10 @@ export default function Home() {
               <Button asChild className="h-12 rounded-full px-7"><Link to="/shop">Shop the edit</Link></Button>
               {cats[0] && <Button asChild variant="outline" className="h-12 rounded-full border-cocoa bg-transparent px-7"><Link to={`/shop/${cats[0].id}`}>{cats[0].name}</Link></Button>}
             </div>
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-cocoa/15 pt-5 text-[13px] font-medium text-cocoa/80">
-              <li>Silk Mark certified</li><li>Fall &amp; pico on request</li><li>Ships across India</li>
-            </ul>
           </div>
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 border-t border-cocoa/15 pt-5 text-[13px] font-medium text-cocoa/80">
+            <li>Silk Mark certified</li><li>Fall &amp; pico on request</li><li>Ships across India</li>
+          </ul>
         </div>
         <div className="relative pb-9 pl-7 md:pb-12 md:pl-12">
           <figure className="aspect-[4/4.4] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-[4/4.6] md:rounded-t-[220px]">
