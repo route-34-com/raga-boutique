@@ -96,9 +96,9 @@ export default function Shop() {
           <p className="my-4 text-sm text-muted-foreground sm:hidden">{count}</p>
           <div className="sm:pt-5">
             {isLoading ? (
-              <div className="grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3 3xl:grid-cols-4">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)}</div>
+              <div className="grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3 2xl:grid-cols-4">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)}</div>
             ) : products?.length ? (
-              <div className="grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3 3xl:grid-cols-4">{products.map((p) => <ProductCard key={p.id} p={p} />)}</div>
+              <div className="grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3 2xl:grid-cols-4">{products.map((p) => <ProductCard key={p.id} p={p} />)}</div>
             ) : (
               <div className="flex flex-col items-center gap-5 py-16 text-center">
                 <p className="font-heading text-xl italic text-rust">

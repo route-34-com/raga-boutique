@@ -22,7 +22,7 @@ from app.models import (
 from app.services.images import store_image_file
 
 HERE = Path(__file__).parent
-CATEGORIES = [("sarees", "Sarees"), ("ethnic", "Anarkalis & dresses"), ("lehengas", "Lehengas")]
+CATEGORIES = [("sarees", "Sarees"), ("ethnic", "Anarkalis & dresses"), ("lehengas", "Lehengas"), ("materials", "Dress materials")]
 # A few pieces start low so the dashboard's low-stock list has something to show; the rest are comfortably stocked.
 LOW_STOCK = {"hindol": 3, "kalyani": 2, "malhar": 2}
 SIZE_STOCK = {"XS": 3, "S": 4, "M": 5, "L": 5, "XL": 3, "XXL": 3}

@@ -558,5 +558,615 @@
       "Festive"
     ],
     "addedDaysAgo": 33
+  },
+  {
+    "id": "sarang",
+    "raga": "Sarang",
+    "name": "Lemon Tussar Silk Saree with Butta Pallu",
+    "cat": "sarees",
+    "mood": "dawn",
+    "price": 5900,
+    "mrp": 6800,
+    "images": [
+      "lemon-sarang.jpg",
+      "lemon-sarang-detail.jpg"
+    ],
+    "swatch": "#e9e08a",
+    "tag": "New",
+    "ragaNote": "Sarang belongs to the bright, still hours around noon. Lemon tussar with its natural slub and a pallu scattered with small woven buttas — light enough for a long summer function.",
+    "details": [
+      "Pure tussar silk with natural slub",
+      "Woven buttas on the pallu",
+      "Unstitched blouse piece included",
+      "Length 6.3 m including blouse"
+    ],
+    "care": "Dry clean only. Store folded in muslin, refold every few months.",
+    "color": "Yellow",
+    "material": "Tussar silk",
+    "work": "Zari",
+    "pattern": "Woven buttis",
+    "occasions": [
+      "Pooja",
+      "Family function",
+      "Office"
+    ],
+    "addedDaysAgo": 6
+  },
+  {
+    "id": "marwa",
+    "raga": "Marwa",
+    "name": "Rust Tussar Saree with Woven Border",
+    "cat": "sarees",
+    "mood": "dusk",
+    "price": 6450,
+    "images": [
+      "rust-marwa.jpg",
+      "rust-marwa-detail.jpg"
+    ],
+    "swatch": "#a8521f",
+    "tag": "",
+    "ragaNote": "Marwa is the restless raga of sunset. Rust-orange tussar that deepens to copper as the light goes, with a quiet woven border along the edge.",
+    "details": [
+      "Tussar silk",
+      "Woven contrast border",
+      "Unstitched blouse piece included",
+      "Length 6.3 m including blouse"
+    ],
+    "care": "Dry clean only. Store folded in muslin, refold every few months.",
+    "color": "Orange",
+    "material": "Tussar silk",
+    "work": "Plain",
+    "pattern": "Contrast border",
+    "occasions": [
+      "Festive",
+      "Office",
+      "Family function"
+    ],
+    "addedDaysAgo": 40
+  },
+  {
+    "id": "hamsadhwani",
+    "raga": "Hamsadhwani",
+    "name": "Pista and Mango Semi Chanderi Saree",
+    "cat": "sarees",
+    "mood": "dawn",
+    "price": 2450,
+    "mrp": 2900,
+    "images": [
+      "pista-hamsadhwani.jpg",
+      "pista-hamsadhwani-detail.jpg"
+    ],
+    "swatch": "#d9ecb0",
+    "tag": "New",
+    "ragaNote": "Hamsadhwani is all brightness — the raga that opens a Carnatic concert. Pista green melting into a mango-yellow border, in feather-light semi chanderi.",
+    "details": [
+      "Semi chanderi (silk-cotton blend)",
+      "Ombré body with contrast border",
+      "Unstitched blouse piece included",
+      "Length 6.2 m including blouse"
+    ],
+    "care": "Hand wash cold separately the first time; starch lightly and iron on medium.",
+    "color": "Green",
+    "material": "Semi chanderi",
+    "work": "Zari",
+    "pattern": "Contrast border",
+    "occasions": [
+      "Office",
+      "Pooja",
+      "Casual"
+    ],
+    "addedDaysAgo": 3
+  },
+  {
+    "id": "sohini",
+    "raga": "Sohini",
+    "name": "Salmon Semi Chanderi with Zari Stripes",
+    "cat": "sarees",
+    "mood": "dawn",
+    "price": 2750,
+    "images": [
+      "salmon-sohini.jpg",
+      "salmon-sohini-detail.jpg"
+    ],
+    "swatch": "#f2a48f",
+    "tag": "",
+    "ragaNote": "Sohini is sung just before dawn, sweet and a little restless. Salmon semi chanderi with fine zari stripes that shimmer without weight.",
+    "details": [
+      "Semi chanderi (silk-cotton blend)",
+      "Zari stripes on the body and pallu",
+      "Unstitched blouse piece included",
+      "Length 6.2 m including blouse"
+    ],
+    "care": "Hand wash cold separately the first time; starch lightly and iron on medium.",
+    "color": "Peach",
+    "material": "Semi chanderi",
+    "work": "Zari",
+    "pattern": "Stripes",
+    "occasions": [
+      "Family function",
+      "Pooja",
+      "Office"
+    ],
+    "addedDaysAgo": 22
+  },
+  {
+    "id": "desh",
+    "raga": "Desh",
+    "name": "Blue Handloom Cotton Saree with Checked Pallu",
+    "cat": "sarees",
+    "mood": "monsoon",
+    "price": 1850,
+    "mrp": 2200,
+    "images": [
+      "blue-desh.jpg",
+      "blue-desh-detail.jpg"
+    ],
+    "swatch": "#2f7fc4",
+    "tag": "Bestseller",
+    "ragaNote": "Desh is the raga of the first rains. Rain-blue handloom cotton with a bold checked pallu in green, yellow and pink — the everyday saree you reach for first.",
+    "details": [
+      "Handloom cotton",
+      "Checked pallu, plain body",
+      "Unstitched blouse piece included",
+      "Length 6.2 m including blouse"
+    ],
+    "care": "Hand wash cold separately the first time; starch lightly and iron on medium.",
+    "color": "Blue",
+    "material": "Cotton",
+    "work": "Plain",
+    "pattern": "Checks",
+    "occasions": [
+      "Office",
+      "Casual"
+    ],
+    "addedDaysAgo": 50
+  },
+  {
+    "id": "pilu",
+    "raga": "Pilu",
+    "name": "Mustard Cotton Saree with Maroon Border",
+    "cat": "sarees",
+    "mood": "festive",
+    "price": 1450,
+    "images": [
+      "mustard-pilu.jpg",
+      "mustard-pilu-detail.jpg"
+    ],
+    "swatch": "#c99a1c",
+    "tag": "",
+    "ragaNote": "Pilu is a light, folk-flavoured raga that sounds like home. Mustard cotton with a maroon temple border — easy to drape, easier to wear all day.",
+    "details": [
+      "Soft cotton",
+      "Woven maroon border",
+      "Unstitched blouse piece included",
+      "Length 6.2 m including blouse"
+    ],
+    "care": "Hand wash cold separately the first time; starch lightly and iron on medium.",
+    "color": "Yellow",
+    "material": "Cotton",
+    "work": "Plain",
+    "pattern": "Contrast border",
+    "occasions": [
+      "Casual",
+      "Office",
+      "Pooja"
+    ],
+    "addedDaysAgo": 31
+  },
+  {
+    "id": "khamaj",
+    "raga": "Khamaj",
+    "name": "Kalamkari Print Cotton Saree with Temple Border",
+    "cat": "sarees",
+    "mood": "festive",
+    "price": 2150,
+    "images": [
+      "kalamkari-khamaj.jpg",
+      "kalamkari-khamaj-detail.jpg"
+    ],
+    "swatch": "#2d6e63",
+    "tag": "New",
+    "ragaNote": "Khamaj is playful and storytelling, a favourite for thumris. Hand-block kalamkari in earthy tones, edged with a teal temple border.",
+    "details": [
+      "Cotton with kalamkari print",
+      "Woven temple border",
+      "Unstitched blouse piece included",
+      "Length 6.2 m including blouse"
+    ],
+    "care": "Hand wash cold separately the first time; starch lightly and iron on medium.",
+    "color": "Teal",
+    "material": "Cotton",
+    "work": "Printed",
+    "pattern": "Kalamkari",
+    "occasions": [
+      "Office",
+      "Casual",
+      "Family function"
+    ],
+    "addedDaysAgo": 9
+  },
+  {
+    "id": "shivranjani",
+    "raga": "Shivranjani",
+    "name": "Magenta Soft Silk with Black Temple Border",
+    "cat": "sarees",
+    "mood": "night",
+    "price": 8900,
+    "mrp": 10200,
+    "images": [
+      "magenta-shivranjani.jpg",
+      "magenta-shivranjani-detail.jpg"
+    ],
+    "swatch": "#c2187c",
+    "tag": "",
+    "ragaNote": "Shivranjani carries longing in five notes. Deep magenta soft silk against a black temple border — dramatic, but never loud.",
+    "details": [
+      "Soft silk",
+      "Woven black temple border",
+      "Contrast pallu",
+      "Length 6.3 m including blouse"
+    ],
+    "care": "Dry clean only. Store folded in muslin, refold every few months.",
+    "color": "Pink",
+    "material": "Soft silk",
+    "work": "Zari",
+    "pattern": "Contrast border",
+    "occasions": [
+      "Reception",
+      "Party",
+      "Festive"
+    ],
+    "addedDaysAgo": 14
+  },
+  {
+    "id": "bageshri",
+    "raga": "Bageshri",
+    "name": "Bottle Green Silk Saree with Zari Buttas",
+    "cat": "sarees",
+    "mood": "night",
+    "price": 10400,
+    "images": [
+      "bottle-bageshri.jpg",
+      "bottle-bageshri-detail.jpg"
+    ],
+    "swatch": "#1f5a45",
+    "tag": "",
+    "ragaNote": "Bageshri is a midnight raga of waiting. Bottle-green silk, scattered with tiny zari buttas and finished with a fine blue edge.",
+    "details": [
+      "Pure silk",
+      "Zari buttas all over",
+      "Unstitched blouse piece included",
+      "Length 6.3 m including blouse"
+    ],
+    "care": "Dry clean only. Store folded in muslin, refold every few months.",
+    "color": "Green",
+    "material": "Kanjivaram silk",
+    "work": "Zari",
+    "pattern": "Woven buttis",
+    "occasions": [
+      "Wedding",
+      "Festive",
+      "Reception"
+    ],
+    "addedDaysAgo": 27
+  },
+  {
+    "id": "jaunpuri",
+    "raga": "Jaunpuri",
+    "name": "Navy Silk Saree with Gold Mango Buttas",
+    "cat": "sarees",
+    "mood": "festive",
+    "price": 12600,
+    "mrp": 14500,
+    "images": [
+      "navy-jaunpuri.jpg",
+      "navy-jaunpuri-detail.jpg"
+    ],
+    "swatch": "#27306e",
+    "tag": "Festive",
+    "ragaNote": "Jaunpuri is a late-morning raga, serious and graceful. Navy silk with big gold mango buttas and a rich pink-and-gold pallu.",
+    "details": [
+      "Pure silk",
+      "Gold zari mango buttas",
+      "Rich woven pallu",
+      "Length 6.3 m including blouse"
+    ],
+    "care": "Dry clean only. Store folded in muslin, refold every few months.",
+    "color": "Blue",
+    "material": "Kanjivaram silk",
+    "work": "Zari",
+    "pattern": "Woven buttis",
+    "occasions": [
+      "Wedding",
+      "Festive",
+      "Engagement"
+    ],
+    "addedDaysAgo": 18
+  },
+  {
+    "id": "kafi",
+    "raga": "Kafi",
+    "name": "White Block-Print Cotton Kurta Set",
+    "cat": "ethnic",
+    "mood": "dawn",
+    "price": 2390,
+    "mrp": 2790,
+    "images": [
+      "white-kafi.jpg",
+      "white-kafi-detail.jpg"
+    ],
+    "swatch": "#f4f1ea",
+    "tag": "New",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "ragaNote": "Kafi is the raga of spring folk songs. Crisp white cotton block-printed with rose-red florals, with matching straight pants.",
+    "details": [
+      "Pure cotton kurta and pants",
+      "Hand block print",
+      "Straight fit, 3/4 sleeves",
+      "Ready to wear"
+    ],
+    "care": "Hand wash cold separately the first time; starch lightly and iron on medium.",
+    "color": "Ivory",
+    "material": "Cotton",
+    "work": "Printed",
+    "pattern": "Floral",
+    "occasions": [
+      "Office",
+      "Casual",
+      "Vacation"
+    ],
+    "addedDaysAgo": 4
+  },
+  {
+    "id": "abhogi",
+    "raga": "Abhogi",
+    "name": "Pink Floral Cotton Kurta Set",
+    "cat": "ethnic",
+    "mood": "dawn",
+    "price": 2190,
+    "images": [
+      "pink-abhogi.jpg",
+      "pink-abhogi-detail.jpg"
+    ],
+    "swatch": "#f0b7c2",
+    "tag": "",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "ragaNote": "Abhogi is gentle and devotional. Soft pink cotton covered in small florals — a kurta set for slow mornings and long days.",
+    "details": [
+      "Pure cotton kurta and pants",
+      "All-over floral print",
+      "Straight fit, 3/4 sleeves",
+      "Ready to wear"
+    ],
+    "care": "Hand wash cold separately the first time; starch lightly and iron on medium.",
+    "color": "Pink",
+    "material": "Cotton",
+    "work": "Printed",
+    "pattern": "Floral",
+    "occasions": [
+      "Office",
+      "Casual"
+    ],
+    "addedDaysAgo": 12
+  },
+  {
+    "id": "mohanam",
+    "raga": "Mohanam",
+    "name": "Mint Chikankari Sharara Set",
+    "cat": "ethnic",
+    "mood": "festive",
+    "price": 5600,
+    "mrp": 6400,
+    "images": [
+      "mint-mohanam.jpg",
+      "mint-mohanam-detail.jpg"
+    ],
+    "swatch": "#cfe3dc",
+    "tag": "",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "ragaNote": "Mohanam is the pentatonic raga every child learns first — simple and joyful. Mint georgette with chikankari, a flared sharara and a net dupatta.",
+    "details": [
+      "Georgette kurta with chikankari",
+      "Flared sharara",
+      "Net dupatta",
+      "Made to your size within 7 days"
+    ],
+    "care": "Dry clean recommended.",
+    "color": "Green",
+    "material": "Georgette",
+    "work": "Chikankari",
+    "pattern": "Solid",
+    "occasions": [
+      "Mehendi",
+      "Festive",
+      "Party"
+    ],
+    "addedDaysAgo": 20
+  },
+  {
+    "id": "kirwani",
+    "raga": "Kirwani",
+    "name": "Navy Velvet Anarkali with Gold Embroidery",
+    "cat": "ethnic",
+    "mood": "night",
+    "price": 7900,
+    "mrp": 8900,
+    "images": [
+      "navy-kirwani.jpg",
+      "navy-kirwani-detail.jpg"
+    ],
+    "swatch": "#1d2a52",
+    "tag": "Festive",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "ragaNote": "Kirwani came to the north from the Carnatic stage, rich and melancholic. Navy velvet anarkali with gold embroidery down the yoke and sleeves.",
+    "details": [
+      "Velvet anarkali",
+      "Gold thread embroidery",
+      "Matching dupatta",
+      "Made to your size within 7 days"
+    ],
+    "care": "Dry clean only.",
+    "color": "Blue",
+    "material": "Velvet",
+    "work": "Zardozi",
+    "pattern": "Floral",
+    "occasions": [
+      "Reception",
+      "Party",
+      "Engagement"
+    ],
+    "addedDaysAgo": 8
+  },
+  {
+    "id": "multani",
+    "raga": "Multani",
+    "name": "Lime Banarasi Silk Dress Material",
+    "cat": "materials",
+    "mood": "festive",
+    "price": 3200,
+    "mrp": 3600,
+    "images": [
+      "lime-multani.jpg",
+      "lime-multani-detail.jpg"
+    ],
+    "swatch": "#c5d43a",
+    "tag": "New",
+    "ragaNote": "Multani is an afternoon raga, warm and intense. Lime Banarasi silk woven with gold florals, ready for your tailor to make it yours.",
+    "details": [
+      "Banarasi silk top fabric, 2.5 m",
+      "Silk bottom fabric, 2.5 m",
+      "Woven dupatta, 2.25 m",
+      "Unstitched"
+    ],
+    "care": "Dry clean before stitching to avoid shrinkage. Iron on the reverse.",
+    "color": "Green",
+    "material": "Banarasi silk",
+    "work": "Zari",
+    "pattern": "Floral",
+    "occasions": [
+      "Festive",
+      "Wedding"
+    ],
+    "addedDaysAgo": 2
+  },
+  {
+    "id": "lalit",
+    "raga": "Lalit",
+    "name": "Maroon Silk Dress Material with Zari Border",
+    "cat": "materials",
+    "mood": "bridal",
+    "price": 2850,
+    "images": [
+      "maroon-lalit.jpg",
+      "maroon-lalit-detail.jpg"
+    ],
+    "swatch": "#8e1530",
+    "tag": "",
+    "ragaNote": "Lalit is sung in the last hour before sunrise. Maroon silk with a broad zari border that makes even a simple churidar look ceremonial.",
+    "details": [
+      "Silk top fabric with zari border, 2.5 m",
+      "Bottom fabric, 2.5 m",
+      "Matching dupatta, 2.25 m",
+      "Unstitched"
+    ],
+    "care": "Dry clean before stitching to avoid shrinkage. Iron on the reverse.",
+    "color": "Red",
+    "material": "Silk",
+    "work": "Zari",
+    "pattern": "Contrast border",
+    "occasions": [
+      "Wedding",
+      "Festive",
+      "Pooja"
+    ],
+    "addedDaysAgo": 16
+  },
+  {
+    "id": "saveri",
+    "raga": "Saveri",
+    "name": "Red and Green Handloom Cotton Dress Material",
+    "cat": "materials",
+    "mood": "festive",
+    "price": 1450,
+    "images": [
+      "red-saveri.jpg",
+      "red-saveri-detail.jpg"
+    ],
+    "swatch": "#c41f2b",
+    "tag": "",
+    "ragaNote": "Saveri is a morning raga of quiet devotion. Handloom cotton in temple red and parrot green, with small woven motifs in the border.",
+    "details": [
+      "Handloom cotton top fabric, 2.5 m",
+      "Cotton bottom fabric, 2.5 m",
+      "Cotton dupatta, 2.25 m",
+      "Unstitched"
+    ],
+    "care": "Hand wash cold separately the first time; starch lightly and iron on medium.",
+    "color": "Red",
+    "material": "Cotton",
+    "work": "Plain",
+    "pattern": "Woven buttis",
+    "occasions": [
+      "Casual",
+      "Office",
+      "Pooja"
+    ],
+    "addedDaysAgo": 35
+  },
+  {
+    "id": "kanada",
+    "raga": "Kanada",
+    "name": "Teal Satin Silk Dress Material",
+    "cat": "materials",
+    "mood": "night",
+    "price": 1950,
+    "mrp": 2300,
+    "images": [
+      "teal-kanada.jpg",
+      "teal-kanada-detail.jpg"
+    ],
+    "swatch": "#1f7c80",
+    "tag": "",
+    "ragaNote": "Kanada is deep and stately, made for late evenings. Fluid teal satin silk with a liquid sheen — ideal for a flared anarkali or a fitted kurta.",
+    "details": [
+      "Satin silk top fabric, 2.5 m",
+      "Bottom fabric, 2.5 m",
+      "Chiffon dupatta, 2.25 m",
+      "Unstitched"
+    ],
+    "care": "Dry clean before stitching to avoid shrinkage. Iron on the reverse.",
+    "color": "Teal",
+    "material": "Satin silk",
+    "work": "Plain",
+    "pattern": "Solid",
+    "occasions": [
+      "Party",
+      "Reception"
+    ],
+    "addedDaysAgo": 26
   }
 ]
