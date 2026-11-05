@@ -1,4 +1,4 @@
-"""Email subject and HTML around the message text, in the store's cream and cocoa."""
+"""Email subject and HTML around the message text, in the store's cream and its brand colour."""
 
 from html import escape
 
@@ -16,13 +16,17 @@ def subject(kind: str, order) -> str:
     return SUBJECTS[kind].format(no=order.order_no)
 
 
-def html(text: str, order, link: str = "", label: str = "Track your parcel") -> str:
+INK = {"plum": "#732853", "cocoa": "#3d1d0f"}
+
+
+def html(text: str, order, link: str = "", label: str = "Track your parcel", brand: str = "plum") -> str:
+    ink = INK.get(brand, INK["plum"])
     rows = "".join(
         f'<tr><td style="padding:6px 0">{escape(i.name)}{f" ({escape(i.size)})" if i.size else ""} × {i.qty}</td>'
         f'<td style="padding:6px 0;text-align:right">{inr(i.price * i.qty)}</td></tr>' for i in order.items)
-    button = (f'<p><a href="{escape(link)}" style="display:inline-block;background:#3d1d0f;color:#f6efe6;padding:12px 22px;'
+    button = (f'<p><a href="{escape(link)}" style="display:inline-block;background:{ink};color:#f6efe6;padding:12px 22px;'
               f'border-radius:999px;text-decoration:none">{escape(label)}</a></p>') if link else ""
-    return f"""<div style="background:#f6efe6;padding:32px 16px;font-family:Georgia,serif;color:#3d1d0f">
+    return f"""<div style="background:#f6efe6;padding:32px 16px;font-family:Georgia,serif;color:{ink}">
 <div style="max-width:520px;margin:0 auto;background:#fffaf3;border-radius:16px;padding:28px">
 <p style="font-size:22px;margin:0 0 18px">Raga</p>
 <p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6">{escape(text)}</p>{button}

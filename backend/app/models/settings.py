@@ -23,3 +23,5 @@ class StoreSettings(Base):
     facebook_url: Mapped[str] = mapped_column(String(200), default="")
     # [{"name": "DTDC", "track_url": "https://www.dtdc.in/tracking?awb={id}"}], edited under Admin → Settings.
     couriers: Mapped[list] = mapped_column(JSON, default=list, server_default="[]")
+    # "plum" (the Instagram logo colour) or "cocoa" (the original brown). Switched under Admin → Settings.
+    brand_theme: Mapped[str] = mapped_column(String(10), default="plum", server_default="plum")

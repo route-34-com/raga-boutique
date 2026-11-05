@@ -10,12 +10,17 @@ import { ApiError, api, del, post, put } from "@/lib/api"
 import { fmtPhone } from "@/lib/format"
 import type { ContactDetails, Courier } from "@/lib/types"
 import { Spinner } from "@/components/ui/spinner"
+import { keys } from "@/hooks/queries"
+import { BRANDS, applyBrand, type Brand } from "@/lib/brand"
+import type { StoreSettings } from "@/lib/types"
+import { cn } from "@/lib/utils"
+import { Check } from "lucide-react"
 
-type S = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at: number; couriers: Courier[] }
+type S = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at: number; couriers: Courier[]; brand_theme: Brand }
 type AdminRow = { id: number; phone: string; name: string; is_you: boolean }
 
 const BLANK: S = { free_ship_above: 5000, ship_fee: 150, low_stock_at: 2, contact_phone: "", contact_whatsapp: "", contact_email: "",
-  contact_address: "", contact_hours: "", instagram_url: "", facebook_url: "", couriers: [] }
+  contact_address: "", contact_hours: "", instagram_url: "", facebook_url: "", couriers: [], brand_theme: "plum" }
 
 export default function Settings() {
   const qc = useQueryClient()
@@ -24,6 +29,13 @@ export default function Settings() {
   const [form, setForm] = useState<S>(BLANK)
   const [phone, setPhone] = useState("")
   useEffect(() => { if (s) setForm(s) }, [s])
+  // Picking a colour previews it at once; leaving without saving puts the saved one back.
+  useEffect(() => () => { qc.invalidateQueries({ queryKey: keys.settings }) }, [qc])
+  const pickBrand = (brand: Brand) => {
+    setForm((f) => ({ ...f, brand_theme: brand }))
+    qc.setQueryData<StoreSettings>(keys.settings, (old) => (old ? { ...old, brand_theme: brand } : old))
+    applyBrand(brand)
+  }
   const fail = (e: Error) => toast.error(e instanceof ApiError ? e.message : "Something went wrong.")
 
   const save = useMutation({ mutationFn: () => put("/api/admin/settings", form), onSuccess: () => { qc.invalidateQueries(); toast.success("Settings saved.") }, onError: fail })
@@ -49,6 +61,24 @@ export default function Settings() {
     <>
       <PageHead eyebrow="Store" title="Settings" />
       <form className="grid items-start gap-4 xl:grid-cols-2" onSubmit={(e) => { e.preventDefault(); save.mutate() }}>
+        <section className="rounded-2xl border bg-card p-5 xl:col-span-2">
+          <h3 className="mb-1 text-xl">Brand colour</h3>
+          <p className="mb-4 text-sm text-muted-foreground">Used for the logo, buttons, headings, footer, browser tab icon and order emails. Tap one to preview it here, then press <strong>Save settings</strong> to show it on the shop.</p>
+          <div role="radiogroup" aria-label="Brand colour" className="grid gap-3 sm:grid-cols-2">
+            {(Object.keys(BRANDS) as Brand[]).map((b) => {
+              const on = form.brand_theme === b
+              return (
+                <button key={b} type="button" role="radio" aria-checked={on} onClick={() => pickBrand(b)}
+                  className={cn("flex items-center gap-4 rounded-xl border bg-white p-4 text-left transition", on ? "border-transparent ring-2 ring-[var(--ring)]" : "hover:border-foreground/30")}>
+                  <span className="grid size-12 shrink-0 place-items-center rounded-full" style={{ background: BRANDS[b].ink }}>{on && <Check className="size-5 text-white" />}</span>
+                  <span className="min-w-0 flex-1"><strong className="block">{BRANDS[b].label}</strong><span className="text-xs text-muted-foreground">{BRANDS[b].note}</span></span>
+                  <img src={BRANDS[b].logo} alt="" className="h-9 w-auto" />
+                </button>
+              )
+            })}
+          </div>
+          {s && form.brand_theme !== s.brand_theme && <p className="mt-3 rounded-lg bg-[#fdf3e2] px-3 py-2 text-sm">Previewing {BRANDS[form.brand_theme].label}. Save settings to show it on the shop.</p>}
+        </section>
         <section className="rounded-2xl border bg-card p-5">
           <h3 className="mb-1 text-xl">Contact details</h3>
           <p className="mb-4 text-sm text-muted-foreground">Shown to shoppers in the footer, on the Story page and after they order. Leave a field empty to hide it.</p>

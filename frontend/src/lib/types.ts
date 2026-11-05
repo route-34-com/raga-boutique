@@ -107,7 +107,7 @@ export type ContactDetails = {
   facebook_url: string
 }
 
-export type StoreSettings = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at?: number; couriers?: Courier[] }
+export type StoreSettings = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at?: number; couriers?: Courier[]; brand_theme?: "plum" | "cocoa" }
 
 export type Review = { id: number; rating: number; comment: string; name: string; city: string; created_at: string }
 export type ReviewWithProduct = Review & { product: { name: string; slug: string; image: string } }

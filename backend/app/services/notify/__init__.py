@@ -44,7 +44,7 @@ def _notify(db: Session, order: Order, kind: str) -> list[Notification]:
     if want_wa and "whatsapp" not in done and (n := _claim(db, order, kind, "whatsapp")):
         made.append(_finish(db, n, _safely(whatsapp.send, wa_to, kind, text, params)))
     if "email" not in done and (n := _claim(db, order, kind, "email")):
-        result = _safely(email.send, mail_to, templates.subject(kind, order), text, templates.html(text, order, link, label)) if mail_to \
+        result = _safely(email.send, mail_to, templates.subject(kind, order), text, templates.html(text, order, link, label, (cfg.brand_theme if cfg else "plum"))) if mail_to \
             else ("skipped", "No email address")
         made.append(_finish(db, n, result))
     return made

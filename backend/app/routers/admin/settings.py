@@ -12,7 +12,7 @@ router = APIRouter()
 @router.get("/settings")
 def get_settings(_: Admin, db: DB):
     s = store_settings(db)
-    empty = {"free_ship_above": 0, "ship_fee": 0, "low_stock_at": 0, "couriers": []}
+    empty = {"free_ship_above": 0, "ship_fee": 0, "low_stock_at": 0, "couriers": [], "brand_theme": "plum"}
     return {k: getattr(s, k) or empty.get(k, "") for k in SettingsIn.model_fields}
 
 

@@ -9,6 +9,7 @@ import { useTitle } from "@/hooks/useTitle"
 import { MOODS, cover, inr } from "@/lib/format"
 import { Photo } from "@/components/common/Photo"
 import { cn } from "@/lib/utils"
+import { useLogo } from "@/lib/brand"
 
 const SERVICES = [
   ["✦", "Silk Mark certified", "Pure silk weaves come with their certificate."],
@@ -27,6 +28,7 @@ function SectionHead({ eyebrow, title, aside }: { eyebrow: string; title: string
 }
 
 export default function Home() {
+  const logo = useLogo()
   const { data: products, isLoading } = useProducts()
   const { data: cats = [] } = useCategories()
   const hero = products?.find((p) => p.slug === "hindol")
@@ -39,7 +41,7 @@ export default function Home() {
       <section className="container-x grid gap-8 pt-6 md:grid-cols-[1fr_1fr] md:gap-10 md:pt-6">
         <div className="flex flex-col gap-6 max-md:order-2 md:pb-12 md:pt-2">
           <div>
-            <img src="/brand/logo-sm.png" alt="Raga — The Music of Colours" className="mb-6 h-16 w-auto md:hidden" />
+            <img src={logo} alt="Raga — The Music of Colours" className="mb-6 h-16 w-auto md:hidden" />
             <p className="eyebrow">Festive edit · Autumn 2026</p>
             <h1 className="mt-4 whitespace-nowrap text-[clamp(44px,6.2vw,92px)] leading-[0.98] 3xl:text-[112px]">Every weave<br />has a <em className="font-light text-rust">raga.</em></h1>
           </div>
@@ -77,7 +79,7 @@ export default function Home() {
             <Photo src="/brand/hero-marigold.jpg" alt="Model in a marigold Kanjivaram saree with royal blue border in a temple courtyard"
               className="size-full animate-[drift_18s_ease-in-out_infinite_alternate] object-cover object-[55%_30%]" />
           </figure>
-          <figure className="absolute bottom-0 left-0 aspect-[4/5] w-[36%] overflow-hidden rounded-2xl border-[6px] border-background shadow-[0_20px_40px_-18px_rgba(61,29,15,.45)]">
+          <figure className="absolute bottom-0 left-0 aspect-[4/5] w-[36%] overflow-hidden rounded-2xl border-[6px] border-background shadow-[0_20px_40px_-18px_color-mix(in_oklab,var(--cocoa)_45%,transparent)]">
             <Photo src="/brand/peach-bhairavi.jpg" alt="Model in a peach tissue silk saree" className="size-full object-cover" />
           </figure>
           {hero && (
@@ -98,7 +100,7 @@ export default function Home() {
             return (
               <Link key={k} to={`/shop?mood=${k}`} className="group relative isolate aspect-[3/4.4] overflow-hidden rounded-t-[120px] rounded-b-2xl text-white">
                 <Photo src={cover(p)} tone={p.swatch} alt="" loading="lazy" className="absolute inset-0 -z-20 size-full object-cover transition duration-700 group-hover:scale-105" />
-                <span className="absolute inset-0 -z-10 bg-gradient-to-t from-[rgba(42,22,12,.75)] to-transparent to-55%" />
+                <span className="absolute inset-0 -z-10 bg-gradient-to-t from-[color-mix(in_oklab,var(--foreground)_75%,transparent)] to-transparent to-55%" />
                 <span className="absolute bottom-8 left-4 font-heading text-xl md:text-2xl">{m.label}</span>
                 <span className="absolute bottom-3.5 left-4 text-[11px] uppercase tracking-[0.12em] opacity-85">Raag {p.raga}</span>
               </Link>

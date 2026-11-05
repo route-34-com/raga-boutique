@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field, StringConstraints
 
@@ -114,6 +114,7 @@ class SettingsIn(BaseModel):
     instagram_url: SocialUrl = ""
     facebook_url: SocialUrl = ""
     couriers: list[CourierIn] = Field(default_factory=list, max_length=20)
+    brand_theme: Literal["plum", "cocoa"] = "plum"
 
 
 class AdminPhone(BaseModel):

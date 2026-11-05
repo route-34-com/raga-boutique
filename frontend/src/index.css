@@ -97,6 +97,22 @@
 }
 
 
+/* Plum brand (the Instagram logo colour). Cocoa is the default palette above; Admin → Settings picks one. */
+:root[data-brand="plum"] {
+    --cocoa: #732853;
+    --foreground: #2b1022;
+    --card-foreground: #2b1022;
+    --popover-foreground: #2b1022;
+    --primary: #732853;
+    --primary-foreground: #fbf1f5;
+    --secondary-foreground: #732853;
+    --muted-foreground: #7a5d6c;
+    --accent-foreground: #732853;
+    --chart-4: #732853;
+    --sidebar: #5e1f43;
+    --sidebar-primary-foreground: #5e1f43;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -2,9 +2,18 @@
 <html lang="en-IN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
-    <link rel="icon" type="image/png" href="/brand/favicon.png" />
-    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" href="/brand/favicon-plum.png" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon-plum.png" />
+    <script>
+      try {
+        if (localStorage.getItem("raga-brand") === "cocoa") {
+          document.documentElement.dataset.brand = "cocoa"
+          document.querySelector("link[rel='icon']").setAttribute("type", "image/svg+xml")
+          document.querySelector("link[rel='icon']").setAttribute("href", "/brand/favicon.svg")
+          document.querySelector("link[rel='apple-touch-icon']").setAttribute("href", "/brand/apple-touch-icon.png")
+        } else document.documentElement.dataset.brand = "plum"
+      } catch (e) { document.documentElement.dataset.brand = "plum" }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Raga Boutique — The Music of Colours</title>
     <meta name="description" content="Handwoven sarees and ethnic wear, each named after the raga whose mood it carries." />

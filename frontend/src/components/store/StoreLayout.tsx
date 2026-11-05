@@ -12,6 +12,7 @@ import { useCategories, useMe, useSettings } from "@/hooks/queries"
 import { fmtPhone, inr, waLink } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/stores/cart"
+import { useBrandSync, useLogo } from "@/lib/brand"
 
 function usePromos() {
   const { data: s } = useSettings()
@@ -44,6 +45,7 @@ function Header() {
   const wish = useCart((s) => s.wishlist.length)
   const setOpen = useCart((s) => s.setOpen)
   const { data: me } = useMe()
+  const logo = useLogo()
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 30)
@@ -61,12 +63,12 @@ function Header() {
       <div className="container-x grid grid-cols-[1fr_auto_1fr] items-center py-2.5">
         <button className="-ml-2 grid size-10 place-items-center justify-self-start xl:hidden" aria-label="Menu" onClick={() => setMenu(true)}><Menu className="size-5" /></button>
         <Link to="/" className="hidden justify-self-start xl:block" aria-label="Raga Boutique home">
-          <img src="/brand/logo-sm.png" alt="Raga — The Music of Colours" className={cn("w-auto transition-[height]", scrolled ? "h-10" : "h-12")} />
+          <img src={logo} alt="Raga — The Music of Colours" className={cn("w-auto transition-[height]", scrolled ? "h-10" : "h-12")} />
         </Link>
         <NavLinks className="hidden items-center gap-8 py-2.5 text-[15px] font-medium xl:flex 2xl:gap-10" />
         {/* Small screens: logo centred between the menu button and the icons. Desktop: logo on the left (above). */}
         <Link to="/" className="justify-self-center px-2 xl:hidden" aria-label="Raga Boutique home">
-          <img src="/brand/logo-sm.png" alt="Raga — The Music of Colours" className={cn("w-auto transition-[height]", scrolled ? "h-10" : "h-11 md:h-[52px]")} />
+          <img src={logo} alt="Raga — The Music of Colours" className={cn("w-auto transition-[height]", scrolled ? "h-10" : "h-11 md:h-[52px]")} />
         </Link>
         <div className="flex items-center justify-end gap-1">
           {me?.is_admin && <Link to="/admin" className="mr-1 hidden rounded-full bg-marigold px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-cocoa xl:block">Admin</Link>}
@@ -177,6 +179,7 @@ function Footer() {
 }
 
 export function StoreLayout() {
+  useBrandSync()
   const { pathname, hash } = useLocation()
   const promos = usePromos()
   const bagged = useCart((s) => s.lines.length > 0)

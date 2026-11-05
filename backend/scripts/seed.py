@@ -203,7 +203,8 @@ def main() -> None:
         with SessionLocal() as db:
             db.execute(text("DROP SCHEMA public CASCADE; CREATE SCHEMA public"))
             db.commit()
-        shutil.rmtree(get_settings().uploads_dir / "products", ignore_errors=True)
+        if get_settings().image_store == "disk":
+            shutil.rmtree(get_settings().uploads_dir / "products", ignore_errors=True)
         subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], check=True, cwd=HERE.parent)
     with SessionLocal() as db:
         products = seed_catalog(db)

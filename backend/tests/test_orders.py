@@ -195,3 +195,12 @@ def test_delivery_asks_customer_for_a_review(customer, admin):
     n = _notices(r.json(), "delivered")
     assert n["whatsapp"]["status"] == "tap" and "%2Forders%2FRB1001" in n["whatsapp"]["detail"]
     assert n["email"]["status"] == "logged"
+
+
+def test_brand_colour_defaults_to_plum_and_admin_can_switch(admin, customer):
+    assert customer.get("/api/settings").json()["brand_theme"] == "plum"
+    s = admin.get("/api/admin/settings").json()
+    assert s["brand_theme"] == "plum"
+    assert admin.put("/api/admin/settings", json={**s, "brand_theme": "cocoa"}).status_code == 200
+    assert customer.get("/api/settings").json()["brand_theme"] == "cocoa"
+    assert admin.put("/api/admin/settings", json={**s, "brand_theme": "teal"}).status_code == 422

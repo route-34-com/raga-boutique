@@ -10,6 +10,7 @@ import { useTitle } from "@/hooks/useTitle"
 import { api, post } from "@/lib/api"
 import { fmtPhone } from "@/lib/format"
 import { cn } from "@/lib/utils"
+import { useBrandSync, useLogo } from "@/lib/brand"
 
 const NAV = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -26,11 +27,12 @@ export const useOrderCounts = (enabled = true) =>
   useQuery({ queryKey: ["admin", "order-counts"], queryFn: () => api<Record<string, number>>("/api/admin/orders/counts"), refetchInterval: 20_000, enabled })
 
 function Gate({ denied }: { denied?: string }) {
+  const logo = useLogo()
   const qc = useQueryClient()
   return (
     <div className="grid min-h-screen place-items-center bg-[radial-gradient(circle_at_30%_20%,#fbe7c4,var(--background)_60%)] p-4">
-      <div className="w-full max-w-[400px] rounded-3xl bg-paper p-8 shadow-[0_30px_80px_-40px_rgba(61,29,15,.5)]">
-        <img src="/brand/logo-sm.png" alt="Raga" className="mb-4 w-32" />
+      <div className="w-full max-w-[400px] rounded-3xl bg-paper p-8 shadow-[0_30px_80px_-40px_color-mix(in_oklab,var(--cocoa)_50%,transparent)]">
+        <img src={logo} alt="Raga" className="mb-4 w-32" />
         <p className="eyebrow mb-3">Store admin</p>
         {denied ? (
           <div className="space-y-4">
@@ -45,6 +47,7 @@ function Gate({ denied }: { denied?: string }) {
 }
 
 export function AdminLayout() {
+  useBrandSync()
   const { data: me, isLoading } = useMe()
   const qc = useQueryClient()
   const { data: counts } = useOrderCounts(!!me?.is_admin)
