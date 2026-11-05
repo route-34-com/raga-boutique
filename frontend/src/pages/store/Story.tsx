@@ -20,17 +20,19 @@ export default function Story() {
       </section>
       <section className="container-x grid items-center gap-8 pt-8 md:grid-cols-[1fr_1.1fr] md:gap-20">
         <figure className="aspect-[4/5] max-h-[600px] overflow-hidden rounded-t-[200px] rounded-b-2xl ring-2 ring-marigold/60 ring-offset-4 ring-offset-background">
-          <Photo src="/brand/owner.jpg" alt="Suja, founder of Raga Boutique" className="size-full object-cover object-top" />
+          <Photo src="/brand/story-together.jpg" alt="Suja and her daughter handing a customer a Raga Boutique bag in the showroom" className="size-full object-cover object-top" />
         </figure>
         <div className="space-y-4">
-          <p className="eyebrow">Meet Suja</p>
+          <p className="eyebrow">Meet Suja and her daughter</p>
           <h2 className="text-[clamp(30px,3.6vw,46px)] leading-tight">Thirteen years of <em className="text-rust">handpicked colour.</em></h2>
-          <p className="max-w-[48ch] text-muted-foreground">Raga began in 2013 as a small boutique in Tiruchengode, built on a simple idea: every woman deserves a saree that makes her feel confident. Suja still chooses each piece herself. She feels the weave, watches how it falls and checks the colour in daylight.</p>
-          <p className="max-w-[48ch] text-muted-foreground">Today Raga has a larger showroom on Erode Main Road, and every customer is still welcomed like family, in the shop or on WhatsApp.</p>
+          <p className="max-w-[48ch] text-muted-foreground">Raga began in 2013 as a small boutique in Tiruchengode, built on a simple idea: every woman deserves a saree that makes her feel confident. Suja and her daughter still choose each piece themselves. They feel the weave, watch how it falls and check the colour in daylight.</p>
+          <p className="max-w-[48ch] text-muted-foreground">Today Raga has a larger showroom on Erode Main Road. Suja welcomes everyone who walks in, and her daughter brings every new arrival to you on Instagram and WhatsApp. Either way, you're treated like family.</p>
+          <p className="font-heading text-xl italic text-rust">Feel confident. Feel beautiful. Feel Raga.</p>
+          {s?.instagram_url && <a href={s.instagram_url} target="_blank" rel="noopener" className="inline-block font-semibold text-cocoa underline-offset-4 hover:text-rust hover:underline">See new arrivals on Instagram →</a>}
         </div>
       </section>
       <section className="container-x grid items-center gap-8 pt-14 md:grid-cols-[1.1fr_1fr] md:gap-24">
-        <figure className="aspect-[4/5] max-h-[640px] overflow-hidden rounded-2xl"><Photo src="/brand/aubergine-yaman.jpg" alt="Model in an aubergine Banarasi saree" className="size-full object-cover" /></figure>
+        <figure className="aspect-[4/5] max-h-[640px] overflow-hidden rounded-2xl"><Photo src="/brand/story-showroom.jpg" alt="Suja and her daughter with stacks of sarees at the Raga showroom counter" className="size-full object-cover object-top" /></figure>
         <div className="space-y-4">
           <p className="eyebrow">Why ragas?</p>
           <h2 className="text-[clamp(30px,3.6vw,46px)] leading-tight">A colour sets a mood <em className="text-rust">before a word is said.</em></h2>
