@@ -128,9 +128,10 @@ Until set up, WhatsApp runs in **tap** mode (admin gets "Open WhatsApp" with the
 
 - **Email** — `EMAIL_PROVIDER=smtp`, `SMTP_HOST`, `SMTP_PORT` (587), `SMTP_USER`, `SMTP_PASSWORD`, `EMAIL_FROM`.
   Brevo free plan: host `smtp-relay.brevo.com`, port 587 (STARTTLS; port 465 is not supported), 300 emails/day. Also set the shop email under Admin → Settings for new-order alerts.
-- **WhatsApp Cloud API (Meta)** — `WHATSAPP_MODE=cloud`, `WHATSAPP_PHONE_ID`, `WHATSAPP_TOKEN` (permanent system-user token), `WHATSAPP_LANG` (`en`). Create three **Utility** templates with these names and body variables, in this order:
+- **WhatsApp Cloud API (Meta)** — `WHATSAPP_MODE=cloud`, `WHATSAPP_PHONE_ID`, `WHATSAPP_TOKEN` (permanent system-user token), `WHATSAPP_LANG` (`en`). Create four **Utility** templates with these names and body variables, in this order:
   - `order_accepted`: `Hi {{1}}, your Raga order {{2}} is confirmed. We'll message you the tracking details once it ships. Total {{3}} (cash on delivery).`
   - `order_shipped`: `Hi {{1}}, your Raga order {{2}} is on its way with {{3}}. Tracking ID: {{4}}. Track it here: {{5}}`
+  - `order_delivered`: `Hi {{1}}, your Raga order {{2}} has been delivered. Hope you love it! Rate your order here: {{3}}`
   - `new_order_owner`: `New order {{1}}: {{2}} item(s), {{3}}, {{4}}, {{5}}.`
 
   The sender can be the shop's WhatsApp Business number (Meta "coexistence") or any other verified number.
@@ -182,7 +183,7 @@ Covers OTP login and lockout, server-side prices, no overselling (row locks), du
 - Stock rows are locked while an order is placed, so two people can't buy the last piece
 - Order flow: placed → confirmed (owner presses Accept) → packed → shipped (courier + tracking required) → delivered. Admins can skip ahead, never go back. Only admins can cancel; it puts stock back. No returns. COD orders are marked paid on delivery
 - The bag lives in the browser tab only (sessionStorage); closing the tab asks first. Login happens at checkout; email is required
-- Messages: new order → shop email (+ WhatsApp in cloud mode); Accept → customer WhatsApp + email; shipped (Admin → Dispatch, one tracking ID per order) → customer WhatsApp + email with the tracking link. Each message goes out once per order and shows on the order
+- Messages: new order → shop email (+ WhatsApp in cloud mode); Accept → customer WhatsApp + email; shipped (Admin → Dispatch, one tracking ID per order) → customer WhatsApp + email with the tracking link; delivered → customer WhatsApp + email asking for a review, with a link to their order. Each message goes out once per order and shows on the order
 - Orders keep their own copy of the address, product name, price and photo, so editing or deleting a product never changes old orders
 - OTP: 6 digits, valid 5 minutes, 5 wrong tries max, 30 s between resends, 5 per hour per number
 

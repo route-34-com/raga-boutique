@@ -185,3 +185,13 @@ def test_public_settings_list_couriers_for_tracking_links(admin):
     s["couriers"] = [{"name": "DTDC", "track_url": "https://www.dtdc.in/tracking?awb={id}"}]
     admin.put("/api/admin/settings", json=s)
     assert admin.get("/api/settings").json()["couriers"] == s["couriers"]
+
+
+def test_delivery_asks_customer_for_a_review(customer, admin):
+    place(customer, [{"product_id": 1, "qty": 1}])
+    oid = admin.get("/api/admin/orders").json()[0]["id"]
+    admin.post(f"/api/admin/orders/{oid}/status", json={"status": "shipped", "courier": "DTDC", "tracking_id": "D1"})
+    r = admin.post(f"/api/admin/orders/{oid}/status", json={"status": "delivered"})
+    n = _notices(r.json(), "delivered")
+    assert n["whatsapp"]["status"] == "tap" and "%2Forders%2FRB1001" in n["whatsapp"]["detail"]
+    assert n["email"]["status"] == "logged"

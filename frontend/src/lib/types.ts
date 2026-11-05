@@ -84,7 +84,7 @@ export type OrderDetail = AdminOrderRow & {
 }
 
 export type Notice = {
-  kind: "accepted" | "shipped" | "new_order"
+  kind: "accepted" | "shipped" | "delivered" | "new_order"
   channel: "whatsapp" | "email"
   status: "sending" | "sent" | "tap" | "logged" | "skipped" | "failed"
   detail: string

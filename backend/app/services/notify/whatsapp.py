@@ -10,7 +10,7 @@ from app.core.config import get_settings
 
 log = logging.getLogger(__name__)
 # Meta template names, as approved in WhatsApp Manager (see README for their text).
-TEMPLATES = {"accepted": "order_accepted", "shipped": "order_shipped", "new_order": "new_order_owner"}
+TEMPLATES = {"accepted": "order_accepted", "shipped": "order_shipped", "delivered": "order_delivered", "new_order": "new_order_owner"}
 
 
 def wa_link(phone: str, text: str) -> str:

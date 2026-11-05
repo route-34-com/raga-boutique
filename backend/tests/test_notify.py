@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
-from app.services.notify import messages, whatsapp
+from app.core.config import get_settings
+from app.services.notify import messages, templates, whatsapp
 
 DTDC = {"name": "DTDC", "track_url": "https://t.example/?awb={id}"}
 
@@ -31,6 +32,20 @@ def test_render_accepted_formats_total():
 
 def test_render_new_order_for_owner():
     assert messages.render("new_order", _order(), []) == "New order RB1001: 3 item(s), ₹11,800, Priya Raman, Madurai."
+
+
+def test_render_delivered_links_to_the_order_for_a_review(monkeypatch):
+    monkeypatch.setattr(get_settings(), "public_site_url", "https://shop.example/")
+    text = messages.render("delivered", _order(), [])
+    assert text.startswith("Hi Priya, your Raga order RB1001 has been delivered.")
+    assert text.endswith("https://shop.example/orders/RB1001")
+    assert messages.params("delivered", _order(), []) == ["Priya", "RB1001", "https://shop.example/orders/RB1001"]
+
+
+def test_delivered_email_has_review_button():
+    html = templates.html("Hello", _order(items=[]), "https://shop.example/orders/RB1001", "Rate your order")
+    assert "Rate your order" in html and "Track your parcel" not in html
+    assert templates.subject("delivered", _order()) == "Your Raga order RB1001 has arrived"
 
 
 def test_tap_mode_send_returns_link():
@@ -149,3 +164,12 @@ def test_cloud_uses_configured_template_names(monkeypatch):
 
 def test_track_link_encodes_tracking_id():
     assert messages.track_link("DTDC", "A 1&2", [DTDC]) == "https://t.example/?awb=A%201%262"
+
+
+def test_site_url_falls_back_to_vercel_production_domain(monkeypatch):
+    from app.core.config import Settings
+    monkeypatch.setenv("VERCEL_PROJECT_PRODUCTION_URL", "raga.example")
+    monkeypatch.delenv("PUBLIC_SITE_URL", raising=False)
+    assert Settings(_env_file=None).public_site_url == "https://raga.example"
+    monkeypatch.setenv("PUBLIC_SITE_URL", "https://own.example")
+    assert Settings(_env_file=None).public_site_url == "https://own.example"

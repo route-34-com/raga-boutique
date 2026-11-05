@@ -13,7 +13,7 @@ from app.services.notify import notify
 
 PAYMENT_METHODS = {"cod"}  # add "razorpay" when online payments are integrated
 MAX_SAVED_ADDRESSES = 5
-NOTIFY_ON = {"confirmed": "accepted", "shipped": "shipped"}  # status reached → customer message
+NOTIFY_ON = {"confirmed": "accepted", "shipped": "shipped", "delivered": "delivered"}  # status reached → customer message
 
 
 def store_settings(db: Session) -> StoreSettings:

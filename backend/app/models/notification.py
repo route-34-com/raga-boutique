@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.db import Base, TimestampMixin
 
-KINDS = ("accepted", "shipped", "new_order")
+KINDS = ("accepted", "shipped", "delivered", "new_order")
 CHANNELS = ("whatsapp", "email")
 
 

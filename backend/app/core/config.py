@@ -1,8 +1,9 @@
+import os
 import re
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -53,6 +54,13 @@ class Settings(BaseSettings):
     def _psycopg_driver(cls, v: str) -> str:
         # Hosted Postgres (Neon, Vercel) hands out postgres:// URLs; SQLAlchemy needs the driver named.
         return re.sub(r"^postgres(ql)?://", "postgresql+psycopg://", v)
+
+    @model_validator(mode="after")
+    def _site_url_on_vercel(self) -> "Settings":
+        # Links in customer messages need the live address; Vercel names its production domain at runtime.
+        if "public_site_url" not in self.model_fields_set and (host := os.environ.get("VERCEL_PROJECT_PRODUCTION_URL")):
+            self.public_site_url = f"https://{host}"
+        return self
 
     @property
     def otp_shown_on_screen(self) -> bool:

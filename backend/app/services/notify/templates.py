@@ -7,6 +7,7 @@ from app.services.notify.messages import inr
 SUBJECTS = {
     "accepted": "Your Raga order {no} is confirmed",
     "shipped": "Your Raga order {no} has shipped",
+    "delivered": "Your Raga order {no} has arrived",
     "new_order": "New order {no}",
 }
 
@@ -15,12 +16,12 @@ def subject(kind: str, order) -> str:
     return SUBJECTS[kind].format(no=order.order_no)
 
 
-def html(text: str, order, link: str = "") -> str:
+def html(text: str, order, link: str = "", label: str = "Track your parcel") -> str:
     rows = "".join(
         f'<tr><td style="padding:6px 0">{escape(i.name)}{f" ({escape(i.size)})" if i.size else ""} × {i.qty}</td>'
         f'<td style="padding:6px 0;text-align:right">{inr(i.price * i.qty)}</td></tr>' for i in order.items)
     button = (f'<p><a href="{escape(link)}" style="display:inline-block;background:#3d1d0f;color:#f6efe6;padding:12px 22px;'
-              f'border-radius:999px;text-decoration:none">Track your parcel</a></p>') if link else ""
+              f'border-radius:999px;text-decoration:none">{escape(label)}</a></p>') if link else ""
     return f"""<div style="background:#f6efe6;padding:32px 16px;font-family:Georgia,serif;color:#3d1d0f">
 <div style="max-width:520px;margin:0 auto;background:#fffaf3;border-radius:16px;padding:28px">
 <p style="font-size:22px;margin:0 0 18px">Raga</p>
