@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { ApiError, api, del, post, put } from "@/lib/api"
 import { fmtPhone } from "@/lib/format"
 import type { ContactDetails, Courier } from "@/lib/types"
+import { Spinner } from "@/components/ui/spinner"
 
 type S = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at: number; couriers: Courier[] }
 type AdminRow = { id: number; phone: string; name: string; is_you: boolean }
@@ -89,7 +90,7 @@ export default function Settings() {
           </div>
           <Button type="button" variant="outline" className="mt-3" onClick={() => setForm({ ...form, couriers: [...form.couriers, { name: "", track_url: "" }] })}>Add courier</Button>
         </section>
-        <div className="xl:col-span-2"><Button className="h-10 px-5" disabled={save.isPending}>{save.isPending ? "Saving…" : "Save settings"}</Button></div>
+        <div className="xl:col-span-2"><Button className="h-10 px-5" disabled={save.isPending}>{save.isPending ? <><Spinner />Saving…</> : "Save settings"}</Button></div>
       </form>
       <section className="mt-4 rounded-2xl border bg-card p-5 xl:max-w-[calc(50%-0.5rem)]">
         <h3 className="mb-1 text-xl">Admins</h3>

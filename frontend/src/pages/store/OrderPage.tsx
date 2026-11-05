@@ -10,6 +10,7 @@ import { useMe, useMyOrder, useMyReviews, useSettings } from "@/hooks/queries"
 import { useTitle } from "@/hooks/useTitle"
 import { fmtDate, fmtPhone, inr, waLink } from "@/lib/format"
 import { LoginPrompt } from "@/pages/store/LoginPrompt"
+import { Photo } from "@/components/common/Photo"
 
 export default function OrderPage() {
   const { orderNo = "" } = useParams()
@@ -33,8 +34,8 @@ export default function OrderPage() {
           {params.get("new") && (
             <div className="mb-6 rounded-2xl bg-emerald-50 px-5 py-4 text-emerald-900">
               <p className="font-semibold">Thank you! Your order is placed.</p>
-              <p className="mt-1 text-sm">Follow it here or under <Link to="/account" className="underline">My orders</Link>. We'll call {fmtPhone(o.phone)} before delivery.
-                {settings?.contact_whatsapp && <> Questions? <a className="underline" href={waLink(settings.contact_whatsapp, `Hi, about my order ${o.order_no}`)} target="_blank" rel="noopener">WhatsApp us</a>.</>}</p>
+              <p className="mt-1 text-sm">Follow it here or under <Link to="/account" className="font-semibold text-rust underline-offset-4 hover:underline">My orders</Link>. We'll call {fmtPhone(o.phone)} before delivery.
+                {settings?.contact_whatsapp && <> Questions? <a className="font-semibold text-rust underline-offset-4 hover:underline" href={waLink(settings.contact_whatsapp, `Hi, about my order ${o.order_no}`)} target="_blank" rel="noopener">WhatsApp us</a>.</>}</p>
             </div>
           )}
           <div className="mb-7 flex items-start justify-between gap-4">
@@ -54,7 +55,7 @@ export default function OrderPage() {
             <div>
               {o.items.map((it, i) => (
                 <div key={i} className="grid grid-cols-[56px_1fr_auto] items-center gap-3 border-b py-2.5 text-sm">
-                  <img src={it.image} alt="" className="aspect-[4/5] w-14 rounded-lg object-cover" />
+                  <Photo src={it.image} alt="" className="aspect-[4/5] w-14 rounded-lg object-cover" />
                   <div><strong className="block">{it.name}</strong><span className="text-xs text-muted-foreground">Raag {it.raga}{it.size && ` · ${it.size}`} · Qty {it.qty}</span>
                     {o.status === "delivered" && <RateButton item={it} mine={mine?.find((m) => m.product_id === it.product_id)} />}</div>
                   <span>{inr(it.price * it.qty)}</span>

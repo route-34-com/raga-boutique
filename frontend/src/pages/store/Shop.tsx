@@ -50,7 +50,7 @@ export default function Shop() {
 
   const onlyMood = selection.mood?.length === 1 && chosen === 1 ? selection.mood[0] : undefined
   const title = search ? `“${search}”` : onlyMood ? MOODS[onlyMood]?.label : cat ? cats.find((c) => c.id === cat)?.name : "Shop all"
-  const sub = search ? <>Search results · <Link to={`/shop${cat ? "/" + cat : ""}`} className="underline hover:text-rust">clear search</Link></>
+  const sub = search ? <>Search results · <Link to={`/shop${cat ? "/" + cat : ""}`} className="hover:text-rust underline-offset-4 hover:underline">clear search</Link></>
     : onlyMood ? MOODS[onlyMood]?.note : "Handwoven, small-batch, named for the music they remind us of."
   useTitle(search ? `Search: ${search}` : title ?? "Shop")
 

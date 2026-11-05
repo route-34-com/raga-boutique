@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router"
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
 import { useProducts } from "@/hooks/queries"
 import { cover, inr } from "@/lib/format"
+import { Spinner } from "@/components/ui/spinner"
+import { Photo } from "@/components/common/Photo"
 
 const SUGGESTIONS = ["Kanjivaram", "Banarasi", "Bridal", "Lehenga", "Tissue", "Festive"]
 
@@ -49,7 +51,7 @@ export function SearchDialog({ open, onOpenChange }: { open: boolean; onOpenChan
             <>
               {results.slice(0, 6).map((p) => (
                 <Link key={p.id} to={`/p/${p.slug}`} onClick={close} className="grid grid-cols-[44px_1fr_auto] items-center gap-3 rounded-xl px-3 py-2 hover:bg-paper">
-                  <img src={cover(p)} alt="" className="aspect-[4/5] w-11 rounded-md object-cover" />
+                  <Photo src={cover(p)} tone={p.swatch} alt="" className="aspect-[4/5] w-11 rounded-md object-cover" />
                   <span><span className="block font-medium">{p.name}</span><span className="text-xs text-muted-foreground">Raag {p.raga}</span></span>
                   <span className="text-sm">{inr(p.price)}</span>
                 </Link>
@@ -59,7 +61,7 @@ export function SearchDialog({ open, onOpenChange }: { open: boolean; onOpenChan
               </button>
             </>
           ) : (
-            <p className="px-3 py-8 text-center text-muted-foreground">{isFetching ? "Searching…" : <>Nothing matches “{q}”. Try a colour, a fabric or a raga.</>}</p>
+            <p className="px-3 py-8 text-center text-muted-foreground">{isFetching ? <span className="inline-flex items-center gap-2"><Spinner />Searching…</span> : <>Nothing matches “{q}”. Try a colour, a fabric or a raga.</>}</p>
           )}
         </div>
       </DialogContent>

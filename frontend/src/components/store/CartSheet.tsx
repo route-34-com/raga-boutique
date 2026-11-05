@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetT
 import { useProducts, useSettings } from "@/hooks/queries"
 import { cover, inr, stockOf } from "@/lib/format"
 import { useCart } from "@/stores/cart"
+import { Photo } from "@/components/common/Photo"
 
 export function useCartTotals() {
   const lines = useCart((s) => s.lines)
@@ -47,7 +48,7 @@ export function CartSheet() {
                 return (
                   <div key={`${productId}-${size}`} className="grid grid-cols-[76px_1fr_auto] gap-3.5 py-4">
                     <Link to={`/p/${p!.slug}`} onClick={() => setOpen(false)}>
-                      <img src={cover(p!)} alt="" className="aspect-[4/5] w-[76px] rounded-xl object-cover" />
+                      <Photo src={cover(p!)} tone={p!.swatch} alt="" className="aspect-[4/5] w-[76px] rounded-xl object-cover" />
                     </Link>
                     <div className="flex min-w-0 flex-col items-start text-sm">
                       <span className="eyebrow text-[10px]">Raag {p!.raga}</span>
@@ -60,7 +61,7 @@ export function CartSheet() {
                     </div>
                     <div className="flex flex-col items-end justify-between text-sm">
                       <strong>{inr(p!.price * qty)}</strong>
-                      <button className="text-xs text-muted-foreground underline" onClick={() => setQty(productId, size, 0)}>Remove</button>
+                      <button className="text-xs text-muted-foreground underline-offset-4 hover:underline" onClick={() => setQty(productId, size, 0)}>Remove</button>
                     </div>
                   </div>
                 )

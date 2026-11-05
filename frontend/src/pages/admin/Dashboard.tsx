@@ -14,6 +14,8 @@ import { api } from "@/lib/api"
 import { ONE_SIZE, cover, fmtDate, inr } from "@/lib/format"
 import type { AdminOrderRow, AdminProduct } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { Spinner } from "@/components/ui/spinner"
+import { Photo } from "@/components/common/Photo"
 
 type Dash = {
   today: { count: number; total: number }
@@ -71,7 +73,7 @@ export default function Dashboard() {
                   <p className="text-xs text-muted-foreground">{fmtDate(o.created_at, true)} · {o.item_count} item{o.item_count === 1 ? "" : "s"} · {inr(o.total)}</p></div>
                 <div className="flex items-center gap-2"><StatusBadge status={o.status} />
                   {next !== "shipped"
-                    ? <Button size="sm" disabled={advance.isPending} onClick={(e) => { e.stopPropagation(); advance.mutate({ id: o.id, status: next }) }}>{NEXT_LABEL[next]}</Button>
+                    ? <Button size="sm" disabled={advance.isPending} onClick={(e) => { e.stopPropagation(); advance.mutate({ id: o.id, status: next }) }}>{advance.isPending && advance.variables?.id === o.id && <Spinner />}{NEXT_LABEL[next]}</Button>
                     : <Button size="sm" onClick={(e) => { e.stopPropagation(); setOrderId(o.id) }}>Add tracking</Button>}
                 </div>
               </div>
@@ -83,7 +85,7 @@ export default function Dashboard() {
           {d.low_stock.length ? d.low_stock.map((p) => (
             <div key={p.id} className="flex items-center justify-between gap-3 border-b py-3 last:border-0">
               <div className="flex items-center gap-3 text-sm">
-                <img src={cover(p)} alt="" className="h-[55px] w-11 rounded-lg object-cover" />
+                <Photo src={cover(p)} tone={p.swatch} alt="" className="h-[55px] w-11 rounded-lg object-cover" />
                 <div><strong>{p.name}</strong><br />
                   {p.variants.map((v) => <span key={v.size} className={cn("mr-2 text-xs", v.stock <= d.low_stock_at ? "font-bold text-rust" : "text-muted-foreground")}>{v.size === ONE_SIZE ? "Stock" : v.size}: {v.stock}</span>)}
                 </div>

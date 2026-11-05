@@ -48,4 +48,4 @@ export const stockOf = (p: Product, size: string | null) =>
 export const isSized = (p: Product) => p.variants.some((v) => v.size !== ONE_SIZE)
 
 export const cover = (p: { images: { url: string }[] }, i = 0) =>
-  p.images[i]?.url ?? p.images[0]?.url ?? "/brand/logo-sm.png"
+  p.images[i]?.url ?? p.images[0]?.url ?? ""

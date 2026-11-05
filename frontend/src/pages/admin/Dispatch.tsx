@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { ApiError, api, post } from "@/lib/api"
 import { STATUS_LABEL } from "@/lib/format"
 import type { AdminOrderRow, Courier, DispatchResult } from "@/lib/types"
+import { Spinner } from "@/components/ui/spinner"
 
 type Row = { on: boolean; courier: string; tracking: string }
 
@@ -107,11 +108,11 @@ export default function Dispatch() {
           </div>
         </div>
         {couriers.length === 0 && (
-          <p className="mb-4 rounded-xl bg-[#fdf3e2] px-4 py-3 text-sm">Add your couriers and their tracking links in <Link to="/admin/settings" className="font-semibold underline">Settings</Link> so customers get a link to track.</p>
+          <p className="mb-4 rounded-xl bg-[#fdf3e2] px-4 py-3 text-sm">Add your couriers and their tracking links in <Link to="/admin/settings" className="font-semibold text-rust underline-offset-4 hover:underline">Settings</Link> so customers get a link to track.</p>
         )}
 
         {!orders ? <Skeleton className="h-40" /> : orders.length === 0 ? (
-          <p className="py-10 text-center text-muted-foreground">No accepted orders waiting. Accept new orders from <Link to="/admin/orders?status=placed" className="underline">Orders</Link>.</p>
+          <p className="py-10 text-center text-muted-foreground">No accepted orders waiting. Accept new orders from <Link to="/admin/orders?status=placed" className="font-semibold text-rust underline-offset-4 hover:underline">Orders</Link>.</p>
         ) : (
           <div className="divide-y">
             <label className="flex items-center gap-3 pb-3 text-sm font-semibold">
@@ -145,7 +146,7 @@ export default function Dispatch() {
         )}
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <Button className="h-11 px-6" disabled={!ready || send.isPending} onClick={() => send.mutate()}>
-            {send.isPending ? "Sending…" : `Send to ${chosen.length} customer${chosen.length === 1 ? "" : "s"}`}
+            {send.isPending ? <><Spinner />Sending…</> : `Send to ${chosen.length} customer${chosen.length === 1 ? "" : "s"}`}
           </Button>
           {chosen.length > 0 && !ready && <span className="text-sm text-muted-foreground">Every ticked order needs a courier and tracking ID.</span>}
         </div>

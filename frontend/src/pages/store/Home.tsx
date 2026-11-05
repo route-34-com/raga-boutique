@@ -7,6 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useCategories, useProducts } from "@/hooks/queries"
 import { useTitle } from "@/hooks/useTitle"
 import { MOODS, cover, inr } from "@/lib/format"
+import { Photo } from "@/components/common/Photo"
+import { cn } from "@/lib/utils"
 
 const SERVICES = [
   ["✦", "Silk Mark certified", "Pure silk weaves come with their certificate."],
@@ -62,7 +64,7 @@ export default function Home() {
               <div className="grid grid-cols-4 gap-2.5">
                 {justIn.map((p) => (
                   <Link key={p.id} to={`/p/${p.slug}`} title={p.name} className="group relative block aspect-square overflow-hidden rounded-xl bg-sand">
-                    <img src={cover(p)} alt={p.name} loading="lazy" className="size-full object-cover object-top transition duration-500 group-hover:scale-105" />
+                    <Photo src={cover(p)} tone={p.swatch} alt={p.name} loading="lazy" className="size-full object-cover object-top transition duration-500 group-hover:scale-105" />
                     <span className="absolute bottom-1.5 left-1.5 rounded-full bg-paper/95 px-2 py-0.5 text-[11px] font-semibold text-cocoa">{inr(p.price)}</span>
                   </Link>
                 ))}
@@ -72,11 +74,11 @@ export default function Home() {
         </div>
         <div className="relative self-start pb-9 pl-7 md:pb-12 md:pl-12">
           <figure className="aspect-[4/4.4] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-[4/4.6] md:rounded-t-[220px] 3xl:-mr-[calc((100vw-100rem)/2+3.5rem)] 3xl:aspect-auto 3xl:h-[min(76vh,780px)] 3xl:rounded-r-none 3xl:rounded-tl-[260px]">
-            <img src="/brand/hero-marigold.jpg" alt="Model in a marigold Kanjivaram saree with royal blue border in a temple courtyard"
+            <Photo src="/brand/hero-marigold.jpg" alt="Model in a marigold Kanjivaram saree with royal blue border in a temple courtyard"
               className="size-full animate-[drift_18s_ease-in-out_infinite_alternate] object-cover object-[55%_30%]" />
           </figure>
           <figure className="absolute bottom-0 left-0 aspect-[4/5] w-[36%] overflow-hidden rounded-2xl border-[6px] border-background shadow-[0_20px_40px_-18px_rgba(61,29,15,.45)]">
-            <img src="/brand/peach-bhairavi.jpg" alt="Model in a peach tissue silk saree" className="size-full object-cover" />
+            <Photo src="/brand/peach-bhairavi.jpg" alt="Model in a peach tissue silk saree" className="size-full object-cover" />
           </figure>
           {hero && (
             <Link to="/p/hindol" className="absolute bottom-14 right-3 inline-flex items-center gap-2 rounded-full bg-paper px-4 py-2.5 text-xs font-semibold shadow-lg transition-transform hover:-translate-y-0.5 md:bottom-[74px] md:right-5 md:text-sm">
@@ -95,7 +97,7 @@ export default function Home() {
             if (!p) return isLoading ? <Skeleton key={k} className="aspect-[3/4.4] rounded-t-[120px] rounded-b-2xl" /> : null
             return (
               <Link key={k} to={`/shop?mood=${k}`} className="group relative isolate aspect-[3/4.4] overflow-hidden rounded-t-[120px] rounded-b-2xl text-white">
-                <img src={cover(p)} alt="" loading="lazy" className="absolute inset-0 -z-20 size-full object-cover transition duration-700 group-hover:scale-105" />
+                <Photo src={cover(p)} tone={p.swatch} alt="" loading="lazy" className="absolute inset-0 -z-20 size-full object-cover transition duration-700 group-hover:scale-105" />
                 <span className="absolute inset-0 -z-10 bg-gradient-to-t from-[rgba(42,22,12,.75)] to-transparent to-55%" />
                 <span className="absolute bottom-8 left-4 font-heading text-xl md:text-2xl">{m.label}</span>
                 <span className="absolute bottom-3.5 left-4 text-[11px] uppercase tracking-[0.12em] opacity-85">Raag {p.raga}</span>
@@ -107,7 +109,7 @@ export default function Home() {
 
       <section className="container-x pt-8 md:pt-12">
         <SectionHead eyebrow="The collection" title="New in the edit"
-          aside={<Link to="/shop" className="border-b-[1.5px] border-cocoa pb-0.5 font-semibold text-cocoa hover:text-rust">Shop all →</Link>} />
+          aside={<Link to="/shop" className="font-semibold text-cocoa underline-offset-4 hover:text-rust hover:underline">Shop all →</Link>} />
         <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4 3xl:grid-cols-5">
           {isLoading ? Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)
             : products?.slice(0, 5).map((p, i) => <div key={p.id} className={i === 4 ? "hidden 3xl:block" : undefined}><ProductCard p={p} /></div>)}
@@ -116,7 +118,7 @@ export default function Home() {
 
       <section className="container-x grid items-center gap-8 pt-10 md:grid-cols-[1.1fr_1fr] md:gap-16 md:pt-16">
         <figure className="aspect-[4/3.4] overflow-hidden rounded-2xl md:aspect-square 3xl:aspect-[5/4]">
-          <img src="/brand/hero-peach.jpg" alt="Model in a peach saree on a garden path" loading="lazy" className="size-full object-cover" />
+          <Photo src="/brand/hero-peach.jpg" alt="Model in a peach saree on a garden path" loading="lazy" className="size-full object-cover" />
         </figure>
         <div>
           <p className="eyebrow">Raag Bhairavi</p>
@@ -138,20 +140,11 @@ export default function Home() {
         </div>
       </section>
 
-      {products && products.length > 4 && (
-        <section className="container-x pt-8 md:pt-12">
-          <SectionHead eyebrow="Also in the edit" title="For the evening after" />
-          <div className="grid grid-cols-2 gap-3 md:gap-7">
-            {products.slice(4, 6).map((p) => <ProductCard key={p.id} p={p} tall />)}
-          </div>
-        </section>
-      )}
-
       {lehengas.length > 0 && (
         <section className="container-x pt-8 md:pt-12">
           <SectionHead eyebrow="Lehengas" title="For the sangeet and the pheras"
-            aside={<Link to="/shop/lehengas" className="border-b-[1.5px] border-cocoa pb-0.5 font-semibold text-cocoa hover:text-rust">See all lehengas →</Link>} />
-          <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4 3xl:grid-cols-5">
+            aside={<Link to="/shop/lehengas" className="font-semibold text-cocoa underline-offset-4 hover:text-rust hover:underline">See all lehengas →</Link>} />
+          <div className={cn("grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4", lehengas.length >= 5 && "3xl:grid-cols-5")}>
             {lehengas.slice(0, 5).map((p, i) => <div key={p.id} className={i === 4 ? "hidden 3xl:block" : undefined}><ProductCard p={p} /></div>)}
           </div>
         </section>

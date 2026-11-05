@@ -12,6 +12,8 @@ import { ApiError, post } from "@/lib/api"
 import { fmtDate } from "@/lib/format"
 import type { MyReview, OrderItem, Review, ReviewWithProduct } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { Spinner } from "@/components/ui/spinner"
+import { Photo } from "@/components/common/Photo"
 
 export function Stars({ value, className }: { value: number; className?: string }) {
   return (
@@ -56,7 +58,7 @@ function ReviewCard({ r, product }: { r: Review; product?: ReviewWithProduct["pr
       </div>
       {product && (
         <Link to={`/p/${product.slug}`} className="mt-4 flex items-center gap-3 border-t pt-4 text-[13px] font-medium hover:text-rust">
-          <img src={product.image} alt="" className="aspect-[4/5] w-9 rounded-md object-cover" />{product.name}
+          <Photo src={product.image} alt="" className="aspect-[4/5] w-9 rounded-md object-cover" />{product.name}
         </Link>
       )}
     </article>
@@ -129,7 +131,7 @@ export function RateButton({ item, mine }: { item: OrderItem; mine?: MyReview })
         <DialogContent className="bg-background sm:max-w-md">
           <DialogTitle className="font-heading text-2xl font-normal text-cocoa">How was it?</DialogTitle>
           <DialogDescription className="flex items-center gap-3">
-            <img src={item.image} alt="" className="aspect-[4/5] w-10 rounded-md object-cover" />{item.name}
+            <Photo src={item.image} alt="" className="aspect-[4/5] w-10 rounded-md object-cover" />{item.name}
           </DialogDescription>
           <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); if (!rating) return toast.error("Tap a star to rate it."); save.mutate() }}>
             <div className="flex gap-1.5" onMouseLeave={() => setHover(0)}>
@@ -142,7 +144,7 @@ export function RateButton({ item, mine }: { item: OrderItem; mine?: MyReview })
             </div>
             <Textarea value={comment} onChange={(e) => setComment(e.target.value)} maxLength={600} rows={4} className="bg-paper"
               placeholder="The colour, the drape, the fabric, how it felt to wear…" />
-            <Button className="h-11 w-full rounded-full" disabled={save.isPending}>{save.isPending ? "Saving…" : mine ? "Update review" : "Post review"}</Button>
+            <Button className="h-11 w-full rounded-full" disabled={save.isPending}>{save.isPending ? <><Spinner />Saving…</> : mine ? "Update review" : "Post review"}</Button>
           </form>
         </DialogContent>
       </Dialog>

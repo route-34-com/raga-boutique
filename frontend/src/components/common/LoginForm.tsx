@@ -7,6 +7,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { keys } from "@/hooks/queries"
 import { ApiError, post } from "@/lib/api"
 import type { User } from "@/lib/types"
+import { Spinner } from "@/components/ui/spinner"
 
 type Props = { onSuccess?: (user: User) => void; title?: string; subtitle?: string }
 
@@ -76,7 +77,7 @@ export function LoginForm({ onSuccess, title = "Log in or sign up", subtitle }: 
         </label>
         {error && <p className="text-sm text-destructive">{error}</p>}
         <Button type="submit" size="lg" className="h-12 w-full rounded-full text-sm" disabled={busy}>
-          {busy ? "Sending…" : "Send code"}
+          {busy ? <><Spinner />Sending…</> : "Send code"}
         </Button>
       </form>
     )
@@ -87,7 +88,7 @@ export function LoginForm({ onSuccess, title = "Log in or sign up", subtitle }: 
         <h3 className="text-2xl">Enter the code</h3>
         <p className="mt-1 text-sm text-muted-foreground">
           Sent to <strong className="text-foreground">+91 {phone}</strong> ·{" "}
-          <button type="button" className="underline" onClick={() => setStep("phone")}>Change</button>
+          <button type="button" className="font-semibold text-rust underline-offset-4 hover:underline" onClick={() => setStep("phone")}>Change</button>
         </p>
       </div>
       <InputOTP maxLength={6} value={code} onChange={setCode} onComplete={verify} autoFocus disabled={busy} containerClassName="justify-center">
@@ -103,7 +104,7 @@ export function LoginForm({ onSuccess, title = "Log in or sign up", subtitle }: 
       {error && <p className="text-sm text-destructive">{error}</p>}
       <div className="flex items-center gap-3">
         <Button size="lg" className="h-12 flex-1 rounded-full" disabled={busy || code.length !== 6} onClick={() => verify()}>
-          {busy ? "Checking…" : "Verify & continue"}
+          {busy ? <><Spinner />Checking…</> : "Verify & continue"}
         </Button>
         <Button variant="ghost" size="lg" className="h-12" disabled={busy} onClick={() => sendCode()}>Resend</Button>
       </div>

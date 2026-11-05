@@ -9,6 +9,7 @@ import argparse
 import json
 import shutil
 import subprocess
+import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -88,7 +89,7 @@ FULL = ["placed", "confirmed", "packed", "shipped", "delivered"]
 DEMO_CUSTOMERS = [
     ("9000000002", "Meera Iyer", "meera@example.com",
      dict(line1="14, North Mada Street", line2="Mylapore", city="Chennai", state="Tamil Nadu", pincode="600004"), [
-         ([("yaman", None)], FULL, 21, ("Delhivery", "DL88213409")),
+         ([("kalyani", None)], FULL, 21, ("Delhivery", "DL88213409")),
          ([("megh", "M")], ["placed", "cancelled"], 9, None),
          ([("hindol", None), ("chandrakauns", "S")], FULL[:4], 2, ("Blue Dart", "BD5521907")),
          ([("bhairavi", None)], ["placed"], 0.05, None),
@@ -96,7 +97,7 @@ DEMO_CUSTOMERS = [
     ("9000000003", "Ananya Rao", "ananya@example.com",
      dict(line1="221, 8th Cross, Indiranagar", line2="HAL 2nd Stage", city="Bengaluru", state="Karnataka", pincode="560038"), [
          ([("malhar", None)], FULL, 18, ("Delhivery", "DL88219951")),
-         ([("bahar", "M"), ("todi", None)], FULL[:3], 1.2, None),
+         ([("bahar", "M"), ("desh", None)], FULL[:3], 1.2, None),
      ]),
     ("9000000004", "Priya Menon", "priya.menon@example.com",
      dict(line1="Flat 4B, Sea Breeze Apartments", line2="Panampilly Nagar", city="Kochi", state="Kerala", pincode="682036"), [
@@ -113,7 +114,7 @@ DEMO_CUSTOMERS = [
      dict(line1="32/1, Hindustan Park", line2="Gariahat", city="Kolkata", state="West Bengal", pincode="700029"), [
          ([("durga", None)], FULL, 11, ("Delhivery", "DL88230476")),
          ([("bilaval", "L")], ["placed", "confirmed", "cancelled"], 6, None),
-         ([("megh", "S"), ("todi", None)], FULL[:3], 3, None),
+         ([("megh", "S"), ("khamaj", None)], FULL[:3], 3, None),
      ]),
 ]
 
@@ -158,7 +159,7 @@ def seed_demo_orders(db, products: dict[str, Product]) -> None:
 
 # (product slug, first name, city, stars, comment, days ago). The first five match demo customers' delivered orders.
 DEMO_REVIEWS = [
-    ("yaman", "Meera", "Chennai", 5, "The aubergine is even richer in person. Wore it to my cousin's reception and three aunties asked where it was from.", 16),
+    ("kalyani", "Meera", "Chennai", 5, "The pink is even richer in person. Wore it to my cousin's reception and three aunties asked where it was from.", 16),
     ("malhar", "Ananya", "Bengaluru", 5, "Light enough for a Bengaluru afternoon, and the colour photographs beautifully. Packed with so much care.", 12),
     ("basant", "Priya", "Kochi", 4, "Lovely weave and the pallu is gorgeous. Took a day longer than expected to reach Kochi, but worth the wait.", 9),
     ("bihag", "Kavya", "New Delhi", 5, "Exactly the shade on the website. The video call before buying helped me decide.", 20),
@@ -169,10 +170,10 @@ DEMO_REVIEWS = [
     ("kalyani", "Janani", "Madurai", 5, "Heavy pallu, rich colour, and they did the fall and pico before sending. Very happy.", 19),
     ("chandrakauns", "Aishwarya", "Hyderabad", 4, "Fits well and the organza is very pretty. The dupatta is slightly sheer, so plan your inner.", 15),
     ("megh", "Shruti", "Pune", 5, "Twirled all evening at the sangeet. Comfortable, flowy and the teal is gorgeous.", 11),
-    ("todi", "Lakshmi", "Tiruchengode", 5, "Visited the new showroom after seeing the website. Same warmth in person. Love my saree.", 8),
+    ("pilu", "Lakshmi", "Tiruchengode", 5, "Visited the new showroom after seeing the website. Same warmth in person. Love my saree.", 8),
     ("hindol", "Harini", "Namakkal", 5, "Gifted this to my mother-in-law. She has worn it twice already!", 5),
     ("bahar", "Pooja", "Mumbai", 3, "The lehenga is beautiful but the blouse needed alteration. The team was quick to help on WhatsApp.", 4),
-    ("yaman", "Gayathri", "Trichy", 5, "Third purchase from Raga. Quality is consistent every single time.", 2),
+    ("bhairavi", "Gayathri", "Trichy", 5, "Third purchase from Raga. Quality is consistent every single time.", 2),
 ]
 
 
@@ -203,7 +204,7 @@ def main() -> None:
             db.execute(text("DROP SCHEMA public CASCADE; CREATE SCHEMA public"))
             db.commit()
         shutil.rmtree(get_settings().uploads_dir / "products", ignore_errors=True)
-        subprocess.run(["alembic", "upgrade", "head"], check=True, cwd=HERE.parent)
+        subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], check=True, cwd=HERE.parent)
     with SessionLocal() as db:
         products = seed_catalog(db)
         make_admin(db, args.admin)

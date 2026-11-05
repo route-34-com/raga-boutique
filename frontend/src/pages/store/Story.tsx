@@ -2,13 +2,14 @@ import { ContactList, SocialLinks } from "@/components/store/StoreLayout"
 import { useSettings } from "@/hooks/queries"
 import { useTitle } from "@/hooks/useTitle"
 import { inr } from "@/lib/format"
+import { Photo } from "@/components/common/Photo"
 
 export default function Story() {
   useTitle("Our story")
   const { data: s } = useSettings()
   const cols = [
     ["shipping", "Shipping", `Dispatched in 2–3 days and delivered across India in 3–6 working days. Free above ${inr(s?.free_ship_above ?? 5000)}, otherwise ${inr(s?.ship_fee ?? 150)}. Every parcel is insured.`],
-    ["orders", "Orders", "We confirm every order on WhatsApp and email, then send the tracking ID once it ships. All sales are final."],
+    ["orders", "Orders & payment", "Pay by cash or any UPI app when your parcel arrives; card and online payments are coming soon. We confirm every order on WhatsApp and email, then send the tracking ID once it ships. All sales are final."],
     ["care", "Saree care", "Dry clean silks. Store folded in muslin, never plastic. Refold along new lines every few months so the zari doesn't crack."],
   ]
   return (
@@ -19,7 +20,7 @@ export default function Story() {
       </section>
       <section className="container-x grid items-center gap-8 pt-8 md:grid-cols-[1fr_1.1fr] md:gap-20">
         <figure className="aspect-[4/5] max-h-[600px] overflow-hidden rounded-t-[200px] rounded-b-2xl ring-2 ring-marigold/60 ring-offset-4 ring-offset-background">
-          <img src="/brand/owner.jpg" alt="Suja, founder of Raga Boutique" className="size-full object-cover object-top" />
+          <Photo src="/brand/owner.jpg" alt="Suja, founder of Raga Boutique" className="size-full object-cover object-top" />
         </figure>
         <div className="space-y-4">
           <p className="eyebrow">Meet Suja</p>
@@ -29,7 +30,7 @@ export default function Story() {
         </div>
       </section>
       <section className="container-x grid items-center gap-8 pt-14 md:grid-cols-[1.1fr_1fr] md:gap-24">
-        <figure className="aspect-[4/5] max-h-[640px] overflow-hidden rounded-2xl"><img src="/brand/aubergine-yaman.jpg" alt="Model in an aubergine Banarasi saree" className="size-full object-cover" /></figure>
+        <figure className="aspect-[4/5] max-h-[640px] overflow-hidden rounded-2xl"><Photo src="/brand/aubergine-yaman.jpg" alt="Model in an aubergine Banarasi saree" className="size-full object-cover" /></figure>
         <div className="space-y-4">
           <p className="eyebrow">Why ragas?</p>
           <h2 className="text-[clamp(30px,3.6vw,46px)] leading-tight">A colour sets a mood <em className="text-rust">before a word is said.</em></h2>

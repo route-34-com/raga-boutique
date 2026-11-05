@@ -16,6 +16,7 @@ import type { Product } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/stores/cart"
 import NotFound from "@/pages/store/NotFound"
+import { Photo } from "@/components/common/Photo"
 
 function StockNote({ n, size }: { n: number; size: string | null }) {
   if (!n) return <span className="text-sm font-semibold text-destructive">Sold out{size ? ` in ${size}` : ""}</span>
@@ -71,12 +72,12 @@ export default function ProductPage() {
             {p.images.map((im, i) => (
               <button key={im.id} onClick={() => setImg(i)} aria-label={`Photo ${i + 1}`}
                 className={cn("aspect-[4/5] w-16 overflow-hidden rounded-lg transition md:w-auto", i === img ? "outline-2 outline-offset-2 outline-cocoa" : "opacity-55")}>
-                <img src={im.url} alt="" className="size-full object-cover" />
+                <Photo src={im.url} tone={p.swatch} alt="" className="size-full object-cover" />
               </button>
             ))}
           </div>
           <figure className="aspect-[4/5] overflow-hidden rounded-2xl bg-sand">
-            <img src={p.images[img]?.url} alt={p.name} className="size-full object-cover" />
+            <Photo src={p.images[img]?.url} tone={p.swatch} alt={p.name} className="size-full object-cover" />
           </figure>
         </div>
 

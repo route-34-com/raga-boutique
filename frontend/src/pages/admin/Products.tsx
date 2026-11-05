@@ -14,6 +14,7 @@ import { ApiError, api, patch, post } from "@/lib/api"
 import { MOODS, ONE_SIZE, cover, inr } from "@/lib/format"
 import type { AdminCategory, AdminProduct } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { Photo } from "@/components/common/Photo"
 
 export default function Products() {
   const qc = useQueryClient()
@@ -62,7 +63,7 @@ export default function Products() {
             <TableBody>
               {list.map((p) => (
                 <TableRow key={p.id} className={cn(!p.active && "opacity-55")}>
-                  <TableCell><div className="flex items-center gap-3"><img src={cover(p)} alt="" className="h-[55px] w-11 rounded-lg object-cover" />
+                  <TableCell><div className="flex items-center gap-3"><Photo src={cover(p)} tone={p.swatch} alt="" className="h-[55px] w-11 rounded-lg object-cover" />
                     <div><strong className="whitespace-normal">{p.name}</strong><br /><span className="text-xs text-muted-foreground">Raag {p.raga} · {MOODS[p.mood]?.label ?? "—"}</span></div></div></TableCell>
                   <TableCell>{cats.find((c) => c.id === p.category_id)?.name ?? "—"}</TableCell>
                   <TableCell>{inr(p.price)}{p.mrp && p.mrp > p.price && <><br /><s className="text-xs text-muted-foreground">{inr(p.mrp)}</s></>}</TableCell>

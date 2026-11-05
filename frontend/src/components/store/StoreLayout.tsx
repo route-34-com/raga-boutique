@@ -1,4 +1,4 @@
-import { Heart, Mail, MapPin, Menu, MessageCircle, Phone, Search, ShoppingBag, User } from "lucide-react"
+import { Banknote, CreditCard, Heart, Mail, MapPin, Menu, MessageCircle, Phone, Search, ShoppingBag, Smartphone, User } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Link, NavLink, Outlet, useLocation } from "react-router"
 
@@ -111,7 +111,7 @@ export function ContactList({ className, linkClass }: { className?: string; link
         <li>
           <a className={row} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("Raga Boutique, " + s.contact_address)}`} target="_blank" rel="noopener">
             <MapPin className="mt-0.5 size-4 shrink-0" />
-            <span>{s.contact_address}{s.contact_hours && <><br />{s.contact_hours}</>}<br /><span className="underline underline-offset-2">Get directions</span></span>
+            <span>{s.contact_address}{s.contact_hours && <><br />{s.contact_hours}</>}<br /><span className="underline-offset-4 hover:underline">Get directions</span></span>
           </a>
         </li>
       )}
@@ -160,7 +160,16 @@ function Footer() {
           <ContactList className="opacity-85" linkClass="hover:text-marigold" />
         </div>
       </div>
-      <div className="mx-auto mt-12 flex max-w-[1320px] flex-col justify-between gap-1.5 border-t border-sand/15 pt-5 text-xs opacity-65 sm:flex-row">
+      <div className="mx-auto mt-12 flex max-w-[1600px] flex-wrap items-center gap-x-5 gap-y-3 border-t border-sand/15 pt-6">
+        <h4 className="font-heading text-lg text-background">Payments</h4>
+        <ul className="flex flex-wrap gap-2 text-xs font-semibold">
+          <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><Banknote className="size-4 text-marigold" />Cash on delivery</li>
+          <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><Smartphone className="size-4 text-marigold" />UPI on delivery</li>
+          <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 opacity-60 ring-1 ring-sand/15"><CreditCard className="size-4" />Cards &amp; online · coming soon</li>
+        </ul>
+        <Link to="/story#orders" className="text-sm opacity-80 hover:text-marigold hover:opacity-100 underline-offset-4 hover:underline">Payment details</Link>
+      </div>
+      <div className="mx-auto mt-5 flex max-w-[1600px] flex-col justify-between gap-1.5 text-xs opacity-65 sm:flex-row">
         <span>© 2026 Raga Boutique</span><span>Made in India, with patience.</span>
       </div>
     </footer>

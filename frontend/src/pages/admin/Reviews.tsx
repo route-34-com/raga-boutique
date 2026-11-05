@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { ApiError, api, del } from "@/lib/api"
 import { fmtDate, fmtPhone } from "@/lib/format"
 import type { AdminReview } from "@/lib/types"
+import { Photo } from "@/components/common/Photo"
 
 export function useAdminReviews(limit = 200) {
   return useQuery({ queryKey: ["admin", "reviews", limit], queryFn: () => api<AdminReview[]>(`/api/admin/reviews?limit=${limit}`) })
@@ -21,7 +22,7 @@ export function ReviewRow({ r, onDelete }: { r: AdminReview; onDelete?: (r: Admi
   return (
     <div className="grid gap-3 border-b py-4 text-sm last:border-0 md:grid-cols-[220px_1fr_auto] md:items-start">
       <Link to={`/p/${r.product.slug}`} target="_blank" className="flex items-center gap-3 font-medium hover:text-rust">
-        <img src={r.product.image} alt="" className="aspect-[4/5] w-10 rounded-md object-cover" />{r.product.name}
+        <Photo src={r.product.image} alt="" className="aspect-[4/5] w-10 rounded-md object-cover" />{r.product.name}
       </Link>
       <div>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1"><Stars value={r.rating} />

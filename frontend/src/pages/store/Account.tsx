@@ -16,11 +16,13 @@ import { useTitle } from "@/hooks/useTitle"
 import { ONGOING, fmtDate, fmtPhone, inr } from "@/lib/format"
 import type { OrderSummary, User } from "@/lib/types"
 import { LoginPrompt } from "@/pages/store/LoginPrompt"
+import { Spinner } from "@/components/ui/spinner"
+import { Photo } from "@/components/common/Photo"
 
 function OrderRow({ o }: { o: OrderSummary }) {
   return (
     <Link to={`/orders/${o.order_no}`} className="mb-2.5 grid grid-cols-[auto_1fr_auto] items-center gap-4 rounded-2xl border bg-paper px-4 py-3.5 transition-colors hover:border-cocoa">
-      <div className="flex">{o.items.slice(0, 3).map((it, i) => <img key={i} src={it.image} alt="" className="-ml-3.5 aspect-[4/5] w-12 rounded-lg border-2 border-paper object-cover first:ml-0" />)}</div>
+      <div className="flex">{o.items.slice(0, 3).map((it, i) => <Photo key={i} src={it.image} alt="" className="-ml-3.5 aspect-[4/5] w-12 rounded-lg border-2 border-paper object-cover first:ml-0" />)}</div>
       <div><strong>{o.order_no}</strong><p className="text-xs text-muted-foreground">{fmtDate(o.created_at)} · {o.item_count} item{o.item_count === 1 ? "" : "s"}</p></div>
       <div className="flex flex-col items-end gap-1.5"><StatusBadge status={o.status} /><strong className="text-sm">{inr(o.total)}</strong></div>
     </Link>
@@ -89,7 +91,7 @@ export default function Account() {
           <form className="grid gap-3.5" onSubmit={(e) => { e.preventDefault(); save.mutate() }}>
             <div className="grid gap-1.5"><Label htmlFor="pname">Name</Label><Input id="pname" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" className="h-11 bg-background" /></div>
             <div className="grid gap-1.5"><Label htmlFor="pemail">Email</Label><Input id="pemail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" className="h-11 bg-background" /></div>
-            <Button variant="outline" className="h-11 rounded-full border-cocoa bg-transparent" disabled={save.isPending}>Save</Button>
+            <Button variant="outline" className="h-11 rounded-full border-cocoa bg-transparent" disabled={save.isPending}>{save.isPending && <Spinner />}Save</Button>
           </form>
           {addresses.length > 0 && <>
             <h3 className="mb-3 mt-7 text-xl">Saved addresses</h3>

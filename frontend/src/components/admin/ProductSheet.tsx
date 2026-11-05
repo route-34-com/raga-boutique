@@ -8,13 +8,15 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { ApiError, api, del, post, put } from "@/lib/api"
 import { MOODS, ONE_SIZE } from "@/lib/format"
 import type { AdminCategory, AdminProduct } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { Spinner } from "@/components/ui/spinner"
+import { Photo } from "@/components/common/Photo"
 
 const SIZE_SET = ["XS", "S", "M", "L", "XL", "XXL"]
 const ATTRS: ["color" | "material" | "work" | "pattern", string, string[]][] = [
@@ -69,6 +71,7 @@ export function ProductSheet({ product, isNew, onClose }: { product: AdminProduc
   const { data: cats = [] } = useQuery({ queryKey: ["admin", "categories"], queryFn: () => api<AdminCategory[]>("/api/admin/categories") })
   const [d, setD] = useState<Draft>(() => toDraft(product, cats[0]?.id ?? "sarees"))
   const [error, setErrorText] = useState("")
+  const [dragging, setDragging] = useState(false)
   const errorRef = useRef<HTMLParagraphElement>(null)
   // The message sits at the bottom of a long form, so bring it into view and toast it too.
   const setError = (msg: string) => {
@@ -129,110 +132,165 @@ export function ProductSheet({ product, isNew, onClose }: { product: AdminProduc
   }
 
   const field = "grid gap-1.5"
+  const card = "grid gap-4 rounded-2xl border bg-white/70 p-5"
+  const hint = "-mt-2 text-xs text-muted-foreground"
+  const off = d.mrp && Number(d.mrp) > Number(d.price) && Number(d.price) > 0 ? Math.round((1 - Number(d.price) / Number(d.mrp)) * 100) : 0
+  const picker = (
+    <input type="file" accept="image/*" multiple hidden onChange={(e) => { if (e.target.files?.length) upload(e.target.files); e.target.value = "" }} />
+  )
+  const drop = {
+    onDragOver: (e: React.DragEvent) => { e.preventDefault(); setDragging(true) },
+    onDragLeave: () => setDragging(false),
+    onDrop: (e: React.DragEvent) => { e.preventDefault(); setDragging(false); if (e.dataTransfer.files.length) upload(e.dataTransfer.files) },
+  }
   return (
-    <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
-      <SheetContent className="w-full gap-0 overflow-y-auto bg-card p-0 sm:max-w-[600px]">
-        <SheetHeader className="border-b px-6 py-5">
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="flex max-h-[92dvh] flex-col gap-0 overflow-hidden bg-card p-0 sm:max-w-6xl">
+        <DialogHeader className="gap-1 border-b px-6 py-5">
           <p className="eyebrow">{isNew ? "New product" : "Edit product"}</p>
-          <SheetTitle className="font-heading text-[26px] font-normal text-cocoa">{d.name || "Untitled"}</SheetTitle>
-          <SheetDescription className="sr-only">Product details, photos and stock</SheetDescription>
-        </SheetHeader>
-        <form onSubmit={submit} className="grid gap-4 px-6 pb-0 pt-5 text-sm">
-          <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Photos</h4>
-          <p className="-mt-2 text-xs text-muted-foreground">The first photo is the cover. Use ← to move a photo earlier. Large photos are shrunk automatically.</p>
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-            {d.images.map((im, i) => (
-              <figure key={im.url} className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted">
-                <img src={im.url} alt="" className={cn("size-full object-cover", im.uploading && "animate-pulse opacity-50")} />
-                {i === 0 ? <span className="absolute bottom-1.5 left-1.5 rounded bg-cocoa px-2 py-0.5 text-[10px] font-bold text-white">Cover</span>
-                  : <button type="button" aria-label="Move earlier" onClick={() => setD((x) => { const a = [...x.images];[a[i - 1], a[i]] = [a[i], a[i - 1]]; return { ...x, images: a } })}
-                    className="absolute bottom-1.5 left-1.5 grid size-7 place-items-center rounded-full bg-white/90"><ArrowLeft className="size-3.5" /></button>}
-                <button type="button" aria-label="Remove photo" onClick={() => set("images", d.images.filter((_, j) => j !== i))}
-                  className="absolute right-1.5 top-1.5 grid size-7 place-items-center rounded-full bg-white/90 text-destructive"><X className="size-3.5" /></button>
-              </figure>
-            ))}
-            <label className="grid aspect-[4/5] cursor-pointer place-items-center rounded-lg border-[1.5px] border-dashed border-[#d2bfa6] text-rust hover:bg-[#fdf3e2]">
-              <span className="flex flex-col items-center gap-1 text-xs font-bold"><ImagePlus className="size-5" />Add photos</span>
-              <input type="file" accept="image/*" multiple hidden onChange={(e) => { if (e.target.files?.length) upload(e.target.files); e.target.value = "" }} />
-            </label>
+          <div className="flex flex-wrap items-center gap-3 pr-8">
+            <DialogTitle className={cn("font-heading text-[26px] font-normal leading-tight", d.name ? "text-cocoa" : "text-muted-foreground")}>
+              {d.name || (isNew ? "Name your piece" : "Untitled")}
+            </DialogTitle>
+            {!isNew && <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-bold", d.active ? "bg-emerald-100 text-emerald-800" : "bg-muted text-muted-foreground")}>{d.active ? "On store" : "Hidden"}</span>}
           </div>
-
-          <h4 className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Basics</h4>
-          <div className={field}><Label htmlFor="p-name">Product name</Label><Input id="p-name" required value={d.name} onChange={(e) => set("name", e.target.value)} placeholder="e.g. Peach Tissue Silk Saree" /></div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className={field}><Label htmlFor="p-raga">Raga name</Label><Input id="p-raga" value={d.raga} onChange={(e) => set("raga", e.target.value)} placeholder="e.g. Bhairavi" /></div>
-            <div className={field}><Label>Mood</Label>
-              <Select value={d.mood} onValueChange={(v) => set("mood", v)}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                <SelectContent>{Object.entries(MOODS).map(([k, m]) => <SelectItem key={k} value={k}>{m.label}</SelectItem>)}</SelectContent></Select></div>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className={field}><Label>Category</Label>
-              <Select value={d.category_id} onValueChange={(v) => set("category_id", v)}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                <SelectContent>{cats.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select></div>
-            <div className={field}><Label htmlFor="p-tag">Badge (optional)</Label><Input id="p-tag" value={d.tag} onChange={(e) => set("tag", e.target.value)} placeholder="New, Bestseller, Bridal…" /></div>
-          </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-[1fr_1fr_96px]">
-            <div className={field}><Label htmlFor="p-price">Selling price (₹)</Label><Input id="p-price" type="number" min={1} required value={d.price} onChange={(e) => set("price", e.target.value)} /></div>
-            <div className={field}><Label htmlFor="p-mrp">MRP (₹)</Label><Input id="p-mrp" type="number" min={0} value={d.mrp} placeholder="Optional" onChange={(e) => set("mrp", e.target.value)} /></div>
-            <div className={field}><Label htmlFor="p-swatch">Colour</Label><Input id="p-swatch" type="color" value={d.swatch} onChange={(e) => set("swatch", e.target.value)} className="p-1" /></div>
-          </div>
-          <p className="-mt-2 text-xs text-muted-foreground">MRP shows struck through next to the selling price. It must be higher than the selling price.</p>
-
-          <h4 className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Sizes &amp; stock</h4>
-          <label className="flex items-center gap-2.5"><Switch checked={d.sized} onCheckedChange={(v) => set("sized", v)} /> This piece comes in sizes</label>
-          {d.sized ? (
-            <div className="grid grid-cols-3 gap-2">
-              {SIZE_SET.map((s) => {
-                const on = d.sizes.includes(s)
-                return (
-                  <div key={s} className={cn("rounded-lg border bg-white p-2.5", on && "border-cocoa")}>
-                    <label className="mb-1.5 flex items-center gap-2 font-bold">
-                      <Checkbox checked={on} onCheckedChange={(v) => set("sizes", v ? SIZE_SET.filter((x) => x === s || d.sizes.includes(x)) : d.sizes.filter((x) => x !== s))} />{s}
+          <DialogDescription>{isNew ? "Add photos and the basics, set the stock, then save. Everything else can be filled in later." : "Changes go live when you press Save."}</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col text-sm">
+          <div className="grid flex-1 items-start gap-5 overflow-y-auto bg-[#f7f1e8] p-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+            <div className="grid gap-5 lg:sticky lg:top-0">
+              <section className={card}>
+                <div><h4 className="eyebrow">Photos</h4><p className="mt-1 text-xs text-muted-foreground">The first photo is the cover. Use ← to move a photo earlier. Large photos are shrunk automatically.</p></div>
+                {d.images.length === 0 ? (
+                  <label {...drop} className={cn("grid cursor-pointer place-items-center gap-2 rounded-xl border-[1.5px] border-dashed border-[#d2bfa6] px-4 py-10 text-center transition-colors hover:bg-[#fdf3e2]", dragging && "border-rust bg-[#fdf3e2]")}>
+                    <span className="grid size-12 place-items-center rounded-full bg-[#fdf3e2] text-rust"><ImagePlus className="size-6" /></span>
+                    <span className="font-semibold text-cocoa">Drag photos here, or click to choose</span>
+                    <span className="text-xs text-muted-foreground">JPG or PNG from your phone or camera. Add a few angles and a close-up of the work.</span>
+                    {picker}
+                  </label>
+                ) : (
+                  <div {...drop} className={cn("grid grid-cols-3 gap-2 rounded-xl sm:grid-cols-4 lg:grid-cols-3", dragging && "ring-2 ring-rust ring-offset-4 ring-offset-white")}>
+                    {d.images.map((im, i) => (
+                      <figure key={im.url} className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted">
+                        <Photo src={im.url} alt="" className={cn("size-full object-cover", im.uploading && "opacity-50")} />
+                        {im.uploading && <span className="absolute inset-0 grid place-items-center"><Spinner aria-label="Uploading" className="size-6 text-cocoa" /></span>}
+                        {i === 0 ? <span className="absolute bottom-1.5 left-1.5 rounded bg-cocoa px-2 py-0.5 text-[10px] font-bold text-white">Cover</span>
+                          : <button type="button" aria-label="Move earlier" onClick={() => setD((x) => { const a = [...x.images];[a[i - 1], a[i]] = [a[i], a[i - 1]]; return { ...x, images: a } })}
+                            className="absolute bottom-1.5 left-1.5 grid size-7 place-items-center rounded-full bg-white/90"><ArrowLeft className="size-3.5" /></button>}
+                        <button type="button" aria-label="Remove photo" onClick={() => set("images", d.images.filter((_, j) => j !== i))}
+                          className="absolute right-1.5 top-1.5 grid size-7 place-items-center rounded-full bg-white/90 text-destructive"><X className="size-3.5" /></button>
+                      </figure>
+                    ))}
+                    <label className="grid aspect-[4/5] cursor-pointer place-items-center rounded-lg border-[1.5px] border-dashed border-[#d2bfa6] text-rust hover:bg-[#fdf3e2]">
+                      <span className="flex flex-col items-center gap-1 text-xs font-bold"><ImagePlus className="size-5" />Add more</span>
+                      {picker}
                     </label>
-                    <Input type="number" min={0} disabled={!on} aria-label={`Stock for ${s}`} value={d.stock[s] ?? 0}
-                      onChange={(e) => set("stock", { ...d.stock, [s]: Math.max(0, Number(e.target.value)) })} className="h-8" />
                   </div>
-                )
-              })}
+                )}
+              </section>
+
+              <section className={card}>
+                <h4 className="eyebrow">Sizes &amp; stock</h4>
+                <label className="flex items-center gap-2.5"><Switch checked={d.sized} onCheckedChange={(v) => set("sized", v)} /> This piece comes in sizes</label>
+                {d.sized ? (
+                  <div className="grid grid-cols-3 gap-2">
+                    {SIZE_SET.map((s) => {
+                      const on = d.sizes.includes(s)
+                      return (
+                        <div key={s} className={cn("rounded-lg border bg-white p-2.5", on && "border-cocoa")}>
+                          <label className="mb-1.5 flex items-center gap-2 font-bold">
+                            <Checkbox checked={on} onCheckedChange={(v) => set("sizes", v ? SIZE_SET.filter((x) => x === s || d.sizes.includes(x)) : d.sizes.filter((x) => x !== s))} />{s}
+                          </label>
+                          <Input type="number" min={0} disabled={!on} aria-label={`Stock for ${s}`} value={d.stock[s] ?? 0}
+                            onChange={(e) => set("stock", { ...d.stock, [s]: Math.max(0, Number(e.target.value)) })} className="h-8" />
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className={cn(field, "max-w-48")}><Label htmlFor="p-stock">Pieces in stock</Label>
+                    <Input id="p-stock" type="number" min={0} value={d.stock[ONE_SIZE] ?? 0} onChange={(e) => set("stock", { ...d.stock, [ONE_SIZE]: Math.max(0, Number(e.target.value)) })} /></div>
+                )}
+              </section>
+
+              <section className={cn(card, "grid-cols-[1fr_auto] items-center")}>
+                <div><h4 className="eyebrow">Show on store</h4>
+                  <p className="mt-1 text-xs text-muted-foreground">{d.active ? "Shoppers can see and buy this piece." : "Hidden from shoppers. Only admins can see it."}</p></div>
+                <Switch checked={d.active} onCheckedChange={(v) => set("active", v)} aria-label="Show on store" />
+              </section>
             </div>
-          ) : (
-            <div className={cn(field, "max-w-48")}><Label htmlFor="p-stock">Pieces in stock</Label>
-              <Input id="p-stock" type="number" min={0} value={d.stock[ONE_SIZE] ?? 0} onChange={(e) => set("stock", { ...d.stock, [ONE_SIZE]: Math.max(0, Number(e.target.value)) })} /></div>
-          )}
 
-          <h4 className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Shop filters</h4>
-          <p className="-mt-2 text-xs text-muted-foreground">Shoppers filter the collection by these. Pick a suggestion or type your own.</p>
-          <div className="grid grid-cols-2 gap-3">
-            {ATTRS.map(([k, label, hints]) => (
-              <div key={k} className={field}><Label htmlFor={`p-${k}`}>{label}</Label>
-                <Input id={`p-${k}`} list={`hints-${k}`} value={d[k]} maxLength={40} onChange={(e) => set(k, e.target.value)} placeholder={hints[0]} />
-                <datalist id={`hints-${k}`}>{hints.map((h) => <option key={h} value={h} />)}</datalist></div>
-            ))}
-          </div>
-          <div className={field}><Label>Occasions</Label>
-            <div className="flex flex-wrap gap-2">
-              {[...new Set([...OCCASIONS, ...d.occasions])].map((o) => {
-                const on = d.occasions.includes(o)
-                return <button key={o} type="button" onClick={() => set("occasions", on ? d.occasions.filter((x) => x !== o) : [...d.occasions, o])}
-                  className={cn("rounded-full px-3 py-1 text-xs font-medium ring-1 transition", on ? "bg-cocoa text-background ring-cocoa" : "bg-white ring-border hover:ring-cocoa")}>{o}</button>
-              })}
+            <div className="grid gap-5">
+              <section className={card}>
+                <h4 className="eyebrow">Basics</h4>
+                <div className={field}><Label htmlFor="p-name">Product name</Label><Input id="p-name" required value={d.name} onChange={(e) => set("name", e.target.value)} placeholder="e.g. Peach Tissue Silk Saree" /></div>
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  <div className={field}><Label htmlFor="p-raga">Raga name</Label><Input id="p-raga" value={d.raga} onChange={(e) => set("raga", e.target.value)} placeholder="e.g. Bhairavi" /></div>
+                  <div className={field}><Label>Mood</Label>
+                    <Select value={d.mood} onValueChange={(v) => set("mood", v)}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                      <SelectContent>{Object.entries(MOODS).map(([k, m]) => <SelectItem key={k} value={k}>{m.label}</SelectItem>)}</SelectContent></Select></div>
+                  <div className={field}><Label>Category</Label>
+                    <Select value={d.category_id} onValueChange={(v) => set("category_id", v)}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                      <SelectContent>{cats.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select></div>
+                  <div className={field}><Label htmlFor="p-tag">Badge (optional)</Label><Input id="p-tag" value={d.tag} onChange={(e) => set("tag", e.target.value)} placeholder="New, Bestseller…" /></div>
+                </div>
+              </section>
+
+              <section className={card}>
+                <h4 className="eyebrow">Price</h4>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-[1fr_1fr_120px]">
+                  <div className={field}><Label htmlFor="p-price">Selling price (₹)</Label><Input id="p-price" type="number" min={1} required value={d.price} placeholder="e.g. 7450" onChange={(e) => set("price", e.target.value)} /></div>
+                  <div className={field}><Label htmlFor="p-mrp">MRP (₹)</Label><Input id="p-mrp" type="number" min={0} value={d.mrp} placeholder="Optional" onChange={(e) => set("mrp", e.target.value)} /></div>
+                  <div className={cn(field, "max-sm:col-span-2")}><Label htmlFor="p-swatch">Swatch colour</Label><Input id="p-swatch" type="color" value={d.swatch} onChange={(e) => set("swatch", e.target.value)} className="p-1" /></div>
+                </div>
+                <p className={hint}>
+                  {off ? <span className="font-semibold text-emerald-700">Shoppers see {off}% off. </span> : null}
+                  MRP shows struck through next to the selling price and must be higher than it. The swatch is the dot shown beside the name.
+                </p>
+              </section>
+
+              <section className={card}>
+                <div><h4 className="eyebrow">Shop filters</h4><p className="mt-1 text-xs text-muted-foreground">Shoppers filter the collection by these. Pick a suggestion or type your own.</p></div>
+                <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+                  {ATTRS.map(([k, label, hints]) => (
+                    <div key={k} className={field}><Label htmlFor={`p-${k}`}>{label}</Label>
+                      <Input id={`p-${k}`} list={`hints-${k}`} value={d[k]} maxLength={40} onChange={(e) => set(k, e.target.value)} placeholder={hints[0]} />
+                      <datalist id={`hints-${k}`}>{hints.map((h) => <option key={h} value={h} />)}</datalist></div>
+                  ))}
+                </div>
+                <div className={field}><Label>Occasions</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {[...new Set([...OCCASIONS, ...d.occasions])].map((o) => {
+                      const on = d.occasions.includes(o)
+                      return <button key={o} type="button" aria-pressed={on} onClick={() => set("occasions", on ? d.occasions.filter((x) => x !== o) : [...d.occasions, o])}
+                        className={cn("rounded-full px-3 py-1 text-xs font-medium ring-1 transition", on ? "bg-cocoa text-background ring-cocoa" : "bg-white ring-border hover:ring-cocoa")}>{o}</button>
+                    })}
+                  </div>
+                </div>
+              </section>
+
+              <section className={card}>
+                <h4 className="eyebrow">Story &amp; details</h4>
+                <div className={field}><Label htmlFor="p-note">Raga note (shown on the product page)</Label><Textarea id="p-note" rows={4} value={d.raga_note} onChange={(e) => set("raga_note", e.target.value)} placeholder="What this piece feels like, and why it's named for its raga." /></div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className={field}><Label htmlFor="p-details">Details (one per line)</Label><Textarea id="p-details" rows={4} value={d.details} onChange={(e) => set("details", e.target.value)} placeholder={"Fabric and weave\nBorder and pallu\nBlouse piece\nLength"} /></div>
+                  <div className={field}><Label htmlFor="p-care">Care</Label><Textarea id="p-care" rows={4} value={d.care} onChange={(e) => set("care", e.target.value)} placeholder="e.g. Dry clean only." /></div>
+                </div>
+              </section>
             </div>
           </div>
 
-          <h4 className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Story &amp; details</h4>
-          <div className={field}><Label htmlFor="p-note">Raga note (shown on the product page)</Label><Textarea id="p-note" rows={4} value={d.raga_note} onChange={(e) => set("raga_note", e.target.value)} /></div>
-          <div className={field}><Label htmlFor="p-details">Details (one per line)</Label><Textarea id="p-details" rows={4} value={d.details} onChange={(e) => set("details", e.target.value)} /></div>
-          <div className={field}><Label htmlFor="p-care">Care</Label><Textarea id="p-care" rows={2} value={d.care} onChange={(e) => set("care", e.target.value)} /></div>
-          <label className="flex items-center gap-2.5"><Switch checked={d.active} onCheckedChange={(v) => set("active", v)} /> Show on store</label>
-
-          {error && <p ref={errorRef} role="alert" className="rounded-lg bg-red-50 p-3 text-red-800">{error}</p>}
-          <div className="sticky bottom-0 -mx-6 flex gap-2.5 border-t bg-card px-6 py-4">
-            <Button type="submit" className="h-10 px-5" disabled={save.isPending}>{save.isPending ? "Saving…" : "Save product"}</Button>
+          <div className="flex flex-wrap items-center gap-2.5 border-t bg-card px-6 py-4">
             {!isNew && <Button type="button" variant="destructive" className="h-10 px-4" disabled={remove.isPending}
-              onClick={() => confirm(`Delete “${product!.name}” permanently? Past orders keep their copy. To hide it for now, turn off “Show on store” instead.`) && remove.mutate()}>Delete</Button>}
+              onClick={() => confirm(`Delete “${product!.name}” permanently? Past orders keep their copy. To hide it for now, turn off “Show on store” instead.`) && remove.mutate()}>{remove.isPending && <Spinner />}Delete</Button>}
+            {error && <p ref={errorRef} role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-red-800">{error}</p>}
+            <div className="ml-auto flex gap-2.5">
+              <Button type="button" variant="ghost" className="h-10 px-4" onClick={onClose}>Cancel</Button>
+              <Button type="submit" className="h-10 px-5" disabled={save.isPending}>{save.isPending ? <><Spinner />Saving…</> : isNew ? "Add product" : "Save changes"}</Button>
+            </div>
           </div>
         </form>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   )
 }

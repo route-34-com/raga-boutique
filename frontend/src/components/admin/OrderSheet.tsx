@@ -1,15 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { Copy, Mail, MapPin, MessageCircle, Phone, Truck } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
+import { OrderTimeline } from "@/components/common/OrderTimeline"
 import { StatusBadge } from "@/components/common/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ApiError, api, post } from "@/lib/api"
 import { STATUS_LABEL, fmtDate, fmtPhone, inr } from "@/lib/format"
 import type { AdminOrderDetail, Courier, Notice, OrderStatus } from "@/lib/types"
+import { cn } from "@/lib/utils"
+import { Spinner } from "@/components/ui/spinner"
+import { Photo } from "@/components/common/Photo"
 
 const NEXT: Partial<Record<OrderStatus, OrderStatus>> = { placed: "confirmed", confirmed: "packed", packed: "shipped", shipped: "delivered" }
 export const NEXT_LABEL: Partial<Record<OrderStatus, string>> = { confirmed: "Accept order", packed: "Mark packed", shipped: "Mark shipped", delivered: "Mark delivered" }
@@ -23,7 +28,7 @@ export function useAdvanceOrder() {
     onSuccess: (o) => {
       qc.setQueryData(["admin", "order", o.id], o)
       qc.invalidateQueries({ queryKey: ["admin"] })
-      const kind = o.status === "confirmed" ? "accepted" : o.status === "shipped" ? "shipped" : null
+      const kind = ({ confirmed: "accepted", shipped: "shipped", delivered: "delivered" } as const)[o.status as "confirmed" | "shipped" | "delivered"] ?? null
       const wa = kind && o.notifications.find((n) => n.kind === kind && n.channel === "whatsapp" && n.status === "tap")
       // Browsers block pop-ups opened after a network wait, so the owner taps the toast to open WhatsApp.
       const mail = kind && o.notifications.find((n) => n.kind === kind && n.channel === "email")
@@ -58,16 +63,26 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
     advance.mutate({ id: o.id, status, note, courier, tracking_id: tracking }, { onSuccess: () => setNote("") })
   }
 
+  const heading = "mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground"
+  const card = "rounded-2xl border bg-white/70 p-5"
+  const track = couriers.find((c) => c.name.trim().toLowerCase() === o?.courier.trim().toLowerCase())?.track_url ?? ""
+  const trackUrl = o?.tracking_id && track.includes("{id}") ? track.replace("{id}", encodeURIComponent(o.tracking_id)) : ""
   return (
-    <Sheet open={id !== null} onOpenChange={(v) => !v && onClose()}>
-      <SheetContent className="w-full gap-0 overflow-y-auto bg-card p-0 sm:max-w-[560px]">
-        {!o ? <SheetTitle className="p-6">Loading…</SheetTitle> : <>
-          <SheetHeader className="border-b px-6 py-5">
+    <Dialog open={id !== null} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="flex max-h-[90dvh] flex-col gap-0 overflow-hidden bg-card p-0 sm:max-w-5xl">
+        {!o ? <><DialogTitle className="sr-only">Loading order</DialogTitle><DialogDescription className="sr-only">Loading the order</DialogDescription><div className="grid min-h-64 place-items-center"><Spinner className="size-6 text-rust" /></div></> : <>
+          <DialogHeader className="gap-1 border-b px-6 py-5">
             <p className="eyebrow">Order</p>
-            <div className="flex items-center gap-3 pr-8"><SheetTitle className="font-heading text-[26px] font-normal text-cocoa">{o.order_no}</SheetTitle><StatusBadge status={o.status} /></div>
-            <SheetDescription>{fmtDate(o.created_at, true)}</SheetDescription>
-          </SheetHeader>
-          <div className="space-y-6 px-6 py-5 text-sm">
+            <div className="flex flex-wrap items-center gap-3 pr-8">
+              <DialogTitle className="font-heading text-[26px] font-normal leading-tight text-cocoa">{o.order_no}</DialogTitle>
+              <StatusBadge status={o.status} />
+              <span className="font-semibold">{inr(o.total)}</span>
+            </div>
+            <DialogDescription>{fmtDate(o.created_at, true)} · {o.customer_name}, {o.address.city}</DialogDescription>
+            {o.status !== "cancelled" && <div className="mt-4 pr-8"><OrderTimeline order={o} /></div>}
+          </DialogHeader>
+          <div className="grid flex-1 items-start gap-4 overflow-y-auto bg-[#f7f1e8] p-5 text-sm lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+          <div className="space-y-4 lg:sticky lg:top-0">
             {next && (
               <div className="space-y-3 rounded-xl border border-[#f0d9b2] bg-[#fdf3e2] p-4">
                 {next === "shipped" && (
@@ -79,16 +94,16 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
                 )}
                 <div className="grid gap-1.5"><Label>Note for the timeline (optional)</Label><Input value={note} onChange={(e) => setNote(e.target.value)} className="bg-white" /></div>
                 <div className="flex flex-wrap gap-2.5">
-                  <Button className="h-10 px-4" disabled={advance.isPending} onClick={() => go(next)}>{NEXT_LABEL[next]}</Button>
-                  <Button variant="destructive" className="h-10 px-4" disabled={advance.isPending} onClick={() => go("cancelled")}>Cancel order</Button>
+                  <Button className="h-10 px-4" disabled={advance.isPending} onClick={() => go(next)}>{advance.isPending && advance.variables?.status === next && <Spinner />}{NEXT_LABEL[next]}</Button>
+                  <Button variant="destructive" className="h-10 px-4" disabled={advance.isPending} onClick={() => go("cancelled")}>{advance.isPending && advance.variables?.status === "cancelled" && <Spinner />}Cancel order</Button>
                 </div>
               </div>
             )}
-            <div>
-              <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Items</h4>
+            <div className={card}>
+              <h4 className={heading}>Items · {o.items.reduce((n, it) => n + it.qty, 0)}</h4>
               {o.items.map((it, i) => (
-                <div key={i} className="grid grid-cols-[48px_1fr_auto] items-center gap-3 border-b py-2.5">
-                  <img src={it.image} alt="" className="h-[60px] w-12 rounded-lg object-cover" />
+                <div key={i} className="grid grid-cols-[64px_1fr_auto] items-center gap-3 border-b py-2.5">
+                  <Photo src={it.image} alt="" className="h-20 w-16 rounded-lg object-cover" />
                   <div><strong className="block">{it.name}</strong><span className="text-xs text-muted-foreground">{it.size && `Size ${it.size} · `}Qty {it.qty} × {inr(it.price)}</span></div>
                   <span>{inr(it.price * it.qty)}</span>
                 </div>
@@ -98,49 +113,104 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
               <div className="mt-2 flex justify-between border-t pt-2 text-base"><span>Total</span><strong>{inr(o.total)}</strong></div>
               <div className="flex justify-between pt-1"><span>Payment</span><span>{o.payment_method === "cod" ? "Cash on delivery" : o.payment_method} · {o.payment_status === "paid" ? "Paid" : "Pending"}</span></div>
             </div>
-            <div>
-              <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Customer</h4>
-              <p>{o.customer_name}{o.email && <> · <a className="underline" href={`mailto:${o.email}`}>{o.email}</a></>}<br />Login phone {fmtPhone(o.phone)}</p>
-              <div className="mt-2.5 flex flex-wrap gap-2">
-                <Button asChild variant="outline" size="sm"><a href={`tel:+91${mobile}`}>Call</a></Button>
-                <Button asChild variant="outline" size="sm"><a target="_blank" rel="noopener" href={`https://wa.me/91${mobile}?text=${msg}`}>WhatsApp</a></Button>
-                <Button variant="outline" size="sm" onClick={async () => { await navigator.clipboard.writeText(addressText).catch(() => {}); toast("Address copied.") }}>Copy address</Button>
+          </div>
+          <div className="space-y-4">
+            <section className={card}>
+              <h4 className={heading}>Customer</h4>
+              <div className="flex items-center gap-3">
+                <span className="grid size-11 shrink-0 place-items-center rounded-full bg-sand font-heading text-lg text-cocoa">{initials(o.customer_name)}</span>
+                <div className="min-w-0">
+                  <p className="truncate text-base font-semibold text-cocoa">{o.customer_name}</p>
+                  <p className="text-xs text-muted-foreground">Logged in as {fmtPhone(o.phone)}</p>
+                </div>
               </div>
-            </div>
-            <div>
-              <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Ship to</h4>
-              <p className="whitespace-pre-line leading-relaxed">{addressText}</p>
-              {o.tracking_id && <p className="mt-2">Courier: <strong>{o.courier}</strong> · {o.tracking_id}</p>}
-            </div>
-            {o.note && <div><h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Customer note</h4><p>{o.note}</p></div>}
-            {o.notifications.length > 0 && (
-              <div>
-                <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Messages</h4>
-                <ul className="space-y-1.5">{o.notifications.map((n, i) => <NoticeRow key={i} n={n} />)}</ul>
+              <ul className="mt-3 space-y-1.5">
+                <li className="flex items-center gap-2.5"><Phone className="size-4 text-muted-foreground" /><a href={`tel:+91${mobile}`} className="hover:underline">{fmtPhone(mobile)}</a></li>
+                {o.email && <li className="flex items-center gap-2.5"><Mail className="size-4 text-muted-foreground" /><a href={`mailto:${o.email}`} className="truncate hover:underline">{o.email}</a></li>}
+              </ul>
+              <div className="mt-3.5 grid grid-cols-2 gap-2">
+                <Button asChild variant="outline" className="h-9"><a href={`tel:+91${mobile}`}><Phone />Call</a></Button>
+                <Button asChild variant="outline" className="h-9"><a target="_blank" rel="noopener" href={`https://wa.me/91${mobile}?text=${msg}`}><MessageCircle />WhatsApp</a></Button>
               </div>
+            </section>
+
+            <section className={card}>
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <h4 className={cn(heading, "mb-0")}>Ship to</h4>
+                <Button variant="ghost" size="sm" className="-mr-2 text-rust" onClick={async () => { await navigator.clipboard.writeText(addressText).catch(() => {}); toast("Address copied.") }}><Copy />Copy</Button>
+              </div>
+              <div className="flex gap-2.5">
+                <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                <p className="leading-relaxed"><strong className="text-cocoa">{o.address.name}</strong><br />{o.address.line1}{o.address.line2 && <>, {o.address.line2}</>}<br />{o.address.city}, {o.address.state} <span className="font-semibold">{o.address.pincode}</span></p>
+              </div>
+              {o.tracking_id && (
+                <div className="mt-3 flex items-center gap-2.5 rounded-lg bg-[#f7f1e8] px-3 py-2">
+                  <Truck className="size-4 shrink-0 text-muted-foreground" />
+                  <span><strong>{o.courier}</strong> · {trackUrl ? <a href={trackUrl} target="_blank" rel="noopener" className="font-mono text-rust underline-offset-4 hover:underline">{o.tracking_id}</a> : <span className="font-mono">{o.tracking_id}</span>}</span>
+                </div>
+              )}
+            </section>
+
+            {o.note && (
+              <section className={cn(card, "border-[#f0d9b2] bg-[#fdf3e2]")}>
+                <h4 className={heading}>Customer note</h4>
+                <p className="italic">“{o.note}”</p>
+              </section>
             )}
-            <div>
-              <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">History</h4>
-              <ol className="list-decimal space-y-1.5 pl-5">
-                {o.events.map((e, i) => <li key={i}><strong>{STATUS_LABEL[e.status]}</strong> <span className="text-xs text-muted-foreground">{fmtDate(e.created_at, true)}</span>{e.note && <><br /><span className="text-xs">{e.note}</span></>}</li>)}
+
+            {o.notifications.length > 0 && (
+              <section className={card}>
+                <h4 className={heading}>Messages</h4>
+                <ul className="divide-y">{o.notifications.map((n, i) => <NoticeRow key={i} n={n} />)}</ul>
+              </section>
+            )}
+
+            {(o.status === "cancelled" || o.events.some((e) => e.note)) && <section className={card}>
+              <h4 className={heading}>History</h4>
+              <ol className="mt-1">
+                {o.events.map((e, i) => (
+                  <li key={i} className="relative pb-4 pl-6 last:pb-0">
+                    {i < o.events.length - 1 && <span className="absolute bottom-0 left-[5px] top-3 w-px bg-border" />}
+                    <span className={cn("absolute left-0 top-1 size-[11px] rounded-full border-2 bg-card",
+                      e.status === "cancelled" ? "border-destructive" : i === o.events.length - 1 ? "border-marigold bg-marigold" : "border-marigold")} />
+                    <p className="font-semibold text-cocoa">{STATUS_LABEL[e.status]}</p>
+                    <p className="text-xs text-muted-foreground">{fmtDate(e.created_at, true)}</p>
+                    {e.note && <p className="mt-0.5 text-xs">{e.note}</p>}
+                  </li>
+                ))}
               </ol>
-            </div>
+            </section>}
+          </div>
           </div>
         </>}
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   )
 }
 
-const KIND_LABEL: Record<Notice["kind"], string> = { accepted: "Order accepted", shipped: "Shipped with tracking", new_order: "New-order alert to shop" }
-const RESULT: Record<Notice["status"], string> = { sending: "Sending…", sent: "Sent", tap: "Ready to send", logged: "Logged (email not set up yet)", skipped: "Skipped", failed: "Failed" }
+const KIND_LABEL: Record<Notice["kind"], string> = { accepted: "Order accepted", shipped: "Shipped with tracking", delivered: "Delivered, review request", new_order: "New-order alert to shop" }
+const RESULT: Record<Notice["status"], string> = { sending: "Sending…", sent: "Sent", tap: "Ready to send", logged: "Not set up", skipped: "Skipped", failed: "Failed" }
+
+const TONE: Record<Notice["status"], string> = {
+  sending: "bg-muted text-muted-foreground", sent: "bg-emerald-100 text-emerald-800", tap: "bg-amber-100 text-amber-800",
+  logged: "bg-muted text-muted-foreground", skipped: "bg-muted text-muted-foreground", failed: "bg-red-100 text-red-800",
+}
+
+function initials(name: string) {
+  return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("") || "?"
+}
 
 function NoticeRow({ n }: { n: Notice }) {
+  const Icon = n.channel === "whatsapp" ? MessageCircle : Mail
   return (
-    <li className="flex flex-wrap items-center gap-x-2">
-      <strong>{n.channel === "whatsapp" ? "WhatsApp" : "Email"}</strong> · {KIND_LABEL[n.kind]} ·
-      <span className={n.status === "failed" ? "text-destructive" : "text-muted-foreground"}>{RESULT[n.status]}{n.status !== "tap" && n.detail && `: ${n.detail}`}</span>
-      {n.status === "tap" && <a href={n.detail} target="_blank" rel="noopener" className="font-semibold text-rust underline">Open WhatsApp</a>}
+    <li className="flex items-start gap-2.5 py-2 first:pt-0 last:pb-0">
+      <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+      <div className="min-w-0 flex-1">
+        <p className="font-medium">{KIND_LABEL[n.kind]}</p>
+        {n.status !== "tap" && n.detail && <p className={cn("break-words text-xs", n.status === "failed" ? "text-destructive" : "text-muted-foreground")}>{n.detail}</p>}
+        {n.status === "tap" && <a href={n.detail} target="_blank" rel="noopener" className="text-xs font-semibold text-rust underline-offset-4 hover:underline">Open WhatsApp to send</a>}
+      </div>
+      <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold", TONE[n.status])}>{RESULT[n.status]}</span>
     </li>
   )
 }

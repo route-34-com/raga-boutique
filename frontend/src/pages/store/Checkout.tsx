@@ -16,6 +16,8 @@ import type { Address } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/stores/cart"
 import { LoginPrompt } from "@/pages/store/LoginPrompt"
+import { Spinner } from "@/components/ui/spinner"
+import { Photo } from "@/components/common/Photo"
 
 const EMPTY: Address = { name: "", phone: "", line1: "", line2: "", city: "", state: "", pincode: "" }
 const FIELDS: [keyof Address, string, string, boolean][] = [
@@ -141,7 +143,7 @@ export default function Checkout() {
 
           {error.length > 0 && <div role="alert" className="mt-5 rounded-xl bg-red-50 p-4 text-sm text-red-800">{error.map((m) => <p key={m}>{m}</p>)}</div>}
           <Button type="submit" className="mt-6 h-12 w-full rounded-full" disabled={placeOrder.isPending}>
-            {placeOrder.isPending ? "Placing order…" : `Place order · ${inr(total)}`}
+            {placeOrder.isPending ? <><Spinner />Placing order…</> : `Place order · ${inr(total)}`}
           </Button>
         </form>
 
@@ -149,7 +151,7 @@ export default function Checkout() {
           <h3 className="mb-3.5 text-[22px]">Order summary</h3>
           {rows.map((r) => (
             <div key={`${r.productId}-${r.size}`} className="grid grid-cols-[56px_1fr_auto] items-center gap-3 border-b py-2.5 text-sm">
-              <img src={cover(r.product!)} alt="" className="aspect-[4/5] w-14 rounded-lg object-cover" />
+              <Photo src={cover(r.product!)} tone={r.product!.swatch} alt="" className="aspect-[4/5] w-14 rounded-lg object-cover" />
               <div><strong className="block">{r.product!.name}</strong><span className="text-xs text-muted-foreground">Raag {r.product!.raga}{r.size && ` · ${r.size}`} · Qty {r.qty}</span></div>
               <span>{inr(r.product!.price * r.qty)}</span>
             </div>
