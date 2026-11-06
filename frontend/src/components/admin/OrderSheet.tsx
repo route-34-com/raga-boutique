@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Copy, Mail, MapPin, MessageCircle, Phone, Truck } from "lucide-react"
+import { Check, Copy, Mail, MapPin, MessageCircle, Package, PackageCheck, Phone, Truck, X } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -20,6 +20,11 @@ import { confirmAction } from "@/components/common/Confirm"
 const NEXT: Partial<Record<OrderStatus, OrderStatus>> = { placed: "confirmed", confirmed: "packed", packed: "shipped", shipped: "delivered" }
 export const NEXT_LABEL: Partial<Record<OrderStatus, string>> = { confirmed: "Accept order", packed: "Mark packed", shipped: "Mark shipped", delivered: "Mark delivered" }
 export const nextStatus = (s: OrderStatus) => NEXT[s]
+const NEXT_ICONS = { confirmed: Check, packed: Package, shipped: Truck, delivered: PackageCheck }
+function NextIcon({ status }: { status: OrderStatus }) {
+  const Icon = NEXT_ICONS[status as keyof typeof NEXT_ICONS] ?? Check
+  return <Icon />
+}
 
 export function useAdvanceOrder() {
   const qc = useQueryClient()
@@ -96,8 +101,8 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
                 )}
                 <div className="grid gap-1.5"><Label>Note for the timeline (optional)</Label><Input value={note} onChange={(e) => setNote(e.target.value)} className="bg-white" /></div>
                 <div className="flex flex-wrap gap-2.5">
-                  <Button className="h-10 px-4" disabled={advance.isPending} onClick={() => go(next)}>{advance.isPending && advance.variables?.status === next && <Spinner />}{NEXT_LABEL[next]}</Button>
-                  <Button variant="destructive" className="h-10 px-4" disabled={advance.isPending} onClick={() => go("cancelled")}>{advance.isPending && advance.variables?.status === "cancelled" && <Spinner />}Cancel order</Button>
+                  <Button className="h-11 flex-1 px-4 sm:h-10 sm:flex-none" disabled={advance.isPending} onClick={() => go(next)}>{advance.isPending && advance.variables?.status === next ? <Spinner /> : <NextIcon status={next} />}{NEXT_LABEL[next]}</Button>
+                  <Button variant="destructive" className="h-11 flex-1 px-4 sm:h-10 sm:flex-none" disabled={advance.isPending} onClick={() => go("cancelled")}>{advance.isPending && advance.variables?.status === "cancelled" ? <Spinner /> : <X />}Cancel order</Button>
                 </div>
               </div>
             )}

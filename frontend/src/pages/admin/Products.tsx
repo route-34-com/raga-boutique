@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Minus, Plus } from "lucide-react"
+import { Minus, Pencil, Plus } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -15,6 +15,7 @@ import type { AdminCategory, AdminProduct } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { Photo } from "@/components/common/Photo"
 import { ExportButton } from "@/components/common/ExportButton"
+import { ActionButton } from "@/components/common/ActionButton"
 import { PageLoader } from "@/components/common/PageLoader"
 
 export default function Products() {
@@ -42,6 +43,20 @@ export default function Products() {
     onSuccess: (p) => { refresh(p); toast(p.active ? "Now showing on store." : "Hidden from store.") },
   })
 
+  const steppers = (p: AdminProduct, big = false) => (
+    <div className="flex max-w-[330px] flex-wrap gap-1.5">
+      {p.variants.map((v) => (
+        <div key={v.size} className={cn("inline-flex items-center rounded-lg border bg-white", big ? "h-10" : "h-8",
+          v.stock === 0 ? "border-red-200 bg-red-50" : v.stock <= low && "border-[#e7b9a3] bg-[#fff5ef]")}>
+          {v.size !== ONE_SIZE && <span className="pl-2.5 pr-1 text-[11px] font-bold text-muted-foreground">{v.size}</span>}
+          <button aria-label={`Remove one ${v.size}`} disabled={!v.stock || stock.isPending} className={cn("grid h-full place-items-center disabled:opacity-25", big ? "w-10" : "w-7")} onClick={() => stock.mutate({ id: p.id, size: v.size, delta: -1 })}><Minus className="size-3" /></button>
+          <span className="min-w-5 text-center font-bold tabular-nums">{v.stock}</span>
+          <button aria-label={`Add one ${v.size}`} disabled={stock.isPending} className={cn("grid h-full place-items-center", big ? "w-10" : "w-7")} onClick={() => stock.mutate({ id: p.id, size: v.size, delta: 1 })}><Plus className="size-3" /></button>
+        </div>
+      ))}
+    </div>
+  )
+
   const list = (products ?? []).filter((p) => (cat === "all" || p.category_id === cat) && (!q || `${p.name} ${p.raga}`.toLowerCase().includes(q.toLowerCase())))
 
   if (!products) return <PageLoader />
@@ -49,7 +64,7 @@ export default function Products() {
     <>
       <PageHead eyebrow="Catalog" title="Products">
         <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products" className="h-10 w-full bg-card sm:w-56" />
-        <Button className="h-10 px-4" onClick={() => setEditing("new")}>+ Add product</Button>
+        <ActionButton icon={Plus} label="Add product" className="h-10 px-4" onClick={() => setEditing("new")} />
         <ExportButton file={`Raga-Stock-${new Date().toISOString().slice(0, 10)}`} sheet={() => ({
           name: "Stock", header: ["Piece", "Raga", "Category", "Price (₹)", "MRP (₹)", "Stock by size", "Total stock", "On store"],
           rows: list.map((p) => [p.name, p.raga, cats.find((c) => c.id === p.category_id)?.name ?? p.category_id, p.price, p.mrp ?? "",
@@ -63,9 +78,27 @@ export default function Products() {
           </button>
         ))}
       </div>
-      <section className="overflow-x-auto rounded-2xl border bg-card p-5">
-        {!list.length ? <p className="py-6 text-center text-muted-foreground">No products yet. Add your first one.</p> : (
-          <Table className="min-w-[860px]">
+      <section className="overflow-x-auto rounded-2xl border bg-card p-5 max-md:px-4 max-md:py-1">
+        {!list.length ? <p className="py-6 text-center text-muted-foreground">No products yet. Add your first one.</p> : <>
+          <ul className="divide-y md:hidden">
+            {list.map((p) => (
+              <li key={p.id} className={cn("py-3", !p.active && "opacity-55")}>
+                <div className="flex items-center gap-3">
+                  <button type="button" aria-label={`Edit ${p.name}`} onClick={() => setEditing(p)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+                    <Photo src={cover(p)} tone={p.swatch} alt="" className="h-[55px] w-11 shrink-0 rounded-lg object-cover" />
+                    <span className="min-w-0">
+                      <strong className="block leading-snug">{p.name}</strong>
+                      <span className="text-xs text-muted-foreground">{cats.find((c) => c.id === p.category_id)?.name ?? "—"} · {inr(p.price)}</span>
+                    </span>
+                  </button>
+                  <Switch checked={p.active} aria-label="Show on store" onCheckedChange={(on) => active.mutate({ id: p.id, on })} />
+                  <Button size="icon" variant="outline" aria-label={`Edit ${p.name}`} title="Edit" className="size-10 shrink-0" onClick={() => setEditing(p)}><Pencil /></Button>
+                </div>
+                <div className="mt-2.5 pl-14">{steppers(p, true)}</div>
+              </li>
+            ))}
+          </ul>
+          <div className="max-md:hidden"><Table className="min-w-[860px]">
             <TableHeader><TableRow>{["Product", "Category", "Price", "Stock", "On store", ""].map((h) => <TableHead key={h} className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{h}</TableHead>)}</TableRow></TableHeader>
             <TableBody>
               {list.map((p) => (
@@ -74,24 +107,14 @@ export default function Products() {
                     <div><strong className="whitespace-normal">{p.name}</strong><br /><span className="text-xs text-muted-foreground">Raag {p.raga} · {MOODS[p.mood]?.label ?? "—"}</span></div></div></TableCell>
                   <TableCell>{cats.find((c) => c.id === p.category_id)?.name ?? "—"}</TableCell>
                   <TableCell>{inr(p.price)}{p.mrp && p.mrp > p.price && <><br /><s className="text-xs text-muted-foreground">{inr(p.mrp)}</s></>}</TableCell>
-                  <TableCell><div className="flex max-w-[330px] flex-wrap gap-1.5">
-                    {p.variants.map((v) => (
-                      <div key={v.size} className={cn("inline-flex h-8 items-center rounded-lg border bg-white",
-                        v.stock === 0 ? "border-red-200 bg-red-50" : v.stock <= low && "border-[#e7b9a3] bg-[#fff5ef]")}>
-                        {v.size !== ONE_SIZE && <span className="pl-2.5 pr-1 text-[11px] font-bold text-muted-foreground">{v.size}</span>}
-                        <button aria-label={`Remove one ${v.size}`} disabled={!v.stock || stock.isPending} className="grid h-full w-7 place-items-center disabled:opacity-25" onClick={() => stock.mutate({ id: p.id, size: v.size, delta: -1 })}><Minus className="size-3" /></button>
-                        <span className="min-w-5 text-center font-bold tabular-nums">{v.stock}</span>
-                        <button aria-label={`Add one ${v.size}`} disabled={stock.isPending} className="grid h-full w-7 place-items-center" onClick={() => stock.mutate({ id: p.id, size: v.size, delta: 1 })}><Plus className="size-3" /></button>
-                      </div>
-                    ))}
-                  </div></TableCell>
+                  <TableCell>{steppers(p)}</TableCell>
                   <TableCell><Switch checked={p.active} aria-label="Show on store" onCheckedChange={(on) => active.mutate({ id: p.id, on })} /></TableCell>
-                  <TableCell><Button size="sm" variant="outline" onClick={() => setEditing(p)}>Edit</Button></TableCell>
+                  <TableCell><Button size="sm" variant="outline" onClick={() => setEditing(p)}><Pencil />Edit</Button></TableCell>
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
-        )}
+          </Table></div>
+        </>}
       </section>
       {editing && <ProductSheet key={editing === "new" ? "new" : editing.id} product={editing === "new" ? null : editing} isNew={editing === "new"} onClose={() => setEditing(null)} />}
     </>

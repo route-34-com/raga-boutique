@@ -15,7 +15,8 @@ import { keys } from "@/hooks/queries"
 import { BRANDS, applyBrand, type Brand } from "@/lib/brand"
 import type { StoreSettings } from "@/lib/types"
 import { cn } from "@/lib/utils"
-import { Check } from "lucide-react"
+import { Check, Plus, Save, Trash2, UserPlus } from "lucide-react"
+import { ActionButton } from "@/components/common/ActionButton"
 import { withApproval } from "@/components/common/Confirm"
 
 type S = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at: number; couriers: Courier[]; brand_theme: Brand }
@@ -64,7 +65,7 @@ export default function Settings() {
     <>
       <div className="sticky top-0 z-20 -mx-4 -mt-6 bg-[#f5f0e8] px-4 pt-6 md:-mx-10 md:-mt-8 md:px-10 md:pt-8">
         <PageHead eyebrow="Store" title="Settings">
-          <Button type="submit" form="settings-form" className="h-10 px-5" disabled={save.isPending}>{save.isPending ? <><Spinner />Saving…</> : "Save settings"}</Button>
+          <ActionButton type="submit" form="settings-form" className="h-10 px-5" icon={Save} label="Save settings" disabled={save.isPending} busy={save.isPending ? <Spinner /> : undefined}>{save.isPending ? "Saving…" : "Save settings"}</ActionButton>
         </PageHead>
       </div>
       <form id="settings-form" className="grid items-start gap-4 xl:grid-cols-2" onSubmit={(e) => { e.preventDefault(); save.mutate() }}>
@@ -116,16 +117,16 @@ export default function Settings() {
             {form.couriers.map((c, i) => {
               const set = (patch: Partial<Courier>) => setForm({ ...form, couriers: form.couriers.map((x, j) => (j === i ? { ...x, ...patch } : x)) })
               return (
-                <div key={i} className="grid gap-2.5 sm:grid-cols-[200px_1fr_auto]">
+                <div key={i} className="grid grid-cols-[1fr_auto] gap-2.5 sm:grid-cols-[200px_1fr_auto]">
                   <Input aria-label="Courier name" value={c.name} required placeholder="DTDC" onChange={(e) => set({ name: e.target.value })} />
-                  <Input aria-label="Tracking link" value={c.track_url} type="url" placeholder="https://…{id}" pattern=".*\{id\}.*"
+                  <Input className="max-sm:col-span-2 max-sm:row-start-2" aria-label="Tracking link" value={c.track_url} type="url" placeholder="https://…{id}" pattern=".*\{id\}.*"
                     title="Include {id} where the tracking ID goes" onChange={(e) => set({ track_url: e.target.value })} />
-                  <Button type="button" variant="outline" onClick={withApproval({ title: `Remove ${c.name || "this courier"}?`, body: "It's taken off the Dispatch list when you save settings.", action: "Remove courier" }, () => setForm({ ...form, couriers: form.couriers.filter((_, j) => j !== i) }))}>Remove</Button>
+                  <ActionButton type="button" variant="outline" icon={Trash2} label="Remove courier" className="h-9 sm:h-auto" onClick={withApproval({ title: `Remove ${c.name || "this courier"}?`, body: "It's taken off the Dispatch list when you save settings.", action: "Remove courier" }, () => setForm({ ...form, couriers: form.couriers.filter((_, j) => j !== i) }))}>Remove</ActionButton>
                 </div>
               )
             })}
           </div>
-          <Button type="button" variant="outline" className="mt-3" onClick={() => setForm({ ...form, couriers: [...form.couriers, { name: "", track_url: "" }] })}>Add courier</Button>
+          <Button type="button" variant="outline" className="mt-3" onClick={() => setForm({ ...form, couriers: [...form.couriers, { name: "", track_url: "" }] })}><Plus />Add courier</Button>
         </section>
       </form>
       <section className="mt-4 rounded-2xl border bg-card p-5 xl:max-w-[calc(50%-0.5rem)]">
@@ -135,13 +136,13 @@ export default function Settings() {
           <div key={a.id} className="flex items-center justify-between gap-3 border-b py-3 text-sm">
             <div><strong>{fmtPhone(a.phone)}</strong>{a.name && <span className="ml-2 text-muted-foreground">{a.name}</span>}</div>
             {a.is_you ? <span className="text-xs text-muted-foreground">You</span>
-              : <Button size="sm" variant="destructive" onClick={withApproval({ title: `Remove ${fmtPhone(a.phone)} as admin?`, body: "They can no longer open this panel.", action: "Remove admin" }, () => removeAdmin.mutate(a.id))}>Remove</Button>}
+              : <ActionButton size="sm" variant="destructive" className="max-sm:size-9" icon={Trash2} label="Remove admin" onClick={withApproval({ title: `Remove ${fmtPhone(a.phone)} as admin?`, body: "They can no longer open this panel.", action: "Remove admin" }, () => removeAdmin.mutate(a.id))}>Remove</ActionButton>}
           </div>
         ))}
         <form className="mt-4 flex gap-2.5" onSubmit={(e) => { e.preventDefault(); if (/^[6-9]\d{9}$/.test(phone)) addAdmin.mutate(); else toast.error("Enter a valid 10-digit mobile number.") }}>
           <label className="flex flex-1 items-center overflow-hidden rounded-lg border bg-white"><span className="border-r px-2.5 text-sm text-muted-foreground">+91</span>
             <input value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))} inputMode="numeric" placeholder="Staff mobile" className="h-9 min-w-0 flex-1 px-2.5 text-sm outline-none" /></label>
-          <Button className="h-9 px-4">Add admin</Button>
+          <ActionButton className="h-9 px-4 max-sm:size-9" icon={UserPlus} label="Add admin" />
         </form>
       </section>
     </>

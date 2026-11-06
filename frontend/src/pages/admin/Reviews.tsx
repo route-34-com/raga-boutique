@@ -6,7 +6,7 @@ import { toast } from "sonner"
 
 import { PageHead } from "@/components/admin/AdminLayout"
 import { Stars } from "@/components/store/Reviews"
-import { Button } from "@/components/ui/button"
+import { ActionButton } from "@/components/common/ActionButton"
 import { Input } from "@/components/ui/input"
 import { ApiError, api, del } from "@/lib/api"
 import { fmtDate, fmtPhone } from "@/lib/format"
@@ -31,7 +31,7 @@ export function ReviewRow({ r, onDelete }: { r: AdminReview; onDelete?: (r: Admi
           <span className="text-xs text-muted-foreground">{fmtPhone(r.phone)} · {fmtDate(r.created_at)}</span></div>
         {r.comment && <p className="mt-1.5 leading-relaxed text-muted-foreground">{r.comment}</p>}
       </div>
-      {onDelete && <Button variant="outline" size="sm" className="justify-self-start text-destructive" onClick={() => onDelete(r)}><Trash2 className="size-3.5" />Delete</Button>}
+      {onDelete && <ActionButton variant="outline" size="sm" className="justify-self-start text-destructive max-sm:size-9" icon={Trash2} label="Delete review" onClick={() => onDelete(r)}>Delete</ActionButton>}
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { ArrowDown, ArrowUp } from "lucide-react"
+import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react"
+import { ActionButton } from "@/components/common/ActionButton"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -39,17 +40,17 @@ export default function Categories() {
               <span className="text-xs text-muted-foreground">{c.products} product{c.products === 1 ? "" : "s"} · /shop/{c.id}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Button size="icon-sm" variant="ghost" aria-label="Move up" disabled={!i} onClick={() => move(i, -1)}><ArrowUp /></Button>
-              <Button size="icon-sm" variant="ghost" aria-label="Move down" disabled={i === cats.length - 1} onClick={() => move(i, 1)}><ArrowDown /></Button>
+              <Button size="icon-sm" variant="ghost" className="max-sm:size-9" aria-label="Move up" disabled={!i} onClick={() => move(i, -1)}><ArrowUp /></Button>
+              <Button size="icon-sm" variant="ghost" className="max-sm:size-9" aria-label="Move down" disabled={i === cats.length - 1} onClick={() => move(i, 1)}><ArrowDown /></Button>
               <Switch checked={c.active} aria-label="Show in store menu" onCheckedChange={(v) => update.mutate({ id: c.id, active: v })} />
-              <Button size="sm" variant="destructive" disabled={c.products > 0} title={c.products ? "Move or delete its products first" : ""}
-                onClick={withApproval({ title: `Delete “${c.name}”?`, body: "It disappears from the shop menu.", action: "Delete category" }, () => remove.mutate(c.id))}>Delete</Button>
+              <ActionButton size="sm" variant="destructive" className="max-sm:size-9" icon={Trash2} label="Delete category" disabled={c.products > 0} title={c.products ? "Move or delete its products first" : "Delete category"}
+                onClick={withApproval({ title: `Delete “${c.name}”?`, body: "It disappears from the shop menu.", action: "Delete category" }, () => remove.mutate(c.id))}>Delete</ActionButton>
             </div>
           </div>
         ))}
         <form className="mt-4 flex gap-2.5" onSubmit={(e) => { e.preventDefault(); if (name.trim()) add.mutate() }}>
           <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="New category, e.g. Lehengas" />
-          <Button className="h-9 px-4">Add</Button>
+          <ActionButton className="h-9 px-4 max-sm:size-9" icon={Plus} label="Add category">Add</ActionButton>
         </form>
       </section>
     </>

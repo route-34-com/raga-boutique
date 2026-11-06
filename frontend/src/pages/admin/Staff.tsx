@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Plus, Trash2 } from "lucide-react"
+import { Pencil, Plus, Trash2, X } from "lucide-react"
+import { ActionButton } from "@/components/common/ActionButton"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -103,7 +104,7 @@ function Detail({ person, month, onChange }: { person: Person; month: string; on
       <section className="rounded-2xl border bg-card p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div><h3 className="text-2xl">{person.name}</h3><p className="text-sm text-muted-foreground">{[person.role, person.phone, person.joined_on && `since ${dayLabel(person.joined_on)} ${person.joined_on.slice(0, 4)}`].filter(Boolean).join(" · ")}</p></div>
-          <Button size="sm" variant="outline" onClick={() => setEditing((v) => !v)}>{editing ? "Close" : "Edit"}</Button>
+          <ActionButton size="sm" variant="outline" className="max-sm:size-9" icon={editing ? X : Pencil} label={editing ? "Close" : `Edit ${person.name}`} onClick={() => setEditing((v) => !v)}>{editing ? "Close" : "Edit"}</ActionButton>
         </div>
         {editing && <div className="mt-4"><PersonForm person={person} onDone={(p) => { setEditing(false); onChange(p) }} /></div>}
       </section>

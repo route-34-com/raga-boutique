@@ -50,7 +50,7 @@ export default function Orders() {
           </Link>
         ))}
       </div>
-      <section className="overflow-x-auto rounded-2xl border bg-card p-5">
+      <section className="overflow-x-auto rounded-2xl border bg-card p-5 max-md:px-4 max-md:py-1">
         <OrdersTable orders={orders} onOpen={setOpenId} />
       </section>
       <OrderSheet key={openId ?? "none"} id={openId} onClose={() => setOpenId(null)} />

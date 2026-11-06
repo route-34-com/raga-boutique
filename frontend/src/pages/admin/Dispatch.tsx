@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Check, MessageCircle, X } from "lucide-react"
+import { Check, MessageCircle, Send, X } from "lucide-react"
 import { useState } from "react"
 import { Link } from "react-router"
 import { toast } from "sonner"
@@ -102,9 +102,9 @@ export default function Dispatch() {
             <h3 className="text-xl">Ready to ship</h3>
             <p className="text-sm text-muted-foreground">Accepted orders. Tick the ones going out, type each tracking ID, then send.</p>
           </div>
-          <div className="grid gap-1.5">
+          <div className="grid gap-1.5 max-sm:w-full">
             <Label htmlFor="batch">Courier for this batch</Label>
-            <Input id="batch" list="dispatch-couriers" value={batchCourier} onChange={(e) => setBatch(e.target.value)} placeholder="e.g. DTDC" className="h-10 w-56" />
+            <Input id="batch" list="dispatch-couriers" value={batchCourier} onChange={(e) => setBatch(e.target.value)} placeholder="e.g. DTDC" className="h-10 w-full sm:w-56" />
             <datalist id="dispatch-couriers">{couriers.map((c) => <option key={c.name} value={c.name} />)}</datalist>
           </div>
         </div>
@@ -116,23 +116,25 @@ export default function Dispatch() {
           <p className="py-10 text-center text-muted-foreground">No accepted orders waiting. Accept new orders from <Link to="/admin/orders?status=placed" className="font-semibold text-rust link-quiet">Orders</Link>.</p>
         ) : (
           <div className="divide-y">
-            <label className="flex items-center gap-3 pb-3 text-sm font-semibold">
-              <Checkbox checked={chosen.length === orders.length} onCheckedChange={(v) => setRows((r) => Object.fromEntries(orders.map((o) => [o.id, { ...(r[o.id] ?? { courier: "", tracking: "" }), on: !!v }])))} />
+            <label className="flex cursor-pointer items-center gap-3 pb-3 text-sm font-semibold">
+              <Checkbox className="max-md:size-5" checked={chosen.length === orders.length} onCheckedChange={(v) => setRows((r) => Object.fromEntries(orders.map((o) => [o.id, { ...(r[o.id] ?? { courier: "", tracking: "" }), on: !!v }])))} />
               Select all ({orders.length})
             </label>
             {orders.map((o) => {
               const r = row(o.id)
               return (
-                <div key={o.id} className="grid grid-cols-[auto_1fr] items-center gap-2.5 py-3 text-sm md:grid-cols-[auto_1fr_180px_220px]">
-                  <Checkbox checked={r.on} onCheckedChange={(v) => set(o.id, { on: !!v })} aria-label={`Select ${o.order_no}`} />
-                  <div>
-                    <strong>{o.order_no}</strong> · {o.customer_name} · {o.address.city}
-                    <span className="block text-xs text-muted-foreground">{STATUS_LABEL[o.status]} · {o.item_count} item(s)</span>
-                  </div>
-                  <Input aria-label={`Courier for ${o.order_no}`} list="dispatch-couriers" value={r.courier || batchCourier}
-                    onChange={(e) => set(o.id, { courier: e.target.value, on: true })} className="h-9 max-md:col-start-2" />
+                <div key={o.id} className="grid gap-2.5 py-3 text-sm md:grid-cols-[1fr_180px_220px] md:items-center">
+                  <label className="-my-1 flex cursor-pointer items-center gap-3 py-1">
+                    <Checkbox checked={r.on} onCheckedChange={(v) => set(o.id, { on: !!v })} aria-label={`Select ${o.order_no}`} className="max-md:size-5" />
+                    <span>
+                      <strong>{o.order_no}</strong> · {o.customer_name} · {o.address.city}
+                      <span className="block text-xs text-muted-foreground">{STATUS_LABEL[o.status]} · {o.item_count} item(s)</span>
+                    </span>
+                  </label>
+                  <Input aria-label={`Courier for ${o.order_no}`} list="dispatch-couriers" value={r.courier || batchCourier} placeholder="Courier"
+                    onChange={(e) => set(o.id, { courier: e.target.value, on: true })} className="max-md:ml-8 max-md:w-[calc(100%-2rem)] h-10 md:h-9" />
                   <Input aria-label={`Tracking ID for ${o.order_no}`} value={r.tracking} placeholder="Tracking ID"
-                    onChange={(e) => set(o.id, { tracking: e.target.value, on: true })} className="h-9 max-md:col-start-2" />
+                    onChange={(e) => set(o.id, { tracking: e.target.value, on: true })} className="max-md:ml-8 max-md:w-[calc(100%-2rem)] h-10 md:h-9" />
                 </div>
               )
             })}
@@ -146,8 +148,8 @@ export default function Dispatch() {
           </div>
         )}
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <Button className="h-11 px-6" disabled={!ready || send.isPending} onClick={() => send.mutate()}>
-            {send.isPending ? <><Spinner />Sending…</> : `Send to ${chosen.length} customer${chosen.length === 1 ? "" : "s"}`}
+          <Button className="h-11 px-6 max-sm:w-full" disabled={!ready || send.isPending} onClick={() => send.mutate()}>
+            {send.isPending ? <><Spinner />Sending…</> : <><Send />Send to {chosen.length} customer{chosen.length === 1 ? "" : "s"}</>}
           </Button>
           {chosen.length > 0 && !ready && <span className="text-sm text-muted-foreground">Every ticked order needs a courier and tracking ID.</span>}
         </div>

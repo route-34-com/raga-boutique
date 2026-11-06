@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
+import { Check, Package, PackageCheck, PackagePlus, Truck, type LucideIcon } from "lucide-react"
 import { useState } from "react"
 import { Link } from "react-router"
 
@@ -8,7 +9,7 @@ import { OrdersTable } from "@/components/admin/OrdersTable"
 import { ProductSheet } from "@/components/admin/ProductSheet"
 import { ReviewRow, useAdminReviews } from "@/pages/admin/Reviews"
 import { StatusBadge } from "@/components/common/StatusBadge"
-import { Button } from "@/components/ui/button"
+import { ActionButton } from "@/components/common/ActionButton"
 import { api } from "@/lib/api"
 import { ONE_SIZE, cover, fmtDate, inr } from "@/lib/format"
 import type { AdminOrderRow, AdminProduct } from "@/lib/types"
@@ -28,6 +29,8 @@ type Dash = {
   needs_action: AdminOrderRow[]
   recent: AdminOrderRow[]
 }
+
+const NEXT_ICON: Record<string, LucideIcon> = { confirmed: Check, packed: Package, shipped: Truck, delivered: PackageCheck }
 
 function Kpi({ label, value, sub, tone }: { label: string; value: React.ReactNode; sub: string; tone?: "alert" | "warn" }) {
   return (
@@ -70,12 +73,14 @@ export default function Dashboard() {
             const next = nextStatus(o.status)!
             return (
               <div key={o.id} className="flex cursor-pointer flex-wrap items-center justify-between gap-3 border-b py-3 last:border-0" onClick={() => setOrderId(o.id)}>
-                <div className="text-sm"><strong>{o.order_no}</strong> <span className="text-muted-foreground">· {o.customer_name}</span>
+                <div className="min-w-0 text-sm"><strong>{o.order_no}</strong> <span className="text-muted-foreground">· {o.customer_name}</span>
                   <p className="text-xs text-muted-foreground">{fmtDate(o.created_at, true)} · {o.item_count} item{o.item_count === 1 ? "" : "s"} · {inr(o.total)}</p></div>
-                <div className="flex items-center gap-2"><StatusBadge status={o.status} />
+                <div className="flex shrink-0 items-center gap-2"><StatusBadge status={o.status} />
                   {next !== "shipped"
-                    ? <Button size="sm" disabled={advance.isPending} onClick={(e) => { e.stopPropagation(); advance.mutate({ id: o.id, status: next }) }}>{advance.isPending && advance.variables?.id === o.id && <Spinner />}{NEXT_LABEL[next]}</Button>
-                    : <Button size="sm" onClick={(e) => { e.stopPropagation(); setOrderId(o.id) }}>Add tracking</Button>}
+                    ? <ActionButton size="sm" className="max-sm:size-9" icon={NEXT_ICON[next]} label={NEXT_LABEL[next]!} disabled={advance.isPending}
+                        busy={advance.isPending && advance.variables?.id === o.id ? <Spinner /> : undefined}
+                        onClick={(e) => { e.stopPropagation(); advance.mutate({ id: o.id, status: next }) }} />
+                    : <ActionButton size="sm" className="max-sm:size-9" icon={Truck} label="Add tracking" onClick={(e) => { e.stopPropagation(); setOrderId(o.id) }} />}
                 </div>
               </div>
             )
@@ -91,7 +96,7 @@ export default function Dashboard() {
                   {p.variants.map((v) => <span key={v.size} className={cn("mr-2 text-xs", v.stock <= d.low_stock_at ? "font-bold text-rust" : "text-muted-foreground")}>{v.size === ONE_SIZE ? "Stock" : v.size}: {v.stock}</span>)}
                 </div>
               </div>
-              <Button size="sm" variant="outline" onClick={() => setEdit(p)}>Restock</Button>
+              <ActionButton size="sm" variant="outline" className="max-sm:size-9" icon={PackagePlus} label="Restock" onClick={() => setEdit(p)} />
             </div>
           )) : <p className="py-6 text-center text-muted-foreground">Everything is well stocked.</p>}
           {d.low_stock_count > d.low_stock.length && (
@@ -103,7 +108,7 @@ export default function Dashboard() {
         <section className="rounded-2xl border bg-card p-5 xl:col-span-2">
           <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2"><h3 className="text-xl">Recent orders</h3>
             <span className="text-[13px] text-muted-foreground">Cash on delivery still to collect: <strong className="text-foreground">{inr(d.cod_due)}</strong></span></div>
-          <div className="-mx-5 overflow-x-auto px-5"><OrdersTable orders={d.recent} onOpen={setOrderId} /></div>
+          <div className="-mx-5 overflow-x-auto px-5 max-md:-mx-1 max-md:px-1"><OrdersTable orders={d.recent} onOpen={setOrderId} /></div>
         </section>
         {reviews && reviews.length > 0 && (
           <section className="rounded-2xl border bg-card p-5 xl:col-span-2">

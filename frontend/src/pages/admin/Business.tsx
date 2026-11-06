@@ -142,9 +142,21 @@ export default function Business() {
 
 
       <section className="mt-5 rounded-2xl border bg-card p-5">
-        <div className="mb-2 flex items-baseline justify-between"><h3 className="text-xl">Best earners · {monthLabel(month)}</h3><Link to="/admin/purchases" className="link-quiet text-[13px] font-semibold">Purchases →</Link></div>
+        <div className="mb-2 flex items-baseline justify-between gap-3"><h3 className="text-xl">Best earners · {monthLabel(month)}</h3><Link to="/admin/purchases" className="link-quiet shrink-0 whitespace-nowrap text-[13px] font-semibold">Purchases →</Link></div>
         {b.top.length ? (
-          <div className="-mx-5 overflow-x-auto px-5">
+          <>
+          <ul className="divide-y text-sm tabular-nums md:hidden">
+            {b.top.map((t) => (
+              <li key={t.product_id} className="py-2.5">
+                <div className="flex items-baseline justify-between gap-3">
+                  <strong className="font-semibold">{t.name}</strong>
+                  <span className="shrink-0 font-semibold">{signed(t.profit)}</span>
+                </div>
+                <p className="mt-0.5 text-xs text-muted-foreground">{t.units} sold · {inr(t.revenue)} sales · {inr(t.cost)} cost · {Math.round((t.profit / t.revenue) * 100)}% margin</p>
+              </li>
+            ))}
+          </ul>
+          <div className="-mx-5 overflow-x-auto px-5 max-md:hidden">
             <table className="w-full min-w-[560px] text-sm tabular-nums">
               <thead><tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <th className="py-2 font-semibold">Piece</th><th className="text-right font-semibold">Sold</th><th className="text-right font-semibold">Sales</th><th className="text-right font-semibold">Cost</th><th className="text-right font-semibold">Profit</th></tr></thead>
@@ -155,6 +167,7 @@ export default function Business() {
               ))}</tbody>
             </table>
           </div>
+          </>
         ) : <Empty>No sales with a purchase cost this month yet.</Empty>}
         {b.pieces_without_cost > 0 && <p className="mt-3 rounded-lg bg-sand/40 px-3 py-2 text-xs">{b.pieces_without_cost} piece{b.pieces_without_cost === 1 ? " has" : "s have"} no purchase cost yet, so {b.pieces_without_cost === 1 ? "its" : "their"} profit can't be worked out. Add them under <Link to="/admin/purchases" className="link-quiet font-semibold">Purchases</Link>.</p>}
       </section>

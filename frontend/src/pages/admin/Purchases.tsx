@@ -47,6 +47,11 @@ export default function Purchases() {
   const pieces = rows?.reduce((s, r) => s + r.qty, 0) ?? 0
   const margin = piece && Number(f.unit_cost) ? Math.round((1 - Number(f.unit_cost) / piece.price) * 100) : null
 
+  const deleteButton = (r: Purchase, big = false) => (
+    <Button size={big ? "icon-lg" : "icon-sm"} variant="ghost" aria-label="Delete purchase" className={big ? "-my-1.5 -mr-2" : undefined}
+      onClick={withApproval({ title: "Delete this purchase?", body: `${r.item_name}${r.size ? ` (${r.size})` : ""} · ${r.qty} × ${inr(r.unit_cost)}.${r.product_id ? ` Its stock goes back down by ${r.qty}.` : ""}`, action: "Delete purchase" }, () => remove.mutate(r.id))}><Trash2 /></Button>
+  )
+
   return (
     <>
       <PageHead eyebrow="Money" title="Purchases">
@@ -94,7 +99,25 @@ export default function Purchases() {
       <section className="mt-5 rounded-2xl border bg-card p-5">
         <h3 className="mb-2 text-xl">This month</h3>
         {!rows ? <PageLoader className="min-h-40" /> : rows.length ? (
-          <div className="-mx-5 overflow-x-auto px-5">
+          <>
+          <ul className="divide-y text-sm md:hidden">
+            {rows.map((r) => (
+              <li key={r.id} className="flex items-start gap-3 py-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <strong className="font-semibold">{r.item_name}{r.size && <span className="font-normal text-muted-foreground"> · {r.size}</span>}</strong>
+                    <span className="shrink-0 font-semibold tabular-nums">{inr(r.qty * r.unit_cost)}</span>
+                  </div>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {dayLabel(r.bought_on)} · {r.qty} × {inr(r.unit_cost)}{r.supplier && ` · ${r.supplier}`}
+                    {!r.product_id && <span className="ml-1.5 inline-block whitespace-nowrap rounded bg-sand px-1.5 text-[11px] text-foreground">not for sale</span>}
+                  </p>
+                </div>
+                {deleteButton(r, true)}
+              </li>
+            ))}
+          </ul>
+          <div className="-mx-5 overflow-x-auto px-5 max-md:hidden">
             <table className="w-full min-w-[640px] text-sm">
               <thead><tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <th className="py-2 font-semibold">Date</th><th className="font-semibold">Piece</th><th className="font-semibold">Supplier</th>
@@ -105,11 +128,12 @@ export default function Purchases() {
                   <td><strong className="font-semibold">{r.item_name}</strong>{r.size && <span className="text-muted-foreground"> · {r.size}</span>}{!r.product_id && <span className="ml-1.5 rounded bg-sand px-1.5 text-[11px]">not for sale</span>}</td>
                   <td className="text-muted-foreground">{r.supplier || "—"}</td>
                   <td className="text-right">{r.qty}</td><td className="text-right">{inr(r.unit_cost)}</td><td className="text-right font-semibold">{inr(r.qty * r.unit_cost)}</td>
-                  <td className="text-right"><Button size="icon-sm" variant="ghost" aria-label="Delete purchase" onClick={withApproval({ title: "Delete this purchase?", body: `${r.item_name}${r.size ? ` (${r.size})` : ""} · ${r.qty} × ${inr(r.unit_cost)}.${r.product_id ? ` Its stock goes back down by ${r.qty}.` : ""}`, action: "Delete purchase" }, () => remove.mutate(r.id))}><Trash2 /></Button></td>
+                  <td className="text-right">{deleteButton(r)}</td>
                 </tr>
               ))}</tbody>
             </table>
           </div>
+          </>
         ) : <Empty>No purchases this month yet.</Empty>}
       </section>
     </>

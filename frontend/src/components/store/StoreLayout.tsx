@@ -85,10 +85,10 @@ function Header() {
       </div>
       <SearchDialog open={search} onOpenChange={setSearch} />
       <Sheet open={menu} onOpenChange={setMenu}>
-        <SheetContent side="left" className="bg-background px-6 pt-16">
+        <SheetContent side="left" className="bg-background px-6 pt-16 data-[side=left]:w-[86%]">
           <SheetTitle className="sr-only">Menu</SheetTitle>
           <SheetDescription className="sr-only">Site navigation</SheetDescription>
-          <NavLinks className="flex flex-col gap-1 font-heading text-3xl text-cocoa [&>a]:border-b [&>a]:py-2" onClick={() => setMenu(false)} />
+          <NavLinks className="flex flex-col gap-1 font-heading text-[26px] leading-tight text-cocoa [&>a]:whitespace-normal [&>a]:border-b [&>a]:py-2" onClick={() => setMenu(false)} />
           <div className="mt-6 flex flex-col gap-3 text-lg">
             <Link to="/account" onClick={() => setMenu(false)}>My account</Link>
             <Link to="/wishlist" onClick={() => setMenu(false)}>Wishlist</Link>
