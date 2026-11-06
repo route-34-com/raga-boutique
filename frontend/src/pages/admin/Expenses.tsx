@@ -41,10 +41,10 @@ export default function Expenses() {
   return (
     <>
       <PageHead eyebrow="Money" title="Expenses">
+        <MonthPicker value={month} onChange={setMonth} />
         <ExportButton file={`Raga-Expenses-${month}`} sheet={() => ({
           name: "Expenses", header: ["Date", "Category", "Amount (₹)", "Note"], rows: data.items.map((r) => [r.spent_on, r.category, r.amount, r.note]),
         })} />
-        <MonthPicker value={month} onChange={setMonth} />
       </PageHead>
       <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
         <div className="grid content-start gap-4">

@@ -98,6 +98,7 @@ export default function Business() {
   return (
     <>
       <PageHead eyebrow="Money" title="Business">
+        <div className="print:hidden"><MonthPicker value={month} onChange={setMonth} /></div>
         <ExportButton file={`Raga-Business-${month}`} pdf sheet={() => ({
           name: "Business", header: ["Line", "Amount (₹)"],
           rows: [["Month", monthLabel(month)], ["Website orders", b.orders], ["Sales", b.sales], ["Shipping charged", b.shipping], ["Sales with no purchase cost", b.uncosted_sales],
@@ -106,7 +107,6 @@ export default function Business() {
             ["Stock in hand at selling price", b.stock_at_price], ["Cash on delivery to collect", b.cod_due], ["Advances with staff", b.advances_out], ["Salaries still to pay", b.salary_due],
             ["", ""], ["Last 6 months", ""], ...b.trend.map((t): [string, number] => [`${monthLabel(t.month)} profit`, t.net_profit])],
         })} />
-        <div className="print:hidden"><MonthPicker value={month} onChange={setMonth} /></div>
       </PageHead>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label="Sales" value={inr(b.sales)} sub={`${b.orders} order${b.orders === 1 ? "" : "s"} on the website`} />

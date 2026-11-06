@@ -160,6 +160,7 @@ export default function Staff() {
   return (
     <>
       <PageHead eyebrow="Team" title="Staff">
+        <MonthPicker value={month} onChange={setMonth} />
         <ExportButton file={`Raga-Salary-register-${month}`} sheet={() => ({
           name: "Salary register", header: ["Name", "Role", "Monthly salary (₹)", "Unpaid leave (days)", "Leave cut (₹)", "Advance taken back (₹)", "Paid (₹)", "Paid on", "Advance still owed (₹)", "Status"],
           rows: staff.filter((s) => s.active || s.payments.some((p) => p.month === month)).map((s) => {
@@ -168,7 +169,6 @@ export default function Staff() {
             return [s.name, s.role, s.monthly_salary, unpaid, pay?.leave_cut ?? "", pay?.advance_cut ?? "", pay?.paid ?? "", pay?.paid_on ?? "", s.advance_owed, pay ? "Paid" : "Due"]
           }),
         })} />
-        <MonthPicker value={month} onChange={setMonth} />
       </PageHead>
       <div className="grid gap-4 sm:grid-cols-3">
         <Stat label="Monthly salaries" value={inr(working.reduce((s, p) => s + p.monthly_salary, 0))} sub={`${working.length} working`} />

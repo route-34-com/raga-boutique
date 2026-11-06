@@ -50,11 +50,11 @@ export default function Purchases() {
   return (
     <>
       <PageHead eyebrow="Money" title="Purchases">
+        <MonthPicker value={month} onChange={setMonth} />
         <ExportButton file={`Raga-Purchases-${month}`} sheet={() => ({
           name: "Purchases", header: ["Date", "Piece", "Size", "Supplier", "Qty", "Cost each (₹)", "Total (₹)", "Note"],
           rows: (rows ?? []).map((r) => [r.bought_on, r.item_name, r.size ?? "", r.supplier, r.qty, r.unit_cost, r.qty * r.unit_cost, r.note]),
         })} />
-        <MonthPicker value={month} onChange={setMonth} />
       </PageHead>
       <div className="grid gap-4 sm:grid-cols-3">
         <Stat label="Spent on stock" value={inr(total)} sub={`${pieces} piece${pieces === 1 ? "" : "s"} bought`} />

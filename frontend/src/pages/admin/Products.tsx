@@ -48,12 +48,12 @@ export default function Products() {
     <>
       <PageHead eyebrow="Catalog" title="Products">
         <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products" className="h-10 w-full bg-card sm:w-56" />
+        <Button className="h-10 px-4" onClick={() => setEditing("new")}>+ Add product</Button>
         <ExportButton file={`Raga-Stock-${new Date().toISOString().slice(0, 10)}`} sheet={() => ({
           name: "Stock", header: ["Piece", "Raga", "Category", "Price (₹)", "MRP (₹)", "Stock by size", "Total stock", "On store"],
           rows: list.map((p) => [p.name, p.raga, cats.find((c) => c.id === p.category_id)?.name ?? p.category_id, p.price, p.mrp ?? "",
             p.variants.map((v) => (v.size === "ONE" ? String(v.stock) : `${v.size}: ${v.stock}`)).join(" · "), p.total_stock, p.active ? "Yes" : "No"]),
         })} />
-        <Button className="h-10 px-4" onClick={() => setEditing("new")}>+ Add product</Button>
       </PageHead>
       <div className="mb-3.5 flex flex-wrap gap-1.5">
         {[{ id: "all", name: "All", n: products?.length ?? 0 }, ...cats.map((c) => ({ id: c.id, name: c.name, n: c.products }))].map((c) => (
