@@ -10,11 +10,18 @@ import argparse
 import json
 import os
 import sys
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 RETIRED = ["desh", "pilu", "khamaj", "shivranjani", "chandrakauns", "megh", "mohanam", "kirwani", "bahar",
            "puriya", "kedar", "bilaval", "multani"]
 PHOTO_SWAPS = ["saveri", "lalit", "kanada"]
+# Same file name, new picture: the stored copy is rewritten.
+RECROPPED = ["marigold-hindol-detail.jpg", "copper-basant-detail.jpg"]
+# Pieces from the November refresh: their launch date follows the seed, so "Just in" shows them ahead of older stock.
+REFRESH = ["neelambari", "hamsadhwani", "kambhoji", "bageshri", "sohini", "malkauns", "sarang", "megh-malhar", "shree",
+           "gaud-malhar", "bhimpalasi", "yaman", "kalavati", "vrindavani", "ahir-bhairav", "jog", "charukesi", "marwa",
+           "shuddh-kalyan", "bhupali", "gaud-sarang"]
 HERE = Path(__file__).parent
 
 
@@ -56,6 +63,9 @@ def main() -> None:
         add = [s for s in order if s not in live]
         swap = [s for s in PHOTO_SWAPS if s in live and [Path(i.url).name for i in live[s].images] != by_slug[s]["images"]]
         extra = [s for s in live if s not in by_slug and s not in RETIRED]
+        now = datetime.now(UTC)
+        want = {s: now - timedelta(days=by_slug[s].get("addedDaysAgo", 0)) for s in REFRESH if s in live}
+        redate = [s for s, when in want.items() if abs((live[s].created_at - when).total_seconds()) > 86400]
         ids = [live[s].id for s in retire]
         orders = db.scalar(select(func.count(func.distinct(OrderItem.order_id))).where(OrderItem.product_id.in_(ids))) if ids else 0
         reviews = db.scalar(select(func.count()).where(Review.product_id.in_(ids))) if ids else 0
@@ -65,6 +75,8 @@ def main() -> None:
         print(f"   their {orders} past order(s) keep their own copy; {reviews} review(s) on them are deleted")
         print(f"Add {len(add)}: {', '.join(add) or '-'}")
         print(f"New photos for {len(swap)}: {', '.join(swap) or '-'}")
+        print(f"New launch date for {len(redate)}: {', '.join(redate) or '-'}")
+        print(f"Recropped close-ups to store: {', '.join(RECROPPED)}")
         print(f"Kept as they are (added in admin): {', '.join(extra) or '-'}")
         print(f"After: {len(live) - len(retire) + len(add)} pieces")
         if not args.apply:
@@ -80,7 +92,11 @@ def main() -> None:
             old_urls += [i.url for i in p.images]
             urls = [store_image_file(name, (HERE / "seed_images" / name).read_bytes()) for name in by_slug[s]["images"]]
             p.images = [ProductImage(url=u, position=j) for j, u in enumerate(urls)]
+        for s in redate:
+            live[s].created_at = want[s]
         db.commit()
+        for name in RECROPPED:
+            store_image_file(name, (HERE / "seed_images" / name).read_bytes())
 
         products = seed_catalog(db)
         tail = sorted((p for p in db.scalars(select(Product)) if p.slug not in by_slug), key=lambda p: (p.sort, p.id))

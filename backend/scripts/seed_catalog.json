@@ -94,7 +94,7 @@
       "Wedding guest",
       "Festive"
     ],
-    "addedDaysAgo": 21
+    "addedDaysAgo": 2.1
   },
   {
     "id": "hamsadhwani",
@@ -125,7 +125,7 @@
       "Festive",
       "Wedding guest"
     ],
-    "addedDaysAgo": 20
+    "addedDaysAgo": 2.0
   },
   {
     "id": "kambhoji",
@@ -157,7 +157,7 @@
       "Bridal",
       "Wedding guest"
     ],
-    "addedDaysAgo": 19
+    "addedDaysAgo": 1.9
   },
   {
     "id": "bageshri",
@@ -188,7 +188,7 @@
       "Festive",
       "Family function"
     ],
-    "addedDaysAgo": 18
+    "addedDaysAgo": 1.8
   },
   {
     "id": "sohini",
@@ -220,7 +220,7 @@
       "Office",
       "Pooja"
     ],
-    "addedDaysAgo": 17
+    "addedDaysAgo": 1.7
   },
   {
     "id": "kalyani",
@@ -491,7 +491,7 @@
       "L",
       "XL"
     ],
-    "addedDaysAgo": 16
+    "addedDaysAgo": 1.6
   },
   {
     "id": "sarang",
@@ -530,7 +530,7 @@
       "L",
       "XL"
     ],
-    "addedDaysAgo": 15
+    "addedDaysAgo": 1.5
   },
   {
     "id": "megh-malhar",
@@ -570,7 +570,7 @@
       "L",
       "XL"
     ],
-    "addedDaysAgo": 3
+    "addedDaysAgo": 0.3
   },
   {
     "id": "lalit",
@@ -705,7 +705,7 @@
       "L",
       "XL"
     ],
-    "addedDaysAgo": 2
+    "addedDaysAgo": 0.2
   },
   {
     "id": "gaud-malhar",
@@ -745,7 +745,7 @@
       "L",
       "XL"
     ],
-    "addedDaysAgo": 1
+    "addedDaysAgo": 0.1
   },
   {
     "id": "bhimpalasi",
@@ -785,7 +785,7 @@
       "L",
       "XL"
     ],
-    "addedDaysAgo": 14
+    "addedDaysAgo": 1.4
   },
   {
     "id": "yaman",
@@ -824,7 +824,7 @@
       "L",
       "XL"
     ],
-    "addedDaysAgo": 13
+    "addedDaysAgo": 1.3
   },
   {
     "id": "kalavati",
@@ -863,7 +863,7 @@
       "L",
       "XL"
     ],
-    "addedDaysAgo": 12
+    "addedDaysAgo": 1.2
   },
   {
     "id": "vrindavani",
@@ -902,7 +902,7 @@
       "L",
       "XL"
     ],
-    "addedDaysAgo": 10
+    "addedDaysAgo": 1.0
   },
   {
     "id": "ahir-bhairav",
@@ -942,7 +942,7 @@
       "L",
       "XL"
     ],
-    "addedDaysAgo": 9
+    "addedDaysAgo": 0.9
   },
   {
     "id": "jog",
@@ -980,7 +980,7 @@
       "L",
       "XL"
     ],
-    "addedDaysAgo": 8
+    "addedDaysAgo": 0.8
   },
   {
     "id": "charukesi",
@@ -1019,7 +1019,7 @@
       "L",
       "XL"
     ],
-    "addedDaysAgo": 7
+    "addedDaysAgo": 0.7
   },
   {
     "id": "marwa",
@@ -1058,7 +1058,7 @@
       "L",
       "XL"
     ],
-    "addedDaysAgo": 11
+    "addedDaysAgo": 1.1
   },
   {
     "id": "kafi",
@@ -1129,7 +1129,7 @@
       "Festive",
       "Office"
     ],
-    "addedDaysAgo": 6
+    "addedDaysAgo": 0.6
   },
   {
     "id": "bhupali",
@@ -1162,7 +1162,7 @@
       "Office",
       "Summer"
     ],
-    "addedDaysAgo": 5
+    "addedDaysAgo": 0.5
   },
   {
     "id": "gaud-sarang",
@@ -1194,6 +1194,6 @@
       "Festive",
       "Wedding guest"
     ],
-    "addedDaysAgo": 4
+    "addedDaysAgo": 0.4
   }
 ]
