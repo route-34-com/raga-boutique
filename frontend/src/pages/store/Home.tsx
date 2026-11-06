@@ -18,6 +18,8 @@ const SERVICES = [
   ["✉", "Updates on WhatsApp", "Order confirmation and tracking, straight to your phone."],
 ]
 
+const JUST_IN_MIX: [string, number][] = [["sarees", 2], ["lehengas", 2], ["ethnic", 1]]
+
 function SectionHead({ eyebrow, title, aside }: { eyebrow: string; title: string; aside?: React.ReactNode }) {
   return (
     <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
@@ -30,9 +32,11 @@ function SectionHead({ eyebrow, title, aside }: { eyebrow: string; title: string
 export default function Home() {
   const logo = useLogo()
   const { data: products, isLoading } = useProducts()
+  const { data: newest } = useProducts({ sort: "new" })
   const { data: cats = [] } = useCategories()
   const hero = products?.find((p) => p.slug === "hindol")
-  const justIn = products?.filter((p) => p.slug !== "hindol" && p.slug !== "bhairavi").slice(0, 4) ?? []
+  const fresh = newest?.filter((p) => p.slug !== "hindol" && p.slug !== "bhairavi") ?? []
+  const justIn = JUST_IN_MIX.flatMap(([cat, n]) => fresh.filter((p) => p.category_id === cat).slice(0, n))
   const lehengas = products?.filter((p) => p.category_id === "lehengas") ?? []
   useTitle()
 
@@ -63,7 +67,7 @@ export default function Home() {
                 <p className="eyebrow">Just in</p>
                 <Link to="/shop" className="text-[13px] font-semibold text-cocoa hover:text-rust">See all →</Link>
               </div>
-              <div className="grid grid-cols-4 gap-2.5">
+              <div className="grid grid-cols-5 gap-2.5">
                 {justIn.map((p) => (
                   <Link key={p.id} to={`/p/${p.slug}`} title={p.name} className="group relative block aspect-square overflow-hidden rounded-xl bg-sand">
                     <Photo src={cover(p)} tone={p.swatch} alt={p.name} loading="lazy" className="size-full object-cover object-top transition duration-500 group-hover:scale-105" />

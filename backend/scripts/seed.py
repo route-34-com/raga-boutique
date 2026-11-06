@@ -90,31 +90,31 @@ DEMO_CUSTOMERS = [
     ("9000000002", "Meera Iyer", "meera@example.com",
      dict(line1="14, North Mada Street", line2="Mylapore", city="Chennai", state="Tamil Nadu", pincode="600004"), [
          ([("kalyani", None)], FULL, 21, ("Delhivery", "DL88213409")),
-         ([("megh", "M")], ["placed", "cancelled"], 9, None),
-         ([("hindol", None), ("chandrakauns", "S")], FULL[:4], 2, ("Blue Dart", "BD5521907")),
+         ([("kafi", "M")], ["placed", "cancelled"], 9, None),
+         ([("hindol", None), ("abhogi", "S")], FULL[:4], 2, ("Blue Dart", "BD5521907")),
          ([("bhairavi", None)], ["placed"], 0.05, None),
      ]),
     ("9000000003", "Ananya Rao", "ananya@example.com",
      dict(line1="221, 8th Cross, Indiranagar", line2="HAL 2nd Stage", city="Bengaluru", state="Karnataka", pincode="560038"), [
          ([("malhar", None)], FULL, 18, ("Delhivery", "DL88219951")),
-         ([("bahar", "M"), ("desh", None)], FULL[:3], 1.2, None),
+         ([("ahir-bhairav", "M"), ("darbari", None)], FULL[:3], 1.2, None),
      ]),
     ("9000000004", "Priya Menon", "priya.menon@example.com",
      dict(line1="Flat 4B, Sea Breeze Apartments", line2="Panampilly Nagar", city="Kochi", state="Kerala", pincode="682036"), [
          ([("basant", None)], FULL, 14, ("India Post", "EK123456789IN")),
-         ([("puriya", "S")], FULL[:2], 0.6, None),
+         ([("vrindavani", "S")], FULL[:2], 0.6, None),
      ]),
     ("9000000005", "Kavya Sharma", "kavya.s@example.com",
      dict(line1="B-17, Vasant Vihar", line2="Near Priya Cinema", city="New Delhi", state="Delhi", pincode="110057"), [
-         ([("kedar", "M")], FULL[:4], 4, ("Blue Dart", "BD5530018")),
+         ([("charukesi", "M")], FULL[:4], 4, ("Blue Dart", "BD5530018")),
          ([("bihag", None)], FULL, 25, ("Blue Dart", "BD5401120")),
          ([("darbari", None)], ["placed"], 0.2, None),
      ]),
     ("9000000006", "Sneha Banerjee", "sneha.b@example.com",
      dict(line1="32/1, Hindustan Park", line2="Gariahat", city="Kolkata", state="West Bengal", pincode="700029"), [
          ([("durga", None)], FULL, 11, ("Delhivery", "DL88230476")),
-         ([("bilaval", "L")], ["placed", "confirmed", "cancelled"], 6, None),
-         ([("megh", "S"), ("khamaj", None)], FULL[:3], 3, None),
+         ([("jog", "L")], ["placed", "confirmed", "cancelled"], 6, None),
+         ([("abhogi", "M"), ("gaud-sarang", None)], FULL[:3], 3, None),
      ]),
 ]
 
@@ -168,11 +168,9 @@ DEMO_REVIEWS = [
     ("hindol", "Revathi", "Salem", 5, "Suja amma helped me choose over WhatsApp. The marigold and royal blue together is stunning.", 28),
     ("bhairavi", "Nandhini", "Erode", 4, "Soft and elegant, perfect for a morning function. Wish it came in one more shade.", 24),
     ("kalyani", "Janani", "Madurai", 5, "Heavy pallu, rich colour, and they did the fall and pico before sending. Very happy.", 19),
-    ("chandrakauns", "Aishwarya", "Hyderabad", 4, "Fits well and the organza is very pretty. The dupatta is slightly sheer, so plan your inner.", 15),
-    ("megh", "Shruti", "Pune", 5, "Twirled all evening at the sangeet. Comfortable, flowy and the teal is gorgeous.", 11),
-    ("pilu", "Lakshmi", "Tiruchengode", 5, "Visited the new showroom after seeing the website. Same warmth in person. Love my saree.", 8),
+    ("durga", "Lakshmi", "Tiruchengode", 5, "Visited the new showroom after seeing the website. Same warmth in person. Love my saree.", 8),
     ("hindol", "Harini", "Namakkal", 5, "Gifted this to my mother-in-law. She has worn it twice already!", 5),
-    ("bahar", "Pooja", "Mumbai", 3, "The lehenga is beautiful but the blouse needed alteration. The team was quick to help on WhatsApp.", 4),
+    ("kalavati", "Pooja", "Mumbai", 3, "The lehenga is beautiful but the blouse needed alteration. The team was quick to help on WhatsApp.", 4),
     ("bhairavi", "Gayathri", "Trichy", 5, "Third purchase from Raga. Quality is consistent every single time.", 2),
 ]
 
