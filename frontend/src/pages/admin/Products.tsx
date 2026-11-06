@@ -7,7 +7,6 @@ import { PageHead } from "@/components/admin/AdminLayout"
 import { ProductSheet } from "@/components/admin/ProductSheet"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Switch } from "@/components/ui/switch"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ApiError, api, patch, post } from "@/lib/api"
@@ -16,6 +15,7 @@ import type { AdminCategory, AdminProduct } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { Photo } from "@/components/common/Photo"
 import { ExportButton } from "@/components/common/ExportButton"
+import { PageLoader } from "@/components/common/PageLoader"
 
 export default function Products() {
   const qc = useQueryClient()
@@ -44,6 +44,7 @@ export default function Products() {
 
   const list = (products ?? []).filter((p) => (cat === "all" || p.category_id === cat) && (!q || `${p.name} ${p.raga}`.toLowerCase().includes(q.toLowerCase())))
 
+  if (!products) return <PageLoader />
   return (
     <>
       <PageHead eyebrow="Catalog" title="Products">
@@ -63,7 +64,7 @@ export default function Products() {
         ))}
       </div>
       <section className="overflow-x-auto rounded-2xl border bg-card p-5">
-        {!products ? <Skeleton className="h-60" /> : !list.length ? <p className="py-6 text-center text-muted-foreground">No products yet. Add your first one.</p> : (
+        {!list.length ? <p className="py-6 text-center text-muted-foreground">No products yet. Add your first one.</p> : (
           <Table className="min-w-[860px]">
             <TableHeader><TableRow>{["Product", "Category", "Price", "Stock", "On store", ""].map((h) => <TableHead key={h} className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{h}</TableHead>)}</TableRow></TableHeader>
             <TableBody>

@@ -6,13 +6,13 @@ import { PageHead, useOrderCounts } from "@/components/admin/AdminLayout"
 import { OrderSheet } from "@/components/admin/OrderSheet"
 import { OrdersTable } from "@/components/admin/OrdersTable"
 import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/lib/api"
 import { FLOW, STATUS_LABEL } from "@/lib/format"
 import type { AdminOrderRow } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { isoDate } from "@/lib/exports"
 import { ExportButton } from "@/components/common/ExportButton"
+import { PageLoader } from "@/components/common/PageLoader"
 
 const TABS: [string, string][] = [["all", "All"], ["ongoing", "Ongoing"], ...FLOW.map((s) => [s, STATUS_LABEL[s]] as [string, string]), ["cancelled", "Cancelled"]]
 
@@ -27,7 +27,9 @@ export default function Orders() {
     queryKey: ["admin", "orders", status, q],
     queryFn: () => api<AdminOrderRow[]>(`/api/admin/orders?${new URLSearchParams({ status, q })}`),
     refetchInterval: 20_000,
+    placeholderData: (prev) => prev,
   })
+  if (!orders) return <PageLoader />
 
   return (
     <>
@@ -49,7 +51,7 @@ export default function Orders() {
         ))}
       </div>
       <section className="overflow-x-auto rounded-2xl border bg-card p-5">
-        {orders ? <OrdersTable orders={orders} onOpen={setOpenId} /> : <Skeleton className="h-40" />}
+        <OrdersTable orders={orders} onOpen={setOpenId} />
       </section>
       <OrderSheet key={openId ?? "none"} id={openId} onClose={() => setOpenId(null)} />
     </>

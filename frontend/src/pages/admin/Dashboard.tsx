@@ -9,13 +9,13 @@ import { ProductSheet } from "@/components/admin/ProductSheet"
 import { ReviewRow, useAdminReviews } from "@/pages/admin/Reviews"
 import { StatusBadge } from "@/components/common/StatusBadge"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/lib/api"
 import { ONE_SIZE, cover, fmtDate, inr } from "@/lib/format"
 import type { AdminOrderRow, AdminProduct } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { Spinner } from "@/components/ui/spinner"
 import { Photo } from "@/components/common/Photo"
+import { PageLoader } from "@/components/common/PageLoader"
 
 type Dash = {
   today: { count: number; total: number }
@@ -49,7 +49,7 @@ export default function Dashboard() {
   const now = new Date()
   const greet = now.getHours() < 12 ? "morning" : now.getHours() < 17 ? "afternoon" : "evening"
 
-  if (!d) return <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-28 rounded-2xl" />)}</div>
+  if (!d) return <PageLoader />
   const toConfirm = d.by_status.placed ?? 0
   const toShip = (d.by_status.confirmed ?? 0) + (d.by_status.packed ?? 0)
 

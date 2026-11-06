@@ -9,11 +9,11 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Skeleton } from "@/components/ui/skeleton"
 import { ApiError, api, post } from "@/lib/api"
 import { STATUS_LABEL } from "@/lib/format"
 import type { AdminOrderRow, Courier, DispatchResult } from "@/lib/types"
 import { Spinner } from "@/components/ui/spinner"
+import { PageLoader } from "@/components/common/PageLoader"
 
 type Row = { on: boolean; courier: string; tracking: string }
 
@@ -62,6 +62,7 @@ export default function Dispatch() {
     onError: (e) => { qc.invalidateQueries({ queryKey: ["admin"] }); toast.error(e instanceof ApiError ? e.message : "Couldn't confirm the send. Check the Orders page before sending again — some may have shipped.") },
   })
 
+  if (!orders) return <PageLoader />
   return (
     <>
       <PageHead eyebrow="Orders" title="Dispatch" />
@@ -111,7 +112,7 @@ export default function Dispatch() {
           <p className="mb-4 rounded-xl bg-[#fdf3e2] px-4 py-3 text-sm">Add your couriers and their tracking links in <Link to="/admin/settings" className="font-semibold text-rust link-quiet">Settings</Link> so customers get a link to track.</p>
         )}
 
-        {!orders ? <Skeleton className="h-40" /> : orders.length === 0 ? (
+        {orders.length === 0 ? (
           <p className="py-10 text-center text-muted-foreground">No accepted orders waiting. Accept new orders from <Link to="/admin/orders?status=placed" className="font-semibold text-rust link-quiet">Orders</Link>.</p>
         ) : (
           <div className="divide-y">

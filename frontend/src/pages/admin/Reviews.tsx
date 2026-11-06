@@ -8,15 +8,15 @@ import { PageHead } from "@/components/admin/AdminLayout"
 import { Stars } from "@/components/store/Reviews"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
 import { ApiError, api, del } from "@/lib/api"
 import { fmtDate, fmtPhone } from "@/lib/format"
 import type { AdminReview } from "@/lib/types"
 import { Photo } from "@/components/common/Photo"
 import { withApproval } from "@/components/common/Confirm"
+import { PageLoader } from "@/components/common/PageLoader"
 
 export function useAdminReviews(limit = 200) {
-  return useQuery({ queryKey: ["admin", "reviews", limit], queryFn: () => api<AdminReview[]>(`/api/admin/reviews?limit=${limit}`) })
+  return useQuery({ queryKey: ["admin", "reviews", limit], queryFn: () => api<AdminReview[]>(`/api/admin/reviews?limit=${limit}`), placeholderData: (prev) => prev })
 }
 
 export function ReviewRow({ r, onDelete }: { r: AdminReview; onDelete?: (r: AdminReview) => void }) {
@@ -47,6 +47,7 @@ export default function Reviews() {
   })
   const shown = (data ?? []).filter((r) => !q || `${r.name} ${r.city} ${r.comment} ${r.product.name} ${r.phone}`.toLowerCase().includes(q.toLowerCase()))
   const avg = data?.length ? data.reduce((n, r) => n + r.rating, 0) / data.length : 0
+  if (!data) return <PageLoader />
   return (
     <>
       <PageHead eyebrow="Customers" title="Reviews">
@@ -57,7 +58,7 @@ export default function Reviews() {
           <span className="text-muted-foreground">from {data.length} reviews · new reviews appear on the site straight away</span></p>
       )}
       <section className="rounded-2xl border bg-card px-5 py-1">
-        {!data ? <Skeleton className="my-4 h-40" /> : shown.length ? shown.map((r) => (
+        {shown.length ? shown.map((r) => (
           <ReviewRow key={r.id} r={r} onDelete={(r) => withApproval({ title: `Delete ${r.name}'s review?`, body: `Of ${r.product.name}. This can't be undone.`, action: "Delete review" }, () => remove.mutate(r.id))()} />
         )) : <p className="py-10 text-center text-muted-foreground">{q ? "No reviews match." : "No reviews yet."}</p>}
       </section>
