@@ -15,6 +15,7 @@ import { MOODS, ONE_SIZE, cover, inr } from "@/lib/format"
 import type { AdminCategory, AdminProduct } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { Photo } from "@/components/common/Photo"
+import { ExportButton } from "@/components/common/ExportButton"
 
 export default function Products() {
   const qc = useQueryClient()
@@ -47,6 +48,11 @@ export default function Products() {
     <>
       <PageHead eyebrow="Catalog" title="Products">
         <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products" className="h-10 w-full bg-card sm:w-56" />
+        <ExportButton file={`Raga-Stock-${new Date().toISOString().slice(0, 10)}`} sheet={() => ({
+          name: "Stock", header: ["Piece", "Raga", "Category", "Price (₹)", "MRP (₹)", "Stock by size", "Total stock", "On store"],
+          rows: list.map((p) => [p.name, p.raga, cats.find((c) => c.id === p.category_id)?.name ?? p.category_id, p.price, p.mrp ?? "",
+            p.variants.map((v) => (v.size === "ONE" ? String(v.stock) : `${v.size}: ${v.stock}`)).join(" · "), p.total_stock, p.active ? "Yes" : "No"]),
+        })} />
         <Button className="h-10 px-4" onClick={() => setEditing("new")}>+ Add product</Button>
       </PageHead>
       <div className="mb-3.5 flex flex-wrap gap-1.5">

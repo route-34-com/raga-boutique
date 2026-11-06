@@ -32,6 +32,7 @@ def dashboard(_: Admin, db: DB):
     low_ids = select(Variant.product_id).where(Variant.stock <= low_at)
     low = db.scalars(select(Product).where(Product.active.is_(True), Product.id.in_(low_ids))
                      .options(selectinload(Product.images), selectinload(Product.variants)).order_by(Product.sort)).all()
+    low = sorted(low, key=lambda p: (min(v.stock for v in p.variants), p.sort))
     action = db.scalars(select(Order).where(Order.status.in_(["placed", "confirmed", "packed"])).options(selectinload(Order.items))
                         .order_by(Order.id).limit(10)).all()
     recent = db.scalars(select(Order).options(selectinload(Order.items)).order_by(Order.id.desc()).limit(8)).all()
@@ -42,7 +43,8 @@ def dashboard(_: Admin, db: DB):
         "by_status": by_status,
         "cod_due": cod_due,
         "low_stock_at": low_at,
-        "low_stock": [product_out(p) for p in low],
+        "low_stock": [product_out(p) for p in low[:5]],
+        "low_stock_count": len(low),
         "needs_action": [AdminOrderRow.model_validate(o) for o in action],
         "recent": [AdminOrderRow.model_validate(o) for o in recent],
     }

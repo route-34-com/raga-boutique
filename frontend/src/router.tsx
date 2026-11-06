@@ -22,6 +22,10 @@ const AdminProducts = lazy(() => import("@/pages/admin/Products"))
 const AdminCategories = lazy(() => import("@/pages/admin/Categories"))
 const AdminCustomers = lazy(() => import("@/pages/admin/Customers"))
 const AdminSettings = lazy(() => import("@/pages/admin/Settings"))
+const AdminBusiness = lazy(() => import("@/pages/admin/Business"))
+const AdminPurchases = lazy(() => import("@/pages/admin/Purchases"))
+const AdminExpenses = lazy(() => import("@/pages/admin/Expenses"))
+const AdminStaff = lazy(() => import("@/pages/admin/Staff"))
 
 export const router = createBrowserRouter([
   {
@@ -51,6 +55,10 @@ export const router = createBrowserRouter([
       { path: "categories", element: <AdminCategories /> },
       { path: "customers", element: <AdminCustomers /> },
       { path: "settings", element: <AdminSettings /> },
+      { path: "business", element: <AdminBusiness /> },
+      { path: "purchases", element: <AdminPurchases /> },
+      { path: "expenses", element: <AdminExpenses /> },
+      { path: "staff", element: <AdminStaff /> },
     ],
   },
 ])

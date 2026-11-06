@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { Boxes, LayoutDashboard, ListTree, LogOut, Settings, ShoppingBag, SquareArrowOutUpRight, Star, Truck, Users } from "lucide-react"
-import { NavLink, Outlet } from "react-router"
+import { Boxes, Contact, LayoutDashboard, ListTree, LogOut, PackagePlus, Receipt, Settings, ShoppingBag, SquareArrowOutUpRight, Star, TrendingUp, Truck, Users } from "lucide-react"
+import { Suspense } from "react"
+import { NavLink, Outlet, useLocation } from "react-router"
 
 import { LoginForm } from "@/components/common/LoginForm"
 import { PageLoader } from "@/components/common/PageLoader"
@@ -12,15 +13,29 @@ import { fmtPhone } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { useBrandSync, useLogo } from "@/lib/brand"
 
-const NAV = [
-  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/admin/orders", label: "Orders", icon: ShoppingBag, badge: true },
-  { to: "/admin/dispatch", label: "Dispatch", icon: Truck },
-  { to: "/admin/products", label: "Products", icon: Boxes },
-  { to: "/admin/categories", label: "Categories", icon: ListTree },
-  { to: "/admin/customers", label: "Customers", icon: Users },
-  { to: "/admin/reviews", label: "Reviews", icon: Star },
-  { to: "/admin/settings", label: "Settings", icon: Settings },
+const NAV: { group: string; items: { to: string; label: string; icon: typeof LayoutDashboard; end?: boolean; badge?: boolean }[] }[] = [
+  { group: "Overview", items: [
+    { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
+    { to: "/admin/business", label: "Business", icon: TrendingUp },
+  ] },
+  { group: "Sales", items: [
+    { to: "/admin/orders", label: "Orders", icon: ShoppingBag, badge: true },
+    { to: "/admin/dispatch", label: "Dispatch", icon: Truck },
+    { to: "/admin/customers", label: "Customers", icon: Users },
+    { to: "/admin/reviews", label: "Reviews", icon: Star },
+  ] },
+  { group: "Catalogue", items: [
+    { to: "/admin/products", label: "Products", icon: Boxes },
+    { to: "/admin/categories", label: "Categories", icon: ListTree },
+  ] },
+  { group: "Money & team", items: [
+    { to: "/admin/purchases", label: "Purchases", icon: PackagePlus },
+    { to: "/admin/expenses", label: "Expenses", icon: Receipt },
+    { to: "/admin/staff", label: "Staff", icon: Contact },
+  ] },
+  { group: "Setup", items: [
+    { to: "/admin/settings", label: "Settings", icon: Settings },
+  ] },
 ]
 
 export const useOrderCounts = (enabled = true) =>
@@ -48,6 +63,7 @@ function Gate({ denied }: { denied?: string }) {
 
 export function AdminLayout() {
   useBrandSync()
+  const { pathname } = useLocation()
   const { data: me, isLoading } = useMe()
   const qc = useQueryClient()
   const { data: counts } = useOrderCounts(!!me?.is_admin)
@@ -58,8 +74,8 @@ export function AdminLayout() {
   const pending = counts?.placed ?? 0
   const logout = async () => { await post("/api/auth/logout"); qc.setQueryData(keys.me, null) }
   return (
-    <div className="min-h-screen bg-[#f5f0e8] md:grid md:grid-cols-[236px_1fr]">
-      <aside className="sticky top-0 z-30 bg-sidebar text-sidebar-foreground md:h-screen">
+    <div className="min-h-screen bg-[#f5f0e8] md:grid md:grid-cols-[236px_1fr] print:block print:bg-white">
+      <aside className="sticky top-0 z-30 bg-sidebar text-sidebar-foreground md:h-screen print:hidden">
         <div className="flex items-center justify-between px-3 pt-2.5 md:hidden">
           <NavLink to="/admin" className="flex items-center gap-2">
             <img src="/brand/logo-sm.png" alt="Raga" className="w-16 brightness-0 invert-[.9] sepia-[.3]" />
@@ -75,14 +91,19 @@ export function AdminLayout() {
             <img src="/brand/logo-sm.png" alt="Raga" className="w-16 brightness-0 invert-[.9] sepia-[.3] md:w-[92px]" />
             <span className="rounded-md bg-marigold px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.14em] text-cocoa">Admin</span>
           </NavLink>
-          <nav className="flex gap-0.5 md:flex-col">
-            {NAV.map(({ to, label, icon: Icon, end, badge }) => (
-              <NavLink key={to} to={to} end={end} className={({ isActive }) => cn(
-                "flex shrink-0 items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium opacity-80 hover:bg-sidebar-accent hover:opacity-100 md:py-2.5 md:text-sm",
-                isActive && "bg-sidebar-accent text-white opacity-100")}>
-                <Icon className="hidden size-[18px] md:block" strokeWidth={1.6} />{label}
-                {badge && pending > 0 && <span className="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-marigold px-1.5 text-[11px] font-bold text-cocoa">{pending}</span>}
-              </NavLink>
+          <nav className="flex gap-0.5 md:flex-col md:gap-0 md:overflow-y-auto md:[scrollbar-width:none]">
+            {NAV.map(({ group, items }) => (
+              <div key={group} className="flex gap-0.5 md:mb-3 md:flex-col">
+                <p className="hidden px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#b89f8a] md:block">{group}</p>
+                {items.map(({ to, label, icon: Icon, end, badge }) => (
+                  <NavLink key={to} to={to} end={end} className={({ isActive }) => cn(
+                    "flex shrink-0 items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium opacity-80 hover:bg-sidebar-accent hover:opacity-100 md:py-[7px] md:text-sm",
+                    isActive && "bg-sidebar-accent text-white opacity-100")}>
+                    <Icon className="hidden size-[18px] md:block" strokeWidth={1.6} />{label}
+                    {badge && pending > 0 && <span className="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-marigold px-1.5 text-[11px] font-bold text-cocoa">{pending}</span>}
+                  </NavLink>
+                ))}
+              </div>
             ))}
           </nav>
           <div className="mt-auto hidden flex-col gap-1.5 px-3 text-[13px] md:flex">
@@ -94,7 +115,7 @@ export function AdminLayout() {
           </div>
         </div>
       </aside>
-      <main className="min-w-0 px-4 pb-16 pt-6 md:px-10 md:pt-8"><Outlet /></main>
+      <main className="min-w-0 px-4 pb-16 pt-6 md:px-10 md:pt-8"><Suspense key={pathname} fallback={<PageLoader />}><Outlet /></Suspense></main>
     </div>
   )
 }

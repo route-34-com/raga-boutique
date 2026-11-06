@@ -24,6 +24,7 @@ type Dash = {
   cod_due: number
   low_stock_at: number
   low_stock: AdminProduct[]
+  low_stock_count: number
   needs_action: AdminOrderRow[]
   recent: AdminOrderRow[]
 }
@@ -59,12 +60,12 @@ export default function Dashboard() {
         <Kpi label="Orders today" value={d.today.count} sub={inr(d.today.total)} />
         <Kpi label="Sales this month" value={inr(d.month.total)} sub={`${d.month.count} orders`} />
         <Kpi label="Waiting for you" value={toConfirm + toShip} sub={`${toConfirm} to confirm · ${toShip} to ship`} tone={toConfirm ? "alert" : undefined} />
-        <Kpi label="Low stock" value={d.low_stock.length} sub={`at or below ${d.low_stock_at}`} tone={d.low_stock.length ? "warn" : undefined} />
+        <Kpi label="Low stock" value={d.low_stock_count} sub={`at or below ${d.low_stock_at}`} tone={d.low_stock_count ? "warn" : undefined} />
       </div>
       {/* min-w-0 lets the wide orders table scroll inside its card instead of stretching the page on phones */}
       <div className="grid items-start gap-4 xl:grid-cols-2 [&>section]:min-w-0">
         <section className="rounded-2xl border bg-card p-5">
-          <div className="mb-2 flex items-baseline justify-between"><h3 className="text-xl">Needs action</h3><Link to="/admin/orders?status=placed" className="text-[13px] font-semibold text-rust hover:underline">All new orders →</Link></div>
+          <div className="mb-2 flex items-baseline justify-between"><h3 className="text-xl">Needs action</h3><Link to="/admin/orders?status=placed" className="text-[13px] font-semibold text-rust link-quiet">All new orders →</Link></div>
           {d.needs_action.length ? d.needs_action.map((o) => {
             const next = nextStatus(o.status)!
             return (
@@ -81,7 +82,7 @@ export default function Dashboard() {
           }) : <p className="py-6 text-center text-muted-foreground">All caught up. ✨</p>}
         </section>
         <section className="rounded-2xl border bg-card p-5">
-          <div className="mb-2 flex items-baseline justify-between"><h3 className="text-xl">Low stock</h3><Link to="/admin/products" className="text-[13px] font-semibold text-rust hover:underline">Products →</Link></div>
+          <div className="mb-2 flex items-baseline justify-between"><h3 className="text-xl">Low stock</h3><Link to="/admin/products" className="text-[13px] font-semibold text-rust link-quiet">Products →</Link></div>
           {d.low_stock.length ? d.low_stock.map((p) => (
             <div key={p.id} className="flex items-center justify-between gap-3 border-b py-3 last:border-0">
               <div className="flex items-center gap-3 text-sm">
@@ -93,6 +94,11 @@ export default function Dashboard() {
               <Button size="sm" variant="outline" onClick={() => setEdit(p)}>Restock</Button>
             </div>
           )) : <p className="py-6 text-center text-muted-foreground">Everything is well stocked.</p>}
+          {d.low_stock_count > d.low_stock.length && (
+            <Link to="/admin/products" className="mt-3 block text-center text-[13px] font-semibold text-rust link-quiet">
+              +{d.low_stock_count - d.low_stock.length} more running low →
+            </Link>
+          )}
         </section>
         <section className="rounded-2xl border bg-card p-5 xl:col-span-2">
           <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2"><h3 className="text-xl">Recent orders</h3>
@@ -101,7 +107,7 @@ export default function Dashboard() {
         </section>
         {reviews && reviews.length > 0 && (
           <section className="rounded-2xl border bg-card p-5 xl:col-span-2">
-            <div className="mb-1 flex items-baseline justify-between"><h3 className="text-xl">Latest reviews</h3><Link to="/admin/reviews" className="text-[13px] font-semibold text-rust hover:underline">All reviews →</Link></div>
+            <div className="mb-1 flex items-baseline justify-between"><h3 className="text-xl">Latest reviews</h3><Link to="/admin/reviews" className="text-[13px] font-semibold text-rust link-quiet">All reviews →</Link></div>
             {reviews.map((r) => <ReviewRow key={r.id} r={r} />)}
           </section>
         )}

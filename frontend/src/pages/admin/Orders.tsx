@@ -11,6 +11,8 @@ import { api } from "@/lib/api"
 import { FLOW, STATUS_LABEL } from "@/lib/format"
 import type { AdminOrderRow } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { isoDate } from "@/lib/exports"
+import { ExportButton } from "@/components/common/ExportButton"
 
 const TABS: [string, string][] = [["all", "All"], ["ongoing", "Ongoing"], ...FLOW.map((s) => [s, STATUS_LABEL[s]] as [string, string]), ["cancelled", "Cancelled"]]
 
@@ -33,6 +35,10 @@ export default function Orders() {
         <form className="w-full sm:w-80" onSubmit={(e) => { e.preventDefault(); const n = new URLSearchParams(params); if (search) n.set("q", search); else n.delete("q"); setParams(n) }}>
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search order no, phone, name, pincode" className="h-10 bg-card" />
         </form>
+        <ExportButton file={`Raga-Orders-${new Date().toISOString().slice(0, 10)}`} sheet={() => ({
+          name: "Orders", header: ["Order", "Date", "Customer", "Phone", "City", "Pincode", "Items", "Total (₹)", "Payment", "Paid", "Status"],
+          rows: (orders ?? []).map((o) => [o.order_no, isoDate(o.created_at), o.customer_name, o.phone, o.address?.city, o.address?.pincode, o.item_count, o.total, o.payment_method.toUpperCase(), o.payment_status, o.status]),
+        })} />
       </PageHead>
       <div className="mb-3.5 flex flex-wrap gap-1.5">
         {TABS.map(([k, label]) => (
