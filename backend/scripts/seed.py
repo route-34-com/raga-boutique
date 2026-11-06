@@ -235,7 +235,8 @@ SUPPLIERS = {"sarees": "Kanchi Silk Weavers", "lehengas": "Jaipur Bridal House",
 EXPENSES = [  # (category, amount, note, day of month)
     ("Rent", 18000, "Showroom rent", 5), ("Electricity", 3900, "EB bill", 12), ("Packing & courier", 2800, "Boxes, tissue, pickups", 20),
 ]
-EXTRA_EXPENSES = {1: [("Marketing", 3500, "Instagram ads", 9)], 3: [("Maintenance", 14500, "AC compressor repair", 16), ("Tailoring", 2400, "Fall and pico", 22)],
+EXTRA_EXPENSES = {0: [("Electricity", 4150, "EB bill", 2), ("Transport", 850, "Auto to Erode market", 3), ("Packing & courier", 1960, "Delhivery pickups", 4),
+                      ("Tailoring", 1500, "Fall and pico, 6 sarees", 5), ("Maintenance", 1200, "Trial room light fixed", 6)], 1: [("Marketing", 3500, "Instagram ads", 9)], 3: [("Maintenance", 14500, "AC compressor repair", 16), ("Tailoring", 2400, "Fall and pico", 22)],
                   4: [("Marketing", 3000, "Diwali flyers", 7)], 2: [("Tailoring", 1800, "Blouse stitching", 18)]}
 STAFF = [  # (name, role, phone, salary, joined days ago, active)
     ("Kala", "Sales", "9842011223", 14000, 900, True), ("Meena", "Tailor", "9842011224", 12000, 600, True),
@@ -277,8 +278,8 @@ def seed_demo_business(db, products: dict[str, Product]) -> None:
 
     for back in range(6):
         start = _month_start(back, today)
-        for cat, amt, note, day in EXPENSES + EXTRA_EXPENSES.get(back, []):
-            when = start.replace(day=day)
+        for cat, amt, note, day in (EXPENSES if back else EXPENSES[:1]) + EXTRA_EXPENSES.get(back, []):
+            when = min(start.replace(day=day), today)
             if when <= today:
                 db.add(Expense(spent_on=when, category=cat, amount=amt + (back * 130 if cat == "Electricity" else 0), note=note))
 
