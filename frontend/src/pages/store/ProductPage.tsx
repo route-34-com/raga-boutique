@@ -82,7 +82,7 @@ export default function ProductPage() {
         </div>
 
         <div>
-          <p className="eyebrow"><Link to="/shop" className="hover:underline">Shop</Link> / <Link to={`/shop/${p.category_id}`} className="hover:underline">{cats.find((c) => c.id === p.category_id)?.name}</Link></p>
+          <p className="eyebrow"><Link to="/shop" className="link-quiet">Shop</Link> / <Link to={`/shop/${p.category_id}`} className="link-quiet">{cats.find((c) => c.id === p.category_id)?.name}</Link></p>
           <p className="mt-4 font-heading text-xl italic text-rust">Raag {p.raga}</p>
           <h1 className="mt-1 text-[clamp(32px,3.4vw,46px)] leading-tight">{p.name}</h1>
           <p className="mb-1 mt-3.5 text-2xl font-semibold">

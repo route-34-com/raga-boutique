@@ -31,7 +31,7 @@ export default function Customers() {
                   <TableCell>{c.orders}</TableCell>
                   <TableCell>{inr(c.spent)}</TableCell>
                   <TableCell>{c.last_order_at ? fmtDate(c.last_order_at) : "—"}</TableCell>
-                  <TableCell>{c.orders > 0 && <Link className="text-[13px] font-semibold text-rust hover:underline" to={`/admin/orders?q=${encodeURIComponent(c.phone)}`}>Orders →</Link>}</TableCell>
+                  <TableCell>{c.orders > 0 && <Link className="text-[13px] font-semibold text-rust link-quiet" to={`/admin/orders?q=${encodeURIComponent(c.phone)}`}>Orders →</Link>}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

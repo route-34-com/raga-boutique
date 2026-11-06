@@ -1,8 +1,9 @@
 import { Banknote, CreditCard, Heart, Mail, MapPin, Menu, MessageCircle, Phone, Search, ShoppingBag, Smartphone, User } from "lucide-react"
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { Link, NavLink, Outlet, useLocation } from "react-router"
 
 import { FacebookIcon, InstagramIcon } from "@/components/common/BrandIcons"
+import { PageLoader } from "@/components/common/PageLoader"
 import { CartSheet, useCartTotals } from "@/components/store/CartSheet"
 import { LoginDialog } from "@/components/store/LoginDialog"
 import { SearchDialog } from "@/components/store/SearchDialog"
@@ -27,7 +28,7 @@ function usePromos() {
 function NavLinks({ className, onClick }: { className?: string; onClick?: () => void }) {
   const { data: cats = [] } = useCategories()
   const link = ({ isActive }: { isActive: boolean }) =>
-    cn("relative whitespace-nowrap py-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[1.5px] after:origin-left after:scale-x-0 after:bg-rust after:transition-transform hover:after:scale-x-100", isActive && "after:scale-x-100")
+    cn("whitespace-nowrap rounded-full px-3 py-1.5 transition-colors hover:bg-sand/60 hover:text-cocoa", isActive && "bg-sand text-cocoa")
   return (
     <nav className={className} aria-label="Main">
       <NavLink to="/shop" end className={link} onClick={onClick}>Shop all</NavLink>
@@ -65,7 +66,7 @@ function Header() {
         <Link to="/" className="hidden justify-self-start xl:block" aria-label="Raga Boutique home">
           <img src={logo} alt="Raga — The Music of Colours" className={cn("w-auto transition-[height]", scrolled ? "h-10" : "h-12")} />
         </Link>
-        <NavLinks className="hidden items-center gap-8 py-2.5 text-[15px] font-medium xl:flex 2xl:gap-10" />
+        <NavLinks className="hidden items-center gap-1 py-2.5 text-[15px] font-medium xl:flex 2xl:gap-2" />
         {/* Small screens: logo centred between the menu button and the icons. Desktop: logo on the left (above). */}
         <Link to="/" className="justify-self-center px-2 xl:hidden" aria-label="Raga Boutique home">
           <img src={logo} alt="Raga — The Music of Colours" className={cn("w-auto transition-[height]", scrolled ? "h-10" : "h-11 md:h-[52px]")} />
@@ -113,7 +114,7 @@ export function ContactList({ className, linkClass }: { className?: string; link
         <li>
           <a className={row} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("Raga Boutique, " + s.contact_address)}`} target="_blank" rel="noopener">
             <MapPin className="mt-0.5 size-4 shrink-0" />
-            <span>{s.contact_address}{s.contact_hours && <><br />{s.contact_hours}</>}<br /><span className="underline-offset-4 hover:underline">Get directions</span></span>
+            <span>{s.contact_address}{s.contact_hours && <><br />{s.contact_hours}</>}<br /><span className=" link-quiet">Get directions</span></span>
           </a>
         </li>
       )}
@@ -138,7 +139,7 @@ function Footer() {
   const a = "block py-1 text-sm opacity-80 hover:text-marigold hover:opacity-100"
   return (
     <footer className="mt-12 bg-cocoa px-4 pb-7 pt-12 text-sand sm:px-8 lg:mt-12 lg:px-14">
-      <div className="mx-auto grid max-w-[1600px] gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_.8fr_.8fr_1.4fr]">
+      <div className="mx-auto grid max-w-[1920px] gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_.8fr_.8fr_1.4fr]">
         <div>
           <img src="/brand/logo-sm.png" alt="Raga" className="mb-4 w-[170px] brightness-0 invert-[.9] sepia-[.3]" />
           <p className="max-w-[34ch] text-sm opacity-80">Handwoven sarees and ethnic wear, chosen the way you'd choose a song: by the mood it leaves you in.</p>
@@ -162,16 +163,16 @@ function Footer() {
           <ContactList className="opacity-85" linkClass="hover:text-marigold" />
         </div>
       </div>
-      <div className="mx-auto mt-12 flex max-w-[1600px] flex-wrap items-center gap-x-5 gap-y-3 border-t border-sand/15 pt-6">
+      <div className="mx-auto mt-12 flex max-w-[1920px] flex-wrap items-center gap-x-5 gap-y-3 border-t border-sand/15 pt-6">
         <h4 className="font-heading text-lg text-background">Payments</h4>
         <ul className="flex flex-wrap gap-2 text-xs font-semibold">
           <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><Banknote className="size-4 text-marigold" />Cash on delivery</li>
           <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><Smartphone className="size-4 text-marigold" />UPI on delivery</li>
           <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 opacity-60 ring-1 ring-sand/15"><CreditCard className="size-4" />Cards &amp; online · coming soon</li>
         </ul>
-        <Link to="/story#orders" className="text-sm opacity-80 hover:text-marigold hover:opacity-100 underline-offset-4 hover:underline">Payment details</Link>
+        <Link to="/story#orders" className="text-sm opacity-80 hover:text-marigold hover:opacity-100 link-quiet">Payment details</Link>
       </div>
-      <div className="mx-auto mt-5 flex max-w-[1600px] flex-col justify-between gap-1.5 text-xs opacity-65 sm:flex-row">
+      <div className="mx-auto mt-5 flex max-w-[1920px] flex-col justify-between gap-1.5 text-xs opacity-65 sm:flex-row">
         <span>© 2026 Raga Boutique</span><span>Made in India, with patience.</span>
       </div>
     </footer>
@@ -209,7 +210,7 @@ export function StoreLayout() {
         </div>
       </div>
       <Header />
-      <main className="overflow-x-clip"><Outlet /></main>
+      <main className="overflow-x-clip"><Suspense fallback={<PageLoader />}><Outlet /></Suspense></main>
       <Footer />
       <CartSheet />
       <LoginDialog />

@@ -79,7 +79,7 @@ export default function Home() {
           )}
         </div>
         <div className="relative self-start pb-9 pl-7 md:pb-12 md:pl-12">
-          <figure className="aspect-[4/4.4] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-[4/4.6] md:rounded-t-[220px] 3xl:-mr-[calc((100vw-100rem)/2+3.5rem)] 3xl:aspect-auto 3xl:h-[min(76vh,780px)] 3xl:rounded-r-none 3xl:rounded-tl-[260px]">
+          <figure className="aspect-[4/4.4] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-[4/4.6] md:rounded-t-[220px] 3xl:-mr-[calc(max(0px,(100vw-120rem)/2)+3.5rem)] 3xl:aspect-auto 3xl:h-[min(76vh,780px)] 3xl:rounded-r-none 3xl:rounded-tl-[260px]">
             <Photo src="/brand/hero-marigold.jpg" alt="Model in a marigold Kanjivaram saree with royal blue border in a temple courtyard"
               className="size-full animate-[drift_18s_ease-in-out_infinite_alternate] object-cover object-[55%_30%]" />
           </figure>
@@ -115,7 +115,7 @@ export default function Home() {
 
       <section className="container-x pt-8 md:pt-12">
         <SectionHead eyebrow="The collection" title="New in the edit"
-          aside={<Link to="/shop" className="font-semibold text-cocoa underline-offset-4 hover:text-rust hover:underline">Shop all →</Link>} />
+          aside={<Link to="/shop" className="font-semibold text-cocoa hover:text-rust link-quiet">Shop all →</Link>} />
         <div className="grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4 3xl:grid-cols-5">
           {isLoading ? Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)
             : products?.slice(0, 5).map((p, i) => <div key={p.id} className={i === 4 ? "hidden 3xl:block" : undefined}><ProductCard p={p} /></div>)}
@@ -149,7 +149,7 @@ export default function Home() {
       {lehengas.length > 0 && (
         <section className="container-x pt-8 md:pt-12">
           <SectionHead eyebrow="Lehengas" title="For the sangeet and the pheras"
-            aside={<Link to="/shop/lehengas" className="font-semibold text-cocoa underline-offset-4 hover:text-rust hover:underline">See all lehengas →</Link>} />
+            aside={<Link to="/shop/lehengas" className="font-semibold text-cocoa hover:text-rust link-quiet">See all lehengas →</Link>} />
           <div className={cn("grid grid-cols-2 gap-3 md:gap-7 lg:grid-cols-4", lehengas.length >= 5 && "3xl:grid-cols-5")}>
             {lehengas.slice(0, 5).map((p, i) => <div key={p.id} className={i === 4 ? "hidden 3xl:block" : undefined}><ProductCard p={p} /></div>)}
           </div>

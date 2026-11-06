@@ -88,7 +88,7 @@ export function LoginForm({ onSuccess, title = "Log in or sign up", subtitle }: 
         <h3 className="text-2xl">Enter the code</h3>
         <p className="mt-1 text-sm text-muted-foreground">
           Sent to <strong className="text-foreground">+91 {phone}</strong> ·{" "}
-          <button type="button" className="font-semibold text-rust underline-offset-4 hover:underline" onClick={() => setStep("phone")}>Change</button>
+          <button type="button" className="font-semibold text-rust link-quiet" onClick={() => setStep("phone")}>Change</button>
         </p>
       </div>
       <InputOTP maxLength={6} value={code} onChange={setCode} onComplete={verify} autoFocus disabled={busy} containerClassName="justify-center">

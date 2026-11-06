@@ -13,6 +13,7 @@ import { ApiError, api, del } from "@/lib/api"
 import { fmtDate, fmtPhone } from "@/lib/format"
 import type { AdminReview } from "@/lib/types"
 import { Photo } from "@/components/common/Photo"
+import { withApproval } from "@/components/common/Confirm"
 
 export function useAdminReviews(limit = 200) {
   return useQuery({ queryKey: ["admin", "reviews", limit], queryFn: () => api<AdminReview[]>(`/api/admin/reviews?limit=${limit}`) })
@@ -57,7 +58,7 @@ export default function Reviews() {
       )}
       <section className="rounded-2xl border bg-card px-5 py-1">
         {!data ? <Skeleton className="my-4 h-40" /> : shown.length ? shown.map((r) => (
-          <ReviewRow key={r.id} r={r} onDelete={(r) => confirm(`Delete ${r.name}'s review of ${r.product.name}? This can't be undone.`) && remove.mutate(r.id)} />
+          <ReviewRow key={r.id} r={r} onDelete={(r) => withApproval({ title: `Delete ${r.name}'s review?`, body: `Of ${r.product.name}. This can't be undone.`, action: "Delete review" }, () => remove.mutate(r.id))()} />
         )) : <p className="py-10 text-center text-muted-foreground">{q ? "No reviews match." : "No reviews yet."}</p>}
       </section>
     </>

@@ -8,6 +8,7 @@ import { useProducts, useSettings } from "@/hooks/queries"
 import { cover, inr, stockOf } from "@/lib/format"
 import { useCart } from "@/stores/cart"
 import { Photo } from "@/components/common/Photo"
+import { withApproval } from "@/components/common/Confirm"
 
 export function useCartTotals() {
   const lines = useCart((s) => s.lines)
@@ -61,7 +62,7 @@ export function CartSheet() {
                     </div>
                     <div className="flex flex-col items-end justify-between text-sm">
                       <strong>{inr(p!.price * qty)}</strong>
-                      <button className="text-xs text-muted-foreground underline-offset-4 hover:underline" onClick={() => setQty(productId, size, 0)}>Remove</button>
+                      <button className="text-xs text-muted-foreground link-quiet" onClick={withApproval({ title: "Remove from your bag?", body: p?.name, action: "Remove", cancel: "Keep it" }, () => setQty(productId, size, 0))}>Remove</button>
                     </div>
                   </div>
                 )

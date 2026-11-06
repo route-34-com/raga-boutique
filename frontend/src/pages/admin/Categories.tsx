@@ -4,15 +4,17 @@ import { useState } from "react"
 import { toast } from "sonner"
 
 import { PageHead } from "@/components/admin/AdminLayout"
+import { PageLoader } from "@/components/common/PageLoader"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { ApiError, api, del, patch, post } from "@/lib/api"
 import type { AdminCategory } from "@/lib/types"
+import { withApproval } from "@/components/common/Confirm"
 
 export default function Categories() {
   const qc = useQueryClient()
-  const { data: cats = [] } = useQuery({ queryKey: ["admin", "categories"], queryFn: () => api<AdminCategory[]>("/api/admin/categories") })
+  const { data: cats = [], isLoading } = useQuery({ queryKey: ["admin", "categories"], queryFn: () => api<AdminCategory[]>("/api/admin/categories") })
   const [name, setName] = useState("")
   const done = (msg?: string) => { qc.invalidateQueries({ queryKey: ["admin", "categories"] }); qc.invalidateQueries({ queryKey: ["categories"] }); if (msg) toast(msg) }
   const fail = (e: Error) => toast.error(e instanceof ApiError ? e.message : "Something went wrong.")
@@ -22,6 +24,7 @@ export default function Categories() {
   const reorder = useMutation({ mutationFn: (ids: string[]) => post("/api/admin/categories/reorder", { ids }), onSuccess: () => done() })
   const remove = useMutation({ mutationFn: (id: string) => del(`/api/admin/categories/${id}`), onSuccess: () => done("Category deleted."), onError: fail })
 
+  if (isLoading) return <PageLoader />
   const move = (i: number, dir: number) => { const ids = cats.map((c) => c.id);[ids[i], ids[i + dir]] = [ids[i + dir], ids[i]]; reorder.mutate(ids) }
 
   return (
@@ -40,7 +43,7 @@ export default function Categories() {
               <Button size="icon-sm" variant="ghost" aria-label="Move down" disabled={i === cats.length - 1} onClick={() => move(i, 1)}><ArrowDown /></Button>
               <Switch checked={c.active} aria-label="Show in store menu" onCheckedChange={(v) => update.mutate({ id: c.id, active: v })} />
               <Button size="sm" variant="destructive" disabled={c.products > 0} title={c.products ? "Move or delete its products first" : ""}
-                onClick={() => confirm(`Delete “${c.name}”?`) && remove.mutate(c.id)}>Delete</Button>
+                onClick={withApproval({ title: `Delete “${c.name}”?`, body: "It disappears from the shop menu.", action: "Delete category" }, () => remove.mutate(c.id))}>Delete</Button>
             </div>
           </div>
         ))}

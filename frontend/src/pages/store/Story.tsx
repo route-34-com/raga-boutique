@@ -28,7 +28,7 @@ export default function Story() {
           <p className="max-w-[48ch] text-muted-foreground">Raga began in 2013 as a small boutique in Tiruchengode, built on a simple idea: every woman deserves a saree that makes her feel confident. Suja and her daughter still choose each piece themselves. They feel the weave, watch how it falls and check the colour in daylight.</p>
           <p className="max-w-[48ch] text-muted-foreground">Today Raga has a larger showroom on Erode Main Road. Suja welcomes everyone who walks in, and her daughter brings every new arrival to you on Instagram and WhatsApp. Either way, you're treated like family.</p>
           <p className="font-heading text-xl italic text-rust">Feel confident. Feel beautiful. Feel Raga.</p>
-          {s?.instagram_url && <a href={s.instagram_url} target="_blank" rel="noopener" className="inline-block font-semibold text-cocoa underline-offset-4 hover:text-rust hover:underline">See new arrivals on Instagram →</a>}
+          {s?.instagram_url && <a href={s.instagram_url} target="_blank" rel="noopener" className="inline-block font-semibold text-cocoa hover:text-rust link-quiet">See new arrivals on Instagram →</a>}
         </div>
       </section>
       <section className="container-x grid items-center gap-8 pt-14 md:grid-cols-[1.1fr_1fr] md:gap-24">

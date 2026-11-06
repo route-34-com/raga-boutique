@@ -37,7 +37,7 @@ export function RatingSummary({ slug }: { slug: string }) {
   const { data } = useProductReviews(slug)
   if (!data?.count) return null
   return (
-    <a href="#reviews" className="mt-2 inline-flex items-center gap-2 text-sm hover:underline">
+    <a href="#reviews" className="mt-2 inline-flex items-center gap-2 text-sm link-quiet">
       <Stars value={data.average} className="text-base" /><strong>{data.average.toFixed(1)}</strong>
       <span className="text-muted-foreground">· {data.count} review{data.count === 1 ? "" : "s"}</span>
     </a>
@@ -124,7 +124,7 @@ export function RateButton({ item, mine }: { item: OrderItem; mine?: MyReview })
   if (item.product_id === null) return null
   return (
     <>
-      <button type="button" onClick={() => { setRating(mine?.rating ?? 0); setComment(mine?.comment ?? ""); setOpen(true) }} className="mt-1 inline-flex items-center gap-1.5 text-[13px] font-semibold text-rust hover:underline">
+      <button type="button" onClick={() => { setRating(mine?.rating ?? 0); setComment(mine?.comment ?? ""); setOpen(true) }} className="mt-1 inline-flex items-center gap-1.5 text-[13px] font-semibold text-rust link-quiet">
         {mine ? <><Stars value={mine.rating} className="text-xs" />Edit your review</> : <><Star className="size-3.5" />Rate this piece</>}
       </button>
       <Dialog open={open} onOpenChange={setOpen}>

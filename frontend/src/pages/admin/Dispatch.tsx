@@ -108,11 +108,11 @@ export default function Dispatch() {
           </div>
         </div>
         {couriers.length === 0 && (
-          <p className="mb-4 rounded-xl bg-[#fdf3e2] px-4 py-3 text-sm">Add your couriers and their tracking links in <Link to="/admin/settings" className="font-semibold text-rust underline-offset-4 hover:underline">Settings</Link> so customers get a link to track.</p>
+          <p className="mb-4 rounded-xl bg-[#fdf3e2] px-4 py-3 text-sm">Add your couriers and their tracking links in <Link to="/admin/settings" className="font-semibold text-rust link-quiet">Settings</Link> so customers get a link to track.</p>
         )}
 
         {!orders ? <Skeleton className="h-40" /> : orders.length === 0 ? (
-          <p className="py-10 text-center text-muted-foreground">No accepted orders waiting. Accept new orders from <Link to="/admin/orders?status=placed" className="font-semibold text-rust underline-offset-4 hover:underline">Orders</Link>.</p>
+          <p className="py-10 text-center text-muted-foreground">No accepted orders waiting. Accept new orders from <Link to="/admin/orders?status=placed" className="font-semibold text-rust link-quiet">Orders</Link>.</p>
         ) : (
           <div className="divide-y">
             <label className="flex items-center gap-3 pb-3 text-sm font-semibold">

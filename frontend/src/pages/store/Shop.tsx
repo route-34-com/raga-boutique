@@ -50,7 +50,7 @@ export default function Shop() {
 
   const onlyMood = selection.mood?.length === 1 && chosen === 1 ? selection.mood[0] : undefined
   const title = search ? `“${search}”` : onlyMood ? MOODS[onlyMood]?.label : cat ? cats.find((c) => c.id === cat)?.name : "Shop all"
-  const sub = search ? <>Search results · <Link to={`/shop${cat ? "/" + cat : ""}`} className="hover:text-rust underline-offset-4 hover:underline">clear search</Link></>
+  const sub = search ? <>Search results · <Link to={`/shop${cat ? "/" + cat : ""}`} className="hover:text-rust link-quiet">clear search</Link></>
     : onlyMood ? MOODS[onlyMood]?.note : "Handwoven, small-batch, named for the music they remind us of."
   useTitle(search ? `Search: ${search}` : title ?? "Shop")
 
@@ -89,16 +89,16 @@ export default function Shop() {
                   {labelFor(key, v)}<X className="size-3.5" />
                 </button>
               )))}
-              <button type="button" onClick={() => setSelection({})} className="px-2 text-[13px] font-semibold text-rust hover:underline">Clear all</button>
+              <button type="button" onClick={() => setSelection({})} className="px-2 text-[13px] font-semibold text-rust link-quiet">Clear all</button>
             </div>
           )}
 
           <p className="my-4 text-sm text-muted-foreground sm:hidden">{count}</p>
           <div className="sm:pt-5">
             {isLoading ? (
-              <div className="grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3 2xl:grid-cols-4">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)}</div>
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] md:gap-6">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-2xl" />)}</div>
             ) : products?.length ? (
-              <div className="grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3 2xl:grid-cols-4">{products.map((p) => <ProductCard key={p.id} p={p} />)}</div>
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] md:gap-6">{products.map((p) => <ProductCard key={p.id} p={p} />)}</div>
             ) : (
               <div className="flex flex-col items-center gap-5 py-16 text-center">
                 <p className="font-heading text-xl italic text-rust">

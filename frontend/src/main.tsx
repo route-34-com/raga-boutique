@@ -3,6 +3,7 @@ import { StrictMode, Suspense } from "react"
 import { createRoot } from "react-dom/client"
 import { RouterProvider } from "react-router"
 
+import { ConfirmHost } from "@/components/common/Confirm"
 import { PageLoader } from "@/components/common/PageLoader"
 import { Toaster } from "@/components/ui/sonner"
 import { router } from "@/router"
@@ -19,6 +20,7 @@ createRoot(document.getElementById("root")!).render(
         <RouterProvider router={router} />
       </Suspense>
       <Toaster theme="light" position="bottom-center" />
+      <ConfirmHost />
     </QueryClientProvider>
   </StrictMode>,
 )

@@ -28,14 +28,14 @@ export default function OrderPage() {
 
   return (
     <section className="container-x pt-5 md:pt-6">
-      <Link to="/account" className="mb-5 inline-block text-sm font-medium text-rust hover:underline">← My orders</Link>
+      <Link to="/account" className="mb-5 inline-block text-sm font-medium text-rust link-quiet">← My orders</Link>
       {isLoading ? <Skeleton className="h-64 rounded-2xl" /> : isError || !o ? <p className="font-heading text-xl italic text-rust">Order not found.</p> : (
         <>
           {params.get("new") && (
             <div className="mb-6 rounded-2xl bg-emerald-50 px-5 py-4 text-emerald-900">
               <p className="font-semibold">Thank you! Your order is placed.</p>
-              <p className="mt-1 text-sm">Follow it here or under <Link to="/account" className="font-semibold text-rust underline-offset-4 hover:underline">My orders</Link>. We'll call {fmtPhone(o.phone)} before delivery.
-                {settings?.contact_whatsapp && <> Questions? <a className="font-semibold text-rust underline-offset-4 hover:underline" href={waLink(settings.contact_whatsapp, `Hi, about my order ${o.order_no}`)} target="_blank" rel="noopener">WhatsApp us</a>.</>}</p>
+              <p className="mt-1 text-sm">Follow it here or under <Link to="/account" className="font-semibold text-rust link-quiet">My orders</Link>. We'll call {fmtPhone(o.phone)} before delivery.
+                {settings?.contact_whatsapp && <> Questions? <a className="font-semibold text-rust link-quiet" href={waLink(settings.contact_whatsapp, `Hi, about my order ${o.order_no}`)} target="_blank" rel="noopener">WhatsApp us</a>.</>}</p>
             </div>
           )}
           <div className="mb-7 flex items-start justify-between gap-4">

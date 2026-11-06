@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dropdown } from "@/components/common/Dropdown"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
@@ -17,6 +17,7 @@ import type { AdminCategory, AdminProduct } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { Spinner } from "@/components/ui/spinner"
 import { Photo } from "@/components/common/Photo"
+import { withApproval } from "@/components/common/Confirm"
 
 const SIZE_SET = ["XS", "S", "M", "L", "XL", "XXL"]
 const ATTRS: ["color" | "material" | "work" | "pattern", string, string[]][] = [
@@ -177,7 +178,7 @@ export function ProductSheet({ product, isNew, onClose }: { product: AdminProduc
                         {i === 0 ? <span className="absolute bottom-1.5 left-1.5 rounded bg-cocoa px-2 py-0.5 text-[10px] font-bold text-white">Cover</span>
                           : <button type="button" aria-label="Move earlier" onClick={() => setD((x) => { const a = [...x.images];[a[i - 1], a[i]] = [a[i], a[i - 1]]; return { ...x, images: a } })}
                             className="absolute bottom-1.5 left-1.5 grid size-7 place-items-center rounded-full bg-white/90"><ArrowLeft className="size-3.5" /></button>}
-                        <button type="button" aria-label="Remove photo" onClick={() => set("images", d.images.filter((_, j) => j !== i))}
+                        <button type="button" aria-label="Remove photo" onClick={withApproval({ title: "Remove this photo?", body: i === 0 ? "It's the cover photo; the next one becomes the cover." : "It goes when you save the piece.", action: "Remove photo" }, () => set("images", d.images.filter((_, j) => j !== i)))}
                           className="absolute right-1.5 top-1.5 grid size-7 place-items-center rounded-full bg-white/90 text-destructive"><X className="size-3.5" /></button>
                       </figure>
                     ))}
@@ -227,11 +228,9 @@ export function ProductSheet({ product, isNew, onClose }: { product: AdminProduc
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                   <div className={field}><Label htmlFor="p-raga">Raga name</Label><Input id="p-raga" value={d.raga} onChange={(e) => set("raga", e.target.value)} placeholder="e.g. Bhairavi" /></div>
                   <div className={field}><Label>Mood</Label>
-                    <Select value={d.mood} onValueChange={(v) => set("mood", v)}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                      <SelectContent>{Object.entries(MOODS).map(([k, m]) => <SelectItem key={k} value={k}>{m.label}</SelectItem>)}</SelectContent></Select></div>
+                    <Dropdown value={d.mood} onChange={(v) => set("mood", v)} options={Object.entries(MOODS).map(([k, m]) => ({ value: k, label: m.label }))} /></div>
                   <div className={field}><Label>Category</Label>
-                    <Select value={d.category_id} onValueChange={(v) => set("category_id", v)}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                      <SelectContent>{cats.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select></div>
+                    <Dropdown value={d.category_id} onChange={(v) => set("category_id", v)} options={cats.map((c) => ({ value: c.id, label: c.name }))} /></div>
                   <div className={field}><Label htmlFor="p-tag">Badge (optional)</Label><Input id="p-tag" value={d.tag} onChange={(e) => set("tag", e.target.value)} placeholder="New, Bestseller…" /></div>
                 </div>
               </section>
@@ -282,7 +281,7 @@ export function ProductSheet({ product, isNew, onClose }: { product: AdminProduc
 
           <div className="flex flex-wrap items-center gap-2.5 border-t bg-card px-6 py-4">
             {!isNew && <Button type="button" variant="destructive" className="h-10 px-4" disabled={remove.isPending}
-              onClick={() => confirm(`Delete “${product!.name}” permanently? Past orders keep their copy. To hide it for now, turn off “Show on store” instead.`) && remove.mutate()}>{remove.isPending && <Spinner />}Delete</Button>}
+              onClick={withApproval({ title: `Delete “${product?.name}”?`, body: "It's removed for good. Past orders keep their own copy. To hide it for now, turn off “Show on store” instead.", action: "Delete piece" }, () => remove.mutate())}>{remove.isPending && <Spinner />}Delete</Button>}
             {error && <p ref={errorRef} role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-red-800">{error}</p>}
             <div className="ml-auto flex gap-2.5">
               <Button type="button" variant="ghost" className="h-10 px-4" onClick={onClose}>Cancel</Button>

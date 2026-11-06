@@ -133,11 +133,25 @@
 
 @layer components {
   .eyebrow { @apply text-[11px] font-bold uppercase tracking-[0.16em] text-rust; }
-  .container-x { @apply mx-auto w-full max-w-[1600px] px-4 sm:px-8 lg:px-14; }
+  .container-x { @apply mx-auto w-full max-w-[1920px] px-4 sm:px-8 lg:px-14; }
+  /* Links highlight with a soft tinted ring instead of an underline; no layout shift. */
+  .link-quiet { border-radius: 6px; transition: color .15s, background-color .15s, box-shadow .15s; }
+  .link-quiet:hover, .link-quiet:focus-visible {
+    color: var(--rust); outline: none;
+    background-color: color-mix(in oklab, var(--rust) 11%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--rust) 11%, transparent);
+  }
 }
 
 @keyframes marquee { to { transform: translateX(-50%); } }
 @keyframes drift { from { transform: scale(1.04); } to { transform: scale(1.12) translate(-1.5%, 1%); } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
+}
+
+@media print {
+  @page { size: A4; margin: 12mm; }
+  html, body { background: #fff !important; }
+  details > summary { display: none; }
+  section, .rounded-2xl { break-inside: avoid; box-shadow: none !important; }
 }

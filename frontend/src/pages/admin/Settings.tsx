@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import { PageHead } from "@/components/admin/AdminLayout"
+import { PageLoader } from "@/components/common/PageLoader"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,6 +16,7 @@ import { BRANDS, applyBrand, type Brand } from "@/lib/brand"
 import type { StoreSettings } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { Check } from "lucide-react"
+import { withApproval } from "@/components/common/Confirm"
 
 type S = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at: number; couriers: Courier[]; brand_theme: Brand }
 type AdminRow = { id: number; phone: string; name: string; is_you: boolean }
@@ -57,10 +59,15 @@ export default function Settings() {
       <Input id={k} type={type} value={form[k]} placeholder={placeholder} onChange={(e) => setForm({ ...form, [k]: e.target.value })} /></div>
   )
 
+  if (!s) return <PageLoader />
   return (
     <>
-      <PageHead eyebrow="Store" title="Settings" />
-      <form className="grid items-start gap-4 xl:grid-cols-2" onSubmit={(e) => { e.preventDefault(); save.mutate() }}>
+      <div className="sticky top-0 z-20 -mx-4 -mt-6 bg-[#f5f0e8] px-4 pt-6 md:-mx-10 md:-mt-8 md:px-10 md:pt-8">
+        <PageHead eyebrow="Store" title="Settings">
+          <Button type="submit" form="settings-form" className="h-10 px-5" disabled={save.isPending}>{save.isPending ? <><Spinner />Saving…</> : "Save settings"}</Button>
+        </PageHead>
+      </div>
+      <form id="settings-form" className="grid items-start gap-4 xl:grid-cols-2" onSubmit={(e) => { e.preventDefault(); save.mutate() }}>
         <section className="rounded-2xl border bg-card p-5 xl:col-span-2">
           <h3 className="mb-1 text-xl">Brand colour</h3>
           <p className="mb-4 text-sm text-muted-foreground">Used for the logo, buttons, headings, footer, browser tab icon and order emails. Tap one to preview it here, then press <strong>Save settings</strong> to show it on the shop.</p>
@@ -113,14 +120,13 @@ export default function Settings() {
                   <Input aria-label="Courier name" value={c.name} required placeholder="DTDC" onChange={(e) => set({ name: e.target.value })} />
                   <Input aria-label="Tracking link" value={c.track_url} type="url" placeholder="https://…{id}" pattern=".*\{id\}.*"
                     title="Include {id} where the tracking ID goes" onChange={(e) => set({ track_url: e.target.value })} />
-                  <Button type="button" variant="outline" onClick={() => setForm({ ...form, couriers: form.couriers.filter((_, j) => j !== i) })}>Remove</Button>
+                  <Button type="button" variant="outline" onClick={withApproval({ title: `Remove ${c.name || "this courier"}?`, body: "It's taken off the Dispatch list when you save settings.", action: "Remove courier" }, () => setForm({ ...form, couriers: form.couriers.filter((_, j) => j !== i) }))}>Remove</Button>
                 </div>
               )
             })}
           </div>
           <Button type="button" variant="outline" className="mt-3" onClick={() => setForm({ ...form, couriers: [...form.couriers, { name: "", track_url: "" }] })}>Add courier</Button>
         </section>
-        <div className="xl:col-span-2"><Button className="h-10 px-5" disabled={save.isPending}>{save.isPending ? <><Spinner />Saving…</> : "Save settings"}</Button></div>
       </form>
       <section className="mt-4 rounded-2xl border bg-card p-5 xl:max-w-[calc(50%-0.5rem)]">
         <h3 className="mb-1 text-xl">Admins</h3>
@@ -129,7 +135,7 @@ export default function Settings() {
           <div key={a.id} className="flex items-center justify-between gap-3 border-b py-3 text-sm">
             <div><strong>{fmtPhone(a.phone)}</strong>{a.name && <span className="ml-2 text-muted-foreground">{a.name}</span>}</div>
             {a.is_you ? <span className="text-xs text-muted-foreground">You</span>
-              : <Button size="sm" variant="destructive" onClick={() => confirm(`Remove ${fmtPhone(a.phone)} as admin?`) && removeAdmin.mutate(a.id)}>Remove</Button>}
+              : <Button size="sm" variant="destructive" onClick={withApproval({ title: `Remove ${fmtPhone(a.phone)} as admin?`, body: "They can no longer open this panel.", action: "Remove admin" }, () => removeAdmin.mutate(a.id))}>Remove</Button>}
           </div>
         ))}
         <form className="mt-4 flex gap-2.5" onSubmit={(e) => { e.preventDefault(); if (/^[6-9]\d{9}$/.test(phone)) addAdmin.mutate(); else toast.error("Enter a valid 10-digit mobile number.") }}>

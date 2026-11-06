@@ -15,6 +15,7 @@ import type { AdminOrderDetail, Courier, Notice, OrderStatus } from "@/lib/types
 import { cn } from "@/lib/utils"
 import { Spinner } from "@/components/ui/spinner"
 import { Photo } from "@/components/common/Photo"
+import { confirmAction } from "@/components/common/Confirm"
 
 const NEXT: Partial<Record<OrderStatus, OrderStatus>> = { placed: "confirmed", confirmed: "packed", packed: "shipped", shipped: "delivered" }
 export const NEXT_LABEL: Partial<Record<OrderStatus, string>> = { confirmed: "Accept order", packed: "Mark packed", shipped: "Mark shipped", delivered: "Mark delivered" }
@@ -59,8 +60,9 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
     const warning = o.status === "shipped"
       ? "This order has already shipped. Cancel it only if the parcel is coming back to you (RTO). Stock will be put back."
       : "Cancel this order? Stock will be put back."
-    if (status === "cancelled" && !confirm(warning)) return
-    advance.mutate({ id: o.id, status, note, courier, tracking_id: tracking }, { onSuccess: () => setNote("") })
+    const run = () => advance.mutate({ id: o.id, status, note, courier, tracking_id: tracking }, { onSuccess: () => setNote("") })
+    if (status !== "cancelled") return run()
+    void confirmAction({ title: `Cancel ${o.order_no}?`, body: warning, action: "Cancel order", cancel: "Keep order" }).then((ok) => ok && run())
   }
 
   const heading = "mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground"
@@ -125,8 +127,8 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
                 </div>
               </div>
               <ul className="mt-3 space-y-1.5">
-                <li className="flex items-center gap-2.5"><Phone className="size-4 text-muted-foreground" /><a href={`tel:+91${mobile}`} className="hover:underline">{fmtPhone(mobile)}</a></li>
-                {o.email && <li className="flex items-center gap-2.5"><Mail className="size-4 text-muted-foreground" /><a href={`mailto:${o.email}`} className="truncate hover:underline">{o.email}</a></li>}
+                <li className="flex items-center gap-2.5"><Phone className="size-4 text-muted-foreground" /><a href={`tel:+91${mobile}`} className="link-quiet">{fmtPhone(mobile)}</a></li>
+                {o.email && <li className="flex items-center gap-2.5"><Mail className="size-4 text-muted-foreground" /><a href={`mailto:${o.email}`} className="truncate link-quiet">{o.email}</a></li>}
               </ul>
               <div className="mt-3.5 grid grid-cols-2 gap-2">
                 <Button asChild variant="outline" className="h-9"><a href={`tel:+91${mobile}`}><Phone />Call</a></Button>
@@ -146,7 +148,7 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
               {o.tracking_id && (
                 <div className="mt-3 flex items-center gap-2.5 rounded-lg bg-[#f7f1e8] px-3 py-2">
                   <Truck className="size-4 shrink-0 text-muted-foreground" />
-                  <span><strong>{o.courier}</strong> · {trackUrl ? <a href={trackUrl} target="_blank" rel="noopener" className="font-mono text-rust underline-offset-4 hover:underline">{o.tracking_id}</a> : <span className="font-mono">{o.tracking_id}</span>}</span>
+                  <span><strong>{o.courier}</strong> · {trackUrl ? <a href={trackUrl} target="_blank" rel="noopener" className="font-mono text-rust link-quiet">{o.tracking_id}</a> : <span className="font-mono">{o.tracking_id}</span>}</span>
                 </div>
               )}
             </section>
@@ -208,7 +210,7 @@ function NoticeRow({ n }: { n: Notice }) {
       <div className="min-w-0 flex-1">
         <p className="font-medium">{KIND_LABEL[n.kind]}</p>
         {n.status !== "tap" && n.detail && <p className={cn("break-words text-xs", n.status === "failed" ? "text-destructive" : "text-muted-foreground")}>{n.detail}</p>}
-        {n.status === "tap" && <a href={n.detail} target="_blank" rel="noopener" className="text-xs font-semibold text-rust underline-offset-4 hover:underline">Open WhatsApp to send</a>}
+        {n.status === "tap" && <a href={n.detail} target="_blank" rel="noopener" className="text-xs font-semibold text-rust link-quiet">Open WhatsApp to send</a>}
       </div>
       <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold", TONE[n.status])}>{RESULT[n.status]}</span>
     </li>
