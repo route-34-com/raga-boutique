@@ -61,6 +61,9 @@ def main() -> None:
     by_slug = {raw["id"]: raw for raw in catalog}
 
     with SessionLocal() as db:
+        from sqlalchemy import inspect
+        if args.reset_demo and not inspect(db.get_bind()).has_table("purchases"):
+            sys.exit("The new tables aren't there yet. Run the migration first:  uv run python -m alembic upgrade head")
         live = {p.slug: p for p in db.scalars(select(Product).options(selectinload(Product.images)))}
         retire = [s for s in RETIRED if s in live]
         add = [s for s in order if s not in live]

@@ -90,7 +90,7 @@ psql -d postgres -c "CREATE ROLE raga LOGIN PASSWORD 'raga_dev'" -c "CREATE DATA
 cd backend
 cp .env.example .env
 uv sync
-uv run alembic upgrade head
+uv run python -m alembic upgrade head
 uv run python -m scripts.seed --demo
 ```
 
@@ -197,7 +197,7 @@ Migrations don't run on deploy. After adding one, run it against Neon (use the u
 
 ```bash
 vercel env pull .env.production.local --environment production
-cd backend && DATABASE_URL="<DATABASE_URL_UNPOOLED>" IMAGE_STORE=db uv run alembic upgrade head
+cd backend && DATABASE_URL="<DATABASE_URL_UNPOOLED>" IMAGE_STORE=db uv run python -m alembic upgrade head
 ```
 
 If backend dependencies change, regenerate `requirements.txt` (command at the top of that file).
@@ -207,7 +207,7 @@ The `ragaboutique.route34solutions.com` subdomain is a DNS-only CNAME in route34
 ## Troubleshooting
 
 - **API won't start / database errors** — make sure Postgres 16 is running and the `raga` user and databases exist (Step 2)
-- **Missing tables** — run `uv run alembic upgrade head` in `backend/`
+- **Missing tables** — run `uv run python -m alembic upgrade head` in `backend/`
 - **No OTP SMS arrives** — in demo mode none is sent; the code is on screen and in the API log
 - **Tests fail to connect** — create the `raga_test` database or set `TEST_DATABASE_URL`
 - **New column missing in production** — migrations don't run on deploy; run them against Neon by hand
