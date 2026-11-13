@@ -28,6 +28,7 @@ def test_render_shipped_without_pattern_drops_link_sentence():
 
 def test_render_accepted_formats_total():
     assert "Total ₹11,800 (cash on delivery)" in messages.render("accepted", _order(), [])
+    assert "Total ₹11,800 (paid online)" in messages.render("accepted", _order(payment_method="online", payment_status="paid"), [])
 
 
 def test_render_new_order_for_owner():

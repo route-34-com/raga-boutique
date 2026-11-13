@@ -1,6 +1,8 @@
+from typing import Annotated
+
 from datetime import datetime
 
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel, StringConstraints, computed_field
 
 from app.schemas.common import Out
 
@@ -52,6 +54,7 @@ class OrderDetail(OrderSummary):
     shipping: int
     payment_method: str
     payment_status: str
+    payment_ref: str = ""
     courier: str
     tracking_id: str
     note: str
@@ -62,6 +65,17 @@ class AdminOrderDetail(OrderDetail):
     notifications: list[NotificationOut]
 
 
+class UpiPaidIn(BaseModel):
+    ref: Annotated[str, StringConstraints(strip_whitespace=True, max_length=40, pattern=r"^[A-Za-z0-9]*$")] = ""
+
+
 class OrderPlaced(BaseModel):
     order_no: str
     total: int
+    payment: dict | None = None  # checkout options when the order is paid online
+
+
+class PaymentDone(BaseModel):
+    razorpay_order_id: str = ""
+    razorpay_payment_id: Annotated[str, StringConstraints(max_length=40)] = ""
+    razorpay_signature: Annotated[str, StringConstraints(max_length=128)] = ""

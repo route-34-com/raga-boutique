@@ -25,3 +25,6 @@ class StoreSettings(Base):
     couriers: Mapped[list] = mapped_column(JSON, default=list, server_default="[]")
     # "plum" (the Instagram logo colour) or "cocoa" (the original brown). Switched under Admin → Settings.
     brand_theme: Mapped[str] = mapped_column(String(10), default="plum", server_default="plum")
+    # The shop's UPI ID and payee name for "Pay now with UPI" at checkout. Empty = the option is hidden.
+    upi_id: Mapped[str] = mapped_column(String(60), default="", server_default="")
+    upi_name: Mapped[str] = mapped_column(String(60), default="", server_default="")

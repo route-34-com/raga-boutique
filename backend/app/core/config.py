@@ -42,6 +42,12 @@ class Settings(BaseSettings):
     email_from: str = ""
     public_site_url: str = "http://localhost:5173"
 
+    # "razorpay": Razorpay Checkout with the keys below. "demo": a stand-in checkout, no money moves. "off": hidden.
+    payment_provider: str = "off"
+    razorpay_key_id: str = ""
+    razorpay_key_secret: str = ""
+    razorpay_webhook_secret: str = ""
+
     uploads_dir: Path = BASE_DIR / "uploads"
     # "disk" keeps photos in uploads_dir. "db" keeps them in Postgres, for hosts without a lasting disk (Vercel).
     image_store: str = "disk"

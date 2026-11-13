@@ -15,6 +15,7 @@ router = APIRouter(prefix="/orders")
 
 @router.get("", response_model=list[AdminOrderRow])
 def list_orders(_: Admin, db: DB, status: str = "all", q: str = "", user_id: int | None = None):
+    svc.release_unpaid(db)
     query = select(Order).options(selectinload(Order.items)).order_by(Order.id.desc()).limit(300)
     if status == "ongoing":
         query = query.where(Order.status.in_(ONGOING))
@@ -32,8 +33,10 @@ def list_orders(_: Admin, db: DB, status: str = "all", q: str = "", user_id: int
 @router.get("/counts")
 def counts(_: Admin, db: DB):
     from sqlalchemy import func
+    svc.release_unpaid(db)
     rows = dict(db.execute(select(Order.status, func.count()).group_by(Order.status)).all())
-    return {**rows, "all": sum(rows.values()), "ongoing": sum(rows.get(s, 0) for s in ONGOING)}
+    awaiting = db.scalar(select(func.count()).where(Order.status == "placed", Order.payment_method == "online", Order.payment_status == "pending"))
+    return {**rows, "all": sum(rows.values()), "ongoing": sum(rows.get(s, 0) for s in ONGOING), "awaiting_payment": awaiting}
 
 
 def _load(db, order_id: int) -> Order:
@@ -53,6 +56,16 @@ def get_order(order_id: int, _: Admin, db: DB):
 def change_status(order_id: int, body: StatusChange, _: Admin, db: DB):
     try:
         svc.set_status(db, order_id, body.status, body.note, body.courier, body.tracking_id)
+    except ServiceError as e:
+        raise e.http() from None
+    db.expire_all()
+    return _load(db, order_id)
+
+
+@router.post("/{order_id}/payment-received", response_model=AdminOrderDetail)
+def payment_received(order_id: int, _: Admin, db: DB):
+    try:
+        svc.confirm_payment(db, order_id)
     except ServiceError as e:
         raise e.http() from None
     db.expire_all()

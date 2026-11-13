@@ -15,6 +15,7 @@ class AdminOrderRow(OrderSummary):
     phone: str
     payment_method: str
     payment_status: str
+    payment_ref: str = ""
 
 
 class StatusChange(BaseModel):
@@ -115,6 +116,8 @@ class SettingsIn(BaseModel):
     facebook_url: SocialUrl = ""
     couriers: list[CourierIn] = Field(default_factory=list, max_length=20)
     brand_theme: Literal["plum", "cocoa"] = "plum"
+    upi_id: Annotated[str, StringConstraints(strip_whitespace=True, max_length=60, pattern=r"^([\w.\-]{2,}@[A-Za-z]{2,})?$")] = ""
+    upi_name: Annotated[str, StringConstraints(strip_whitespace=True, max_length=60)] = ""
 
 
 class AdminPhone(BaseModel):

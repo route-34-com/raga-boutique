@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Check, Copy, Mail, MapPin, MessageCircle, Package, PackageCheck, Phone, Truck, X } from "lucide-react"
+import { BadgeIndianRupee, Check, Clock, ShieldCheck, Copy, Mail, MapPin, MessageCircle, Package, PackageCheck, Phone, Truck, X } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils"
 import { Spinner } from "@/components/ui/spinner"
 import { Photo } from "@/components/common/Photo"
 import { confirmAction } from "@/components/common/Confirm"
+import { paymentLabel } from "@/lib/payment"
 
 const NEXT: Partial<Record<OrderStatus, OrderStatus>> = { placed: "confirmed", confirmed: "packed", packed: "shipped", shipped: "delivered" }
 export const NEXT_LABEL: Partial<Record<OrderStatus, string>> = { confirmed: "Accept order", packed: "Mark packed", shipped: "Mark shipped", delivered: "Mark delivered" }
@@ -48,23 +49,32 @@ export function useAdvanceOrder() {
 }
 
 export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => void }) {
-  const { data: o } = useQuery({ queryKey: ["admin", "order", id], queryFn: () => api<AdminOrderDetail>(`/api/admin/orders/${id}`), enabled: id !== null })
+  const { data: o } = useQuery({ queryKey: ["admin", "order", id], queryFn: () => api<AdminOrderDetail>(`/api/admin/orders/${id}`), enabled: id !== null,
+    refetchInterval: (q) => (q.state.data?.payment_method === "online" && q.state.data.payment_status === "pending" && q.state.data.status !== "cancelled" ? 5000 : false) })
   const { data: couriers = [] } = useQuery({ queryKey: ["admin", "settings"], queryFn: () => api<{ couriers: Courier[] }>("/api/admin/settings"),
     select: (s) => s.couriers })
   const advance = useAdvanceOrder()
+  const qc = useQueryClient()
+  const received = useMutation({
+    mutationFn: (orderId: number) => post<AdminOrderDetail>(`/api/admin/orders/${orderId}/payment-received`),
+    onSuccess: (x) => { qc.setQueryData(["admin", "order", x.id], x); qc.invalidateQueries({ queryKey: ["admin"] }); toast.success(`${x.order_no}: payment received`) },
+    onError: (e) => toast.error(e instanceof ApiError ? e.message : "Couldn't update."),
+  })
   const [note, setNote] = useState("")
   const [courier, setCourier] = useState("")
   const [tracking, setTracking] = useState("")
-  const next = o && NEXT[o.status]
+  const awaitingOnline = o?.payment_method === "online" && o.payment_status === "pending" && o.status !== "cancelled"
+  const next = o && !awaitingOnline ? NEXT[o.status] : undefined
   const mobile = o?.address.phone ?? ""
   const msg = o ? encodeURIComponent(`Hi ${o.customer_name.split(" ")[0]}, this is Raga Boutique about your order ${o.order_no}.`) : ""
   const addressText = o ? `${o.address.name}\n${o.address.phone}\n${o.address.line1}${o.address.line2 ? ", " + o.address.line2 : ""}\n${o.address.city}, ${o.address.state} ${o.address.pincode}` : ""
 
   function go(status: OrderStatus) {
     if (!o) return
-    const warning = o.status === "shipped"
+    const refundNote = o.payment_method === "online" && o.payment_status === "paid" ? ` The ${inr(o.total)} payment will be refunded to the customer automatically.` : ""
+    const warning = (o.status === "shipped"
       ? "This order has already shipped. Cancel it only if the parcel is coming back to you (RTO). Stock will be put back."
-      : "Cancel this order? Stock will be put back."
+      : "Cancel this order? Stock will be put back.") + refundNote
     const run = () => advance.mutate({ id: o.id, status, note, courier, tracking_id: tracking }, { onSuccess: () => setNote("") })
     if (status !== "cancelled") return run()
     void confirmAction({ title: `Cancel ${o.order_no}?`, body: warning, action: "Cancel order", cancel: "Keep order" }).then((ok) => ok && run())
@@ -90,6 +100,31 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
           </DialogHeader>
           <div className="grid flex-1 items-start gap-4 overflow-y-auto bg-[#f7f1e8] p-5 text-sm lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
           <div className="space-y-4 lg:sticky lg:top-0">
+            {o.payment_method === "online" && o.payment_status === "paid" && (
+              <div className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                <ShieldCheck className="mt-0.5 size-5 shrink-0 text-emerald-700" aria-hidden="true" />
+                <div><p className="font-semibold text-cocoa">Paid online · {inr(o.total)}</p>
+                  <p className="text-muted-foreground">Confirmed automatically by the payment gateway · {o.payment_ref}. Nothing to check, accept the order when you're ready.</p></div>
+              </div>
+            )}
+            {awaitingOnline && (
+              <div className="flex items-start gap-3 rounded-xl border bg-white/70 p-4">
+                <Clock className="mt-0.5 size-5 shrink-0 text-rust" aria-hidden="true" />
+                <div><p className="font-semibold text-cocoa">Waiting for the online payment</p>
+                  <p className="text-muted-foreground">It updates here by itself once the customer pays. If they don't pay within 30 minutes, the order is cancelled and the stock goes back.</p></div>
+              </div>
+            )}
+            {o.payment_method === "upi" && o.payment_status !== "paid" && o.status !== "cancelled" && (
+              <div className={cn("flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4", o.payment_status === "claimed" ? "border-emerald-200 bg-emerald-50" : "bg-white/70")}>
+                <div>
+                  <p className="font-semibold text-cocoa">{o.payment_status === "claimed" ? `Customer says they paid ${inr(o.total)} by UPI` : `Waiting for ${inr(o.total)} by UPI`}</p>
+                  <p className="text-muted-foreground">{o.payment_status === "claimed"
+                    ? <>{o.payment_ref ? <>Reference <strong className="text-foreground">{o.payment_ref}</strong>. </> : "No reference given. "}Check your UPI app or bank, then confirm.</>
+                    : "The customer sees a QR code on their order page. Confirm here if they pay another way."}</p>
+                </div>
+                <Button className="h-10 px-4" disabled={received.isPending} onClick={() => received.mutate(o.id)}>{received.isPending ? <Spinner /> : <BadgeIndianRupee />}Payment received</Button>
+              </div>
+            )}
             {next && (
               <div className="space-y-3 rounded-xl border border-[#f0d9b2] bg-[#fdf3e2] p-4">
                 {next === "shipped" && (
@@ -118,7 +153,7 @@ export function OrderSheet({ id, onClose }: { id: number | null; onClose: () => 
               <div className="flex justify-between pt-2"><span>Subtotal</span><span>{inr(o.subtotal)}</span></div>
               <div className="flex justify-between pt-1"><span>Shipping</span><span>{o.shipping ? inr(o.shipping) : "Free"}</span></div>
               <div className="mt-2 flex justify-between border-t pt-2 text-base"><span>Total</span><strong>{inr(o.total)}</strong></div>
-              <div className="flex justify-between pt-1"><span>Payment</span><span>{o.payment_method === "cod" ? "Cash on delivery" : o.payment_method} · {o.payment_status === "paid" ? "Paid" : "Pending"}</span></div>
+              <div className="flex justify-between pt-1"><span>Payment</span><span className="text-right">{paymentLabel(o, "admin")}</span></div>
             </div>
           </div>
           <div className="space-y-4">

@@ -4,6 +4,7 @@ from sqlalchemy import select
 from app.core.deps import DB, Admin
 from app.models import StoreSettings, User
 from app.schemas.admin import AdminPhone, SettingsIn
+from app.services import payments
 from app.services.orders import store_settings
 
 router = APIRouter()
@@ -13,7 +14,7 @@ router = APIRouter()
 def get_settings(_: Admin, db: DB):
     s = store_settings(db)
     empty = {"free_ship_above": 0, "ship_fee": 0, "low_stock_at": 0, "couriers": [], "brand_theme": "plum"}
-    return {k: getattr(s, k) or empty.get(k, "") for k in SettingsIn.model_fields}
+    return {**{k: getattr(s, k) or empty.get(k, "") for k in SettingsIn.model_fields}, "online_payments": payments.mode()}
 
 
 @router.put("/settings")

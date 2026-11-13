@@ -45,6 +45,17 @@ def seed_settings(db) -> None:
             setattr(s, k, v)
 
 
+# A placeholder UPI ID ("@demo" is not a real bank handle, so a scan of the demo QR can't send money anywhere).
+# Replace it with the shop's real UPI ID under Admin → Settings → UPI payments.
+DEMO_UPI = dict(upi_id="ragaboutique@demo", upi_name="Raga Boutique")
+
+
+def seed_demo_upi(db) -> None:
+    s = db.get(StoreSettings, 1)
+    if s and not s.upi_id:
+        s.upi_id, s.upi_name = DEMO_UPI["upi_id"], DEMO_UPI["upi_name"]
+
+
 def filter_fields(raw: dict) -> dict:
     """Shop-filter attributes, plus a launch date spread over past months so "Launched in" has something to show."""
     return dict(color=raw.get("color", ""), material=raw.get("material", ""), work=raw.get("work", ""),
@@ -329,6 +340,7 @@ def main() -> None:
             seed_demo_orders(db, products)
             seed_demo_reviews(db, products)
             seed_demo_business(db, products)
+            seed_demo_upi(db)
         db.commit()
         db.execute(text("SELECT setval('order_no_seq', GREATEST((SELECT COALESCE(MAX(seq), 1000) FROM orders), 1000))"))
         db.commit()

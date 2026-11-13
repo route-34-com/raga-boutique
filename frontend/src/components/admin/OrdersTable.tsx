@@ -1,4 +1,5 @@
 import { ChevronRight } from "lucide-react"
+import { paymentShort } from "@/lib/payment"
 
 import { StatusBadge } from "@/components/common/StatusBadge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -6,8 +7,8 @@ import { fmtDate, fmtPhone, inr } from "@/lib/format"
 import type { AdminOrderRow } from "@/lib/types"
 import { Photo } from "@/components/common/Photo"
 
-const paid = (o: AdminOrderRow) => (o.status === "cancelled" ? "Not due" : o.payment_status === "paid" ? "Paid" : "Pending")
-const method = (o: AdminOrderRow) => (o.payment_method === "cod" ? "COD" : o.payment_method)
+const paid = paymentShort
+const method = (o: AdminOrderRow) => (o.payment_method === "cod" ? "COD" : o.payment_method === "online" ? "Online" : o.payment_method.toUpperCase())
 
 function OrderCards({ orders, onOpen }: { orders: AdminOrderRow[]; onOpen: (id: number) => void }) {
   return (

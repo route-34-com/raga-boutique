@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.core.config import get_settings
 from app.core.validation import friendly_errors
-from app.routers import account, auth, catalog
+from app.routers import account, auth, catalog, payments
 from app.routers import admin
 from app.services.images import load_image_file
 
@@ -19,7 +19,7 @@ def create_app() -> FastAPI:
     s = get_settings()
     app = FastAPI(title="Raga Boutique API", docs_url="/api/docs", openapi_url="/api/openapi.json")
     app.add_middleware(CORSMiddleware, allow_origins=s.cors_origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
-    for r in (auth.router, catalog.router, account.router, admin.router):
+    for r in (auth.router, catalog.router, account.router, payments.router, admin.router):
         app.include_router(r)
 
     @app.exception_handler(RequestValidationError)

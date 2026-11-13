@@ -6,6 +6,7 @@ from sqlalchemy.orm import selectinload
 
 from app.core.deps import DB
 from app.models import Category, Order, OrderItem, Product
+from app.services import payments
 from app.schemas.catalog import CategoryOut, ProductCard, ProductDetail, PublicSettings
 from app.schemas.review import ReviewList, ReviewOut
 from app.services import reviews
@@ -59,7 +60,9 @@ def product(slug: str, db: DB):
 
 @router.get("/settings", response_model=PublicSettings)
 def public_settings(db: DB):
-    return store_settings(db)
+    out = PublicSettings.model_validate(store_settings(db))
+    out.online_payments = "" if payments.provider() == "off" else payments.provider()
+    return out
 
 
 @router.get("/products/{slug}/reviews", response_model=ReviewList)

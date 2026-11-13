@@ -59,4 +59,7 @@ class PublicSettings(Out):
     instagram_url: str = ""
     facebook_url: str = ""
     brand_theme: str = "plum"
+    upi_id: str = ""
+    upi_name: str = ""
+    online_payments: str = ""  # "razorpay", "demo" or "" (off)
     couriers: list[dict] = []  # [{name, track_url}], so a customer's order page can link to the courier's tracking

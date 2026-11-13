@@ -9,7 +9,7 @@ from app.core.deps import DB, Admin
 from app.models import Order, Product, Variant
 from app.routers.admin.common import product_out
 from app.schemas.admin import AdminOrderRow
-from app.services.orders import store_settings
+from app.services.orders import release_unpaid, store_settings
 
 router = APIRouter()
 IST = ZoneInfo("Asia/Kolkata")
@@ -17,6 +17,7 @@ IST = ZoneInfo("Asia/Kolkata")
 
 @router.get("/dashboard")
 def dashboard(_: Admin, db: DB):
+    release_unpaid(db)
     now = datetime.now(IST)
     start_today = datetime.combine(now.date(), time.min, IST)
     start_month = start_today.replace(day=1)
@@ -33,7 +34,8 @@ def dashboard(_: Admin, db: DB):
     low = db.scalars(select(Product).where(Product.active.is_(True), Product.id.in_(low_ids))
                      .options(selectinload(Product.images), selectinload(Product.variants)).order_by(Product.sort)).all()
     low = sorted(low, key=lambda p: (min(v.stock for v in p.variants), p.sort))
-    action = db.scalars(select(Order).where(Order.status.in_(["placed", "confirmed", "packed"])).options(selectinload(Order.items))
+    unpaid_online = (Order.payment_method == "online") & (Order.payment_status == "pending")
+    action = db.scalars(select(Order).where(Order.status.in_(["placed", "confirmed", "packed"]), ~unpaid_online).options(selectinload(Order.items))
                         .order_by(Order.id).limit(10)).all()
     recent = db.scalars(select(Order).options(selectinload(Order.items)).order_by(Order.id.desc()).limit(8)).all()
 

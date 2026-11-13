@@ -19,11 +19,11 @@ import { Check, Plus, Save, Trash2, UserPlus } from "lucide-react"
 import { ActionButton } from "@/components/common/ActionButton"
 import { withApproval } from "@/components/common/Confirm"
 
-type S = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at: number; couriers: Courier[]; brand_theme: Brand }
+type S = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at: number; couriers: Courier[]; brand_theme: Brand; upi_id: string; upi_name: string; online_payments?: string }
 type AdminRow = { id: number; phone: string; name: string; is_you: boolean }
 
 const BLANK: S = { free_ship_above: 5000, ship_fee: 150, low_stock_at: 2, contact_phone: "", contact_whatsapp: "", contact_email: "",
-  contact_address: "", contact_hours: "", instagram_url: "", facebook_url: "", couriers: [], brand_theme: "plum" }
+  contact_address: "", contact_hours: "", instagram_url: "", facebook_url: "", couriers: [], brand_theme: "plum", upi_id: "", upi_name: "" }
 
 export default function Settings() {
   const qc = useQueryClient()
@@ -102,6 +102,7 @@ export default function Settings() {
             {text("facebook_url", "Facebook page", "https://www.facebook.com/yourstore/", "url")}
           </div>
         </section>
+        <div className="grid gap-4">
         <section className="rounded-2xl border bg-card p-5">
           <h3 className="mb-4 text-xl">Shipping &amp; stock</h3>
           <div className="grid gap-3.5">
@@ -110,6 +111,27 @@ export default function Settings() {
             {num("low_stock_at", "Warn me when stock is at or below")}
           </div>
         </section>
+        <section className="rounded-2xl border bg-card p-5">
+          <h3 className="mb-1 text-xl">Online payments</h3>
+          {({
+            live: <p className="text-sm"><strong className="text-[#0f8a5f]">Razorpay is live.</strong> Shoppers pay by UPI, card, netbanking or wallet, orders are marked paid automatically, and cancelling a paid order refunds it.</p>,
+            test: <p className="text-sm"><strong>Razorpay test mode.</strong> Payments use Razorpay's test cards and UPI IDs, no real money moves. Switch to live keys to start taking payments.</p>,
+            demo: <p className="text-sm"><strong>Demo mode.</strong> A stand-in payment window is used so the flow can be tried. Add the shop's Razorpay keys to take real payments.</p>,
+          } as Record<string, React.ReactNode>)[s.online_payments ?? ""] ?? <p className="text-sm text-muted-foreground">Off. Shoppers pay cash or UPI on delivery. Add the shop's Razorpay keys to take payments online.</p>}
+          <p className="mt-2 text-xs text-muted-foreground">Razorpay keys are kept on the server, never in this page.</p>
+        </section>
+        {!s.online_payments && <section className="rounded-2xl border bg-card p-5">
+          <h3 className="mb-1 text-xl">UPI payments</h3>
+          <p className="mb-4 text-sm text-muted-foreground">Shoppers can choose <strong>Pay now with UPI</strong> at checkout and scan a QR code for the exact amount. Leave the UPI ID empty to hide the option.</p>
+          <div className="grid gap-3.5 sm:grid-cols-2">
+            <div className="grid gap-1.5"><Label htmlFor="upi_id">Shop UPI ID</Label>
+              <Input id="upi_id" value={form.upi_id} placeholder="yourshop@okhdfcbank" pattern="[\w.\-]{2,}@[A-Za-z]{2,}" title="Like name@bank"
+                onChange={(e) => setForm({ ...form, upi_id: e.target.value.trim() })} /></div>
+            <div className="grid gap-1.5"><Label htmlFor="upi_name">Name shown in the UPI app</Label>
+              <Input id="upi_name" value={form.upi_name} placeholder="Raga Boutique" onChange={(e) => setForm({ ...form, upi_name: e.target.value })} /></div>
+          </div>
+        </section>}
+        </div>
         <section className="rounded-2xl border bg-card p-5 xl:col-span-2">
           <h3 className="mb-1 text-xl">Couriers</h3>
           <p className="mb-4 text-sm text-muted-foreground">Used on the Dispatch page. Put <code>{"{id}"}</code> where the tracking ID goes, e.g. https://www.dtdc.in/tracking?awb={"{id}"}. Customers get this link with their tracking ID.</p>

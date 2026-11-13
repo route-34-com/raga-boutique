@@ -129,13 +129,41 @@ Until set up, WhatsApp runs in **tap** mode (admin gets "Open WhatsApp" with the
 - **Email** — `EMAIL_PROVIDER=smtp`, `SMTP_HOST`, `SMTP_PORT` (587), `SMTP_USER`, `SMTP_PASSWORD`, `EMAIL_FROM`.
   Brevo free plan: host `smtp-relay.brevo.com`, port 587 (STARTTLS; port 465 is not supported), 300 emails/day. Also set the shop email under Admin → Settings for new-order alerts.
 - **WhatsApp Cloud API (Meta)** — `WHATSAPP_MODE=cloud`, `WHATSAPP_PHONE_ID`, `WHATSAPP_TOKEN` (permanent system-user token), `WHATSAPP_LANG` (`en`). Create four **Utility** templates with these names and body variables, in this order:
-  - `order_accepted`: `Hi {{1}}, your Raga order {{2}} is confirmed. We'll message you the tracking details once it ships. Total {{3}} (cash on delivery).`
+  - `order_accepted`: `Hi {{1}}, your Raga order {{2}} is confirmed. We'll message you the tracking details once it ships. Total {{3}}.` ({{3}} is the amount with how it's paid, e.g. `₹23,200 (paid online)` or `₹7,450 (cash on delivery)`)
   - `order_shipped`: `Hi {{1}}, your Raga order {{2}} is on its way with {{3}}. Tracking ID: {{4}}. Track it here: {{5}}`
   - `order_delivered`: `Hi {{1}}, your Raga order {{2}} has been delivered. Hope you love it! Rate your order here: {{3}}`
   - `new_order_owner`: `New order {{1}}: {{2}} item(s), {{3}}, {{4}}, {{5}}.`
 
   The sender can be the shop's WhatsApp Business number (Meta "coexistence") or any other verified number.
 - **Couriers** and their tracking links (`{id}` = tracking ID) are set under Admin → Settings.
+
+### Switching On Online Payments (Razorpay)
+
+`PAYMENT_PROVIDER` picks how shoppers pay online:
+
+- `off` (default): checkout offers cash / UPI on delivery only.
+- `demo`: a stand-in payment window so the whole flow can be tried. No money moves.
+- `razorpay`: Razorpay Checkout (UPI, cards, netbanking, wallets).
+
+To go live, create a Razorpay account (business KYC), then set in `backend/.env` (and in Vercel for production):
+
+```env
+PAYMENT_PROVIDER=razorpay
+RAZORPAY_KEY_ID=rzp_live_...        # rzp_test_... first, to try it with Razorpay's test cards
+RAZORPAY_KEY_SECRET=...
+RAZORPAY_WEBHOOK_SECRET=...         # any long random string, also entered in the Razorpay webhook
+```
+
+In the Razorpay Dashboard → Webhooks, add `https://<your-domain>/api/payments/razorpay/webhook` with the
+`payment.captured` event and the same secret. How it works:
+
+- The server creates a Razorpay order for the exact total; the browser opens Razorpay's checkout.
+- A payment counts only after its signature is checked on the server; the webhook marks it paid too, for shoppers who
+  close the tab early. The shop's new-order alert goes out once the order is paid.
+- Admins can't accept an order until it's paid. Unpaid online orders are cancelled after 30 minutes and their stock released.
+- Cancelling a paid order refunds it through Razorpay automatically.
+
+Admin → Settings shows whether payments are live, in test mode, in demo mode or off. Keys stay on the server.
 
 ### Store Details
 
@@ -215,7 +243,7 @@ The `ragaboutique.route34solutions.com` subdomain is a DNS-only CNAME in route34
 
 ## Not Built Yet
 
-Online payments (Razorpay), SMS/WhatsApp order updates, GST invoices, courier booking, returns, coupons.
+SMS/WhatsApp order updates (until switched on above), GST invoices, courier booking, returns, coupons.
 
 ## Project Structure
 

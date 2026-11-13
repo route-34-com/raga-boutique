@@ -33,7 +33,9 @@ def params(kind: str, order, couriers: list[dict]) -> list[str]:
     """Values in template order, for the WhatsApp Cloud API."""
     first = order.customer_name.split()[0] if order.customer_name else "there"
     if kind == "accepted":
-        return [first, order.order_no, inr(order.total)]
+        method, status = getattr(order, "payment_method", "cod"), getattr(order, "payment_status", "pending")
+        paid = "paid online" if method == "online" and status == "paid" else "paid" if status == "paid" else "cash on delivery"
+        return [first, order.order_no, f"{inr(order.total)} ({paid})"]
     if kind == "shipped":
         return [first, order.order_no, order.courier, order.tracking_id, track_link(order.courier, order.tracking_id, couriers)]
     if kind == "delivered":
@@ -46,7 +48,7 @@ def render(kind: str, order, couriers: list[dict]) -> str:
     p = params(kind, order, couriers)
     if kind == "accepted":
         return (f"Hi {p[0]}, your Raga order {p[1]} is confirmed. We'll message you the tracking details once it ships. "
-                f"Total {p[2]} (cash on delivery).")
+                f"Total {p[2]}.")
     if kind == "shipped":
         text = f"Hi {p[0]}, your Raga order {p[1]} is on its way with {p[2]}. Tracking ID: {p[3]}."
         return f"{text} Track it here: {p[4]}" if p[4] else text

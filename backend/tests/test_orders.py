@@ -23,7 +23,7 @@ def test_requires_login():
 def test_place_order_uses_db_price_and_decrements_stock(customer):
     r = place(customer, [{"product_id": 1, "qty": 1, "price": 1}])  # a tampered price is ignored
     assert r.status_code == 201, r.text
-    assert r.json() == {"order_no": "RB1001", "total": 11800}
+    assert r.json() == {"order_no": "RB1001", "total": 11800, "payment": None}
     assert stock() == 1
     orders = customer.get("/api/me/orders").json()
     assert orders[0]["status"] == "placed" and orders[0]["items"][0]["price"] == 11800

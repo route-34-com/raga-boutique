@@ -71,7 +71,7 @@ export function AdminLayout() {
   if (!me) return <Gate />
   if (!me.is_admin) return <Gate denied={fmtPhone(me.phone)} />
 
-  const pending = counts?.placed ?? 0
+  const pending = (counts?.placed ?? 0) - (counts?.awaiting_payment ?? 0)
   const logout = async () => { await post("/api/auth/logout"); qc.setQueryData(keys.me, null) }
   return (
     <div className="min-h-screen bg-[#f5f0e8] md:grid md:grid-cols-[236px_1fr] print:block print:bg-white">

@@ -11,6 +11,14 @@ import { useTitle } from "@/hooks/useTitle"
 import { fmtDate, fmtPhone, inr, waLink } from "@/lib/format"
 import { LoginPrompt } from "@/pages/store/LoginPrompt"
 import { Photo } from "@/components/common/Photo"
+import { UpiPay } from "@/components/store/UpiPay"
+import { paymentLabel } from "@/lib/payment"
+import { type PayOptions, usePayOnline } from "@/components/store/PayOnline"
+import { api } from "@/lib/api"
+import { useState } from "react"
+import { Lock } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
+import { toast } from "sonner"
 
 export default function OrderPage() {
   const { orderNo = "" } = useParams()
@@ -20,6 +28,15 @@ export default function OrderPage() {
   const { data: settings } = useSettings()
   const { data: mine } = useMyReviews(o?.status === "delivered")
   useTitle(`Order ${orderNo}`)
+  const payOnline = usePayOnline()
+  const [opening, setOpening] = useState(false)
+  const completePayment = async () => {
+    setOpening(true)
+    try { await payOnline.pay(orderNo, await api<PayOptions>(`/api/me/orders/${orderNo}/pay`)) }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Couldn't open the payment.") }
+    finally { setOpening(false) }
+  }
+  const awaitingPay = o?.payment_method === "online" && o.payment_status === "pending" && o.status !== "cancelled"
   const courier = o && settings?.couriers?.find((c) => c.name.trim().toLowerCase() === o.courier.trim().toLowerCase())
   const trackUrl = o?.tracking_id && courier?.track_url.includes("{id}") ? courier.track_url.replace("{id}", encodeURIComponent(o.tracking_id)) : ""
 
@@ -31,9 +48,16 @@ export default function OrderPage() {
       <Link to="/account" className="mb-5 inline-block text-sm font-medium text-rust link-quiet">← My orders</Link>
       {isLoading ? <Skeleton className="h-64 rounded-2xl" /> : isError || !o ? <p className="font-heading text-xl italic text-rust">Order not found.</p> : (
         <>
-          {params.get("new") && (
+          {payOnline.dialog}
+          {params.get("paid") && o.payment_status === "paid" && (
             <div className="mb-6 rounded-2xl bg-emerald-50 px-5 py-4 text-emerald-900">
-              <p className="font-semibold">Thank you! Your order is placed.</p>
+              <p className="font-semibold">Payment received. Thank you!</p>
+              <p className="mt-1 text-sm">{inr(o.total)} paid online. Your order is confirmed and the shop has been told. We'll call {fmtPhone(o.phone)} before delivery.</p>
+            </div>
+          )}
+          {params.get("new") && !awaitingPay && (
+            <div className="mb-6 rounded-2xl bg-emerald-50 px-5 py-4 text-emerald-900">
+              <p className="font-semibold">{o.payment_method === "upi" && o.payment_status === "pending" ? "Your order is placed. Pay below to confirm it." : "Thank you! Your order is placed."}</p>
               <p className="mt-1 text-sm">Follow it here or under <Link to="/account" className="font-semibold text-rust link-quiet">My orders</Link>. We'll call {fmtPhone(o.phone)} before delivery.
                 {settings?.contact_whatsapp && <> Questions? <a className="font-semibold text-rust link-quiet" href={waLink(settings.contact_whatsapp, `Hi, about my order ${o.order_no}`)} target="_blank" rel="noopener">WhatsApp us</a>.</>}</p>
             </div>
@@ -42,6 +66,18 @@ export default function OrderPage() {
             <div><p className="eyebrow">Order</p><h1 className="my-1.5 text-[clamp(34px,4vw,52px)]">{o.order_no}</h1><p className="text-muted-foreground">Placed {fmtDate(o.created_at, true)}</p></div>
             <StatusBadge status={o.status} />
           </div>
+          {awaitingPay && (
+            <section aria-labelledby="pay-title" className="mb-9 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#f0d9b2] bg-[#fdf3e2] p-5 md:p-6">
+              <div>
+                <p className="eyebrow">Payment pending</p>
+                <h2 id="pay-title" className="mt-1 text-[clamp(26px,3vw,34px)] leading-none">{inr(o.total)}</h2>
+                <p className="mt-2 text-sm text-muted-foreground">Your pieces are held for 30 minutes. Pay by UPI, card, netbanking or wallet to confirm the order.</p>
+              </div>
+              <Button className="h-12 rounded-full px-7" disabled={opening} onClick={completePayment}>{opening ? <Spinner /> : <Lock />}Complete payment</Button>
+            </section>
+          )}
+          {o.payment_method === "upi" && o.payment_status !== "paid" && o.status !== "cancelled" && settings?.upi_id &&
+            <UpiPay order={o} upiId={settings.upi_id} payee={settings.upi_name || "Raga Boutique"} />}
           {o.status === "cancelled"
             ? <p className="mb-8 rounded-2xl border bg-paper px-5 py-4">This order was cancelled. Any stock was released.</p>
             : <div className="mb-9"><OrderTimeline order={o} /></div>}
@@ -69,7 +105,7 @@ export default function OrderPage() {
               <h3 className="mb-2 text-[22px]">Delivering to</h3>
               <p className="text-sm leading-relaxed text-muted-foreground">{o.address.name} · {fmtPhone(o.address.phone)}<br />{o.address.line1}{o.address.line2 && `, ${o.address.line2}`}<br />{o.address.city}, {o.address.state} {o.address.pincode}</p>
               <h3 className="mb-2 mt-6 text-[22px]">Payment</h3>
-              <p className="text-sm">{o.payment_method === "cod" ? "Cash / UPI on delivery" : o.payment_method} · {o.payment_status === "paid" ? "Paid" : "Pending"}</p>
+              <p className="text-sm">{paymentLabel(o, "store")}</p>
             </aside>
           </div>
         </>

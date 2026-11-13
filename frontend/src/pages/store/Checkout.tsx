@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
+import { ShieldCheck } from "lucide-react"
 import { Link, useNavigate } from "react-router"
 
 import { PageLoader } from "@/components/common/PageLoader"
@@ -8,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { keys, useAddresses, useMe } from "@/hooks/queries"
+import { keys, useAddresses, useMe, useSettings } from "@/hooks/queries"
 import { ApiError, post } from "@/lib/api"
 import { useTitle } from "@/hooks/useTitle"
 import { cover, fmtPhone, inr } from "@/lib/format"
@@ -18,6 +19,7 @@ import { useCart } from "@/stores/cart"
 import { LoginPrompt } from "@/pages/store/LoginPrompt"
 import { Spinner } from "@/components/ui/spinner"
 import { Photo } from "@/components/common/Photo"
+import { type PayOptions, usePayOnline } from "@/components/store/PayOnline"
 
 const EMPTY: Address = { name: "", phone: "", line1: "", line2: "", city: "", state: "", pincode: "" }
 const FIELDS: [keyof Address, string, string, boolean][] = [
@@ -69,6 +71,12 @@ export default function Checkout() {
   const [addr, setAddr] = useState<Address>(EMPTY)
   const [email, setEmail] = useState("")
   const [error, setError] = useState<string[]>([])
+  const { data: settings } = useSettings()
+  const online = settings?.online_payments ?? ""
+  const upiReady = !!settings?.upi_id && !online
+  const [choice, setPay] = useState<"online" | "cod" | "upi" | null>(null)
+  const pay = choice ?? (online ? "online" : "cod")
+  const payOnline = usePayOnline()
 
   useEffect(() => { if (saved.length) setPick(String(saved[0].id)) }, [saved])
   useEffect(() => {
@@ -76,18 +84,19 @@ export default function Checkout() {
   }, [me])
 
   const placeOrder = useMutation({
-    mutationFn: () => post<{ order_no: string }>("/api/orders", {
+    mutationFn: () => post<{ order_no: string; payment: PayOptions | null }>("/api/orders", {
       items: rows.map((r) => ({ product_id: r.productId, size: r.size, qty: r.qty })),
       ...(pick === "new" ? { address: { ...addr, line2: addr.line2 || "" } } : { address_id: Number(pick) }),
       email,
-      payment_method: "cod",
+      payment_method: pay === "online" && online ? "online" : pay === "upi" && upiReady ? "upi" : "cod",
     }),
-    onSuccess: ({ order_no }) => {
-      clear()
+    onSuccess: async ({ order_no, payment }) => {
       qc.invalidateQueries({ queryKey: ["products"] })
       qc.invalidateQueries({ queryKey: keys.myOrders })
       qc.invalidateQueries({ queryKey: keys.addresses })
-      navigate(`/orders/${order_no}?new=1`)
+      const paid = payment ? await payOnline.pay(order_no, payment) : false
+      clear()
+      navigate(`/orders/${order_no}?${paid ? "paid" : "new"}=1`)
     },
     onError: (e) => {
       setError(e instanceof ApiError ? (e.details.length ? e.details : [e.message]) : ["Couldn't place the order. Please try again."])
@@ -133,20 +142,37 @@ export default function Checkout() {
           {pick === "new" && <AddressFields value={addr} onChange={setAddr} />}
 
           <h3 className="mb-3.5 mt-7 text-[22px]">Payment</h3>
-          <RadioGroup value="cod" className="gap-2">
-            <Label className="flex items-center gap-3 rounded-xl border border-cocoa bg-paper p-4 font-normal ring-1 ring-cocoa"><RadioGroupItem value="cod" /> Cash / UPI on delivery</Label>
-            <Label className="flex cursor-not-allowed items-center gap-3 rounded-xl border bg-paper p-4 font-normal opacity-60">
-              <RadioGroupItem value="online" disabled /> Pay online (UPI, cards)
-              <span className="ml-auto rounded-md bg-sand px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide">Coming soon</span>
-            </Label>
+          <RadioGroup value={pay} onValueChange={(v) => setPay(v as "online" | "cod" | "upi")} className="gap-2">
+            {online && (
+              <Label className={cn("flex cursor-pointer items-center gap-3 rounded-xl border bg-paper p-4 font-normal", pay === "online" && "border-cocoa ring-1 ring-cocoa")}>
+                <RadioGroupItem value="online" />
+                <span className="flex-1">Pay online<span className="block text-xs text-muted-foreground">UPI, cards, netbanking and wallets · secured by Razorpay</span></span>
+                <ShieldCheck className="size-5 text-rust" aria-hidden="true" />
+              </Label>
+            )}
+            <Label className={cn("flex cursor-pointer items-center gap-3 rounded-xl border bg-paper p-4 font-normal", pay === "cod" && "border-cocoa ring-1 ring-cocoa")}>
+              <RadioGroupItem value="cod" /> Cash / UPI on delivery</Label>
+            {upiReady && (
+              <Label className={cn("flex cursor-pointer items-center gap-3 rounded-xl border bg-paper p-4 font-normal", pay === "upi" && "border-cocoa ring-1 ring-cocoa")}>
+                <RadioGroupItem value="upi" />
+                <span>Pay now with UPI<span className="block text-xs text-muted-foreground">GPay, PhonePe, Paytm or any UPI app · scan a QR code after placing the order</span></span>
+              </Label>
+            )}
+            {!online && (
+              <Label className="flex cursor-not-allowed items-center gap-3 rounded-xl border bg-paper p-4 font-normal opacity-60">
+                <RadioGroupItem value="card" disabled /> Cards &amp; netbanking
+                <span className="ml-auto rounded-md bg-sand px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide">Coming soon</span>
+              </Label>
+            )}
           </RadioGroup>
 
           {error.length > 0 && <div role="alert" className="mt-5 rounded-xl bg-red-50 p-4 text-sm text-red-800">{error.map((m) => <p key={m}>{m}</p>)}</div>}
           <Button type="submit" className="mt-6 h-12 w-full rounded-full" disabled={placeOrder.isPending}>
-            {placeOrder.isPending ? <><Spinner />Placing order…</> : `Place order · ${inr(total)}`}
+            {placeOrder.isPending ? <><Spinner />Placing order…</> : pay === "online" && online ? `Place order & pay · ${inr(total)}` : pay === "upi" && upiReady ? `Place order & pay by UPI · ${inr(total)}` : `Place order · ${inr(total)}`}
           </Button>
         </form>
 
+        {payOnline.dialog}
         <aside className="rounded-2xl bg-paper p-6 lg:sticky lg:top-24">
           <h3 className="mb-3.5 text-[22px]">Order summary</h3>
           {rows.map((r) => (
