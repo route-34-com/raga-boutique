@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Response
 
 from app.core.config import get_settings
-from app.core.deps import DB, OptionalUser
+from app.core.deps import DB, OptionalUser, promote_super_admin
 from app.core.errors import ServiceError
 from app.core.security import COOKIE_NAME, create_session_token
 from app.schemas.account import OtpRequest, OtpRequested, OtpVerify, UserOut
@@ -25,6 +25,7 @@ def verify(body: OtpVerify, response: Response, db: DB):
         user = auth.verify_otp(db, body.phone, body.code)
     except ServiceError as e:
         raise e.http() from None
+    promote_super_admin(db, user)
     s = get_settings()
     response.set_cookie(COOKIE_NAME, create_session_token(user.id), max_age=s.session_days * 86400,
                         httponly=True, samesite="lax", secure=s.cookie_secure, path="/")
@@ -37,5 +38,5 @@ def logout(response: Response):
 
 
 @router.get("/me", response_model=UserOut | None)
-def me(user: OptionalUser):
-    return user
+def me(user: OptionalUser, db: DB):
+    return promote_super_admin(db, user)

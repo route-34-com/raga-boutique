@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     otp_max_attempts: int = 5
     otp_resend_seconds: int = 30
     otp_max_per_hour: int = 5
+    # Ten-digit mobiles that are always admins and the only ones who can add or remove admins.
+    super_admin_phones: list[str] = ["9344780554", "8248785648"]
     msg91_authkey: str = ""
     msg91_template_id: str = ""
 

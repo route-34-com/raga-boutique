@@ -165,6 +165,12 @@ In the Razorpay Dashboard → Webhooks, add `https://<your-domain>/api/payments/
 
 Admin → Settings shows whether payments are live, in test mode, in demo mode or off. Keys stay on the server.
 
+### Admins And Super Admins
+
+Super admins are set in config (`SUPER_ADMIN_PHONES`, default `["9344780554","8248785648"]`). They are always admins,
+can't be removed, and are the only ones who can add or remove admins under Admin → Settings. Other admins see the list
+read-only.
+
 ### Store Details
 
 Contact phone, WhatsApp, email, address, hours and Instagram/Facebook links are edited under Admin → Settings and appear in the footer, the Story page and on order confirmations. The seed fills the store's details from its Google Maps listing (Tiruchengode); confirm the WhatsApp number and add an email address there.

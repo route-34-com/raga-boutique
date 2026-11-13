@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import select
 
-from app.core.deps import DB, Admin
+from app.core.deps import DB, Admin, SuperAdmin, is_super_admin
 from app.models import StoreSettings, User
 from app.schemas.admin import AdminPhone, SettingsIn
 from app.services import payments
@@ -29,12 +29,12 @@ def put_settings(body: SettingsIn, _: Admin, db: DB):
 
 @router.get("/admins")
 def list_admins(me: Admin, db: DB):
-    return [{"id": u.id, "phone": u.phone, "name": u.name, "is_you": u.id == me.id}
+    return [{"id": u.id, "phone": u.phone, "name": u.name, "is_you": u.id == me.id, "is_super": is_super_admin(u)}
             for u in db.scalars(select(User).where(User.is_admin.is_(True)).order_by(User.id))]
 
 
 @router.post("/admins", status_code=201)
-def add_admin(body: AdminPhone, _: Admin, db: DB):
+def add_admin(body: AdminPhone, _: SuperAdmin, db: DB):
     phone = "+91" + body.phone
     user = db.scalar(select(User).where(User.phone == phone)) or User(phone=phone)
     user.is_admin = True
@@ -44,9 +44,11 @@ def add_admin(body: AdminPhone, _: Admin, db: DB):
 
 
 @router.delete("/admins/{user_id}", status_code=204)
-def remove_admin(user_id: int, me: Admin, db: DB):
+def remove_admin(user_id: int, me: SuperAdmin, db: DB):
     if user_id == me.id:
         raise HTTPException(409, {"message": "You can't remove yourself."})
     if u := db.get(User, user_id):
+        if is_super_admin(u):
+            raise HTTPException(409, {"message": "Super admins can't be removed."})
         u.is_admin = False
         db.commit()

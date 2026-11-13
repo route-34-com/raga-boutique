@@ -20,7 +20,7 @@ import { ActionButton } from "@/components/common/ActionButton"
 import { withApproval } from "@/components/common/Confirm"
 
 type S = ContactDetails & { free_ship_above: number; ship_fee: number; low_stock_at: number; couriers: Courier[]; brand_theme: Brand; upi_id: string; upi_name: string; online_payments?: string }
-type AdminRow = { id: number; phone: string; name: string; is_you: boolean }
+type AdminRow = { id: number; phone: string; name: string; is_you: boolean; is_super: boolean }
 
 const BLANK: S = { free_ship_above: 5000, ship_fee: 150, low_stock_at: 2, contact_phone: "", contact_whatsapp: "", contact_email: "",
   contact_address: "", contact_hours: "", instagram_url: "", facebook_url: "", couriers: [], brand_theme: "plum", upi_id: "", upi_name: "" }
@@ -31,6 +31,7 @@ export default function Settings() {
   const { data: admins = [] } = useQuery({ queryKey: ["admin", "admins"], queryFn: () => api<AdminRow[]>("/api/admin/admins") })
   const [form, setForm] = useState<S>(BLANK)
   const [phone, setPhone] = useState("")
+  const canManage = admins.some((a) => a.is_you && a.is_super)
   useEffect(() => { if (s) setForm(s) }, [s])
   // Picking a colour previews it at once; leaving without saving puts the saved one back.
   useEffect(() => () => { qc.invalidateQueries({ queryKey: keys.settings }) }, [qc])
@@ -153,19 +154,22 @@ export default function Settings() {
       </form>
       <section className="mt-4 rounded-2xl border bg-card p-5 xl:max-w-[calc(50%-0.5rem)]">
         <h3 className="mb-1 text-xl">Admins</h3>
-        <p className="mb-3 text-sm text-muted-foreground">These numbers can log in to this panel with an OTP.</p>
+        <p className="mb-3 text-sm text-muted-foreground">
+          These numbers can log in to this panel with an OTP. {canManage ? "As a super admin, you can add or remove admins." : "Only the super admins can add or remove admins."}
+        </p>
         {admins.map((a) => (
           <div key={a.id} className="flex items-center justify-between gap-3 border-b py-3 text-sm">
-            <div><strong>{fmtPhone(a.phone)}</strong>{a.name && <span className="ml-2 text-muted-foreground">{a.name}</span>}</div>
+            <div><strong>{fmtPhone(a.phone)}</strong>{a.name && <span className="ml-2 text-muted-foreground">{a.name}</span>}
+              {a.is_super && <span className="ml-2 rounded bg-marigold/30 px-1.5 py-0.5 text-[10px] font-bold uppercase">Super admin</span>}</div>
             {a.is_you ? <span className="text-xs text-muted-foreground">You</span>
-              : <ActionButton size="sm" variant="destructive" className="max-sm:size-9" icon={Trash2} label="Remove admin" onClick={withApproval({ title: `Remove ${fmtPhone(a.phone)} as admin?`, body: "They can no longer open this panel.", action: "Remove admin" }, () => removeAdmin.mutate(a.id))}>Remove</ActionButton>}
+              : canManage && !a.is_super && <ActionButton size="sm" variant="destructive" className="max-sm:size-9" icon={Trash2} label="Remove admin" onClick={withApproval({ title: `Remove ${fmtPhone(a.phone)} as admin?`, body: "They can no longer open this panel.", action: "Remove admin" }, () => removeAdmin.mutate(a.id))}>Remove</ActionButton>}
           </div>
         ))}
-        <form className="mt-4 flex gap-2.5" onSubmit={(e) => { e.preventDefault(); if (/^[6-9]\d{9}$/.test(phone)) addAdmin.mutate(); else toast.error("Enter a valid 10-digit mobile number.") }}>
+        {canManage && <form className="mt-4 flex gap-2.5" onSubmit={(e) => { e.preventDefault(); if (/^[6-9]\d{9}$/.test(phone)) addAdmin.mutate(); else toast.error("Enter a valid 10-digit mobile number.") }}>
           <label className="flex flex-1 items-center overflow-hidden rounded-lg border bg-white"><span className="border-r px-2.5 text-sm text-muted-foreground">+91</span>
             <input value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))} inputMode="numeric" placeholder="Staff mobile" className="h-9 min-w-0 flex-1 px-2.5 text-sm outline-none" /></label>
           <ActionButton className="h-9 px-4 max-sm:size-9" icon={UserPlus} label="Add admin" />
-        </form>
+        </form>}
       </section>
     </>
   )
