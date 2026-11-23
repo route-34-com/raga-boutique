@@ -51,11 +51,11 @@ LOW_STOCK = {"hindol": 3, "kalyani": 2, "malhar": 2, "kambhoji": 2, "sohini": 1}
 SIZE_STOCK = {"XS": 3, "S": 4, "M": 5, "L": 5, "XL": 3, "XXL": 3}
 # The store's details from its Google Maps listing; edited later under Admin → Settings.
 CONTACT = dict(
-    contact_phone="8754291999",
-    contact_whatsapp="8754291999",
-    contact_email="",
-    contact_address="22–23, Municipal Complex, near the Bus Stand, Erode Main Road, Santhaipettai, Tiruchengode, Tamil Nadu 637211",
-    contact_hours="Open till 8 pm",
+    contact_phone="9715093999",
+    contact_whatsapp="9715093999",
+    contact_email="boutiqueraga@gmail.com",
+    contact_address="22, 23, Municipal Complex, Bus Stop, No. 21, Erode Main Road, Santhaipettai, Sattaiyampudur, Tiruchengode, Tamil Nadu 637211",
+    contact_hours="Mon–Sat 10 am – 8 pm · Sunday closed",
     instagram_url="https://www.instagram.com/ragaboutique_/",
     facebook_url="https://www.facebook.com/ragatheboutique/",
 )
