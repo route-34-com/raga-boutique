@@ -194,11 +194,11 @@ export default function Policies() {
           </NavLink>
         ))}
       </nav>
-      <article className="policy max-w-[68ch]">
+      <article className="max-w-[68ch]">
         <p className="eyebrow">Policies</p>
         <h1 className="mt-3.5 text-[clamp(32px,4vw,52px)] leading-none">{page.title}</h1>
         <p className="mt-3 text-xs text-muted-foreground">Last updated {UPDATED}</p>
-        <div className="mt-8">{page.body(s)}</div>
+        <div className="policy-text mt-8">{page.body(s)}</div>
       </article>
     </section>
   )
