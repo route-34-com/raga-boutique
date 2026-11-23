@@ -17,14 +17,31 @@ from app.services.notify import notify
 PAYMENT_METHODS = {"cod", "upi", "online"}
 PAY_WINDOW = timedelta(minutes=30)  # an online order not paid by then is cancelled and its stock released
 MAX_SAVED_ADDRESSES = 5
-NOTIFY_ON = {"confirmed": "accepted", "shipped": "shipped", "delivered": "delivered"}  # status reached → customer message
+NOTIFY_ON = {
+    "confirmed": "accepted",
+    "shipped": "shipped",
+    "delivered": "delivered",
+}  # status reached → customer message
 
 
 def store_settings(db: Session) -> StoreSettings:
-    return db.get(StoreSettings, 1) or StoreSettings(id=1, free_ship_above=5000, ship_fee=150, low_stock_at=2, contact_phone="",
-                                                     contact_whatsapp="", contact_email="", contact_address="", contact_hours="",
-                                                     instagram_url="", facebook_url="", couriers=[], brand_theme="plum",
-                                                     upi_id="", upi_name="")
+    return db.get(StoreSettings, 1) or StoreSettings(
+        id=1,
+        free_ship_above=5000,
+        ship_fee=150,
+        low_stock_at=2,
+        contact_phone="",
+        contact_whatsapp="",
+        contact_email="",
+        contact_address="",
+        contact_hours="",
+        instagram_url="",
+        facebook_url="",
+        couriers=[],
+        brand_theme="plum",
+        upi_id="",
+        upi_name="",
+    )
 
 
 def _resolve_address(db: Session, user: User, data: PlaceOrderIn) -> dict:
@@ -63,7 +80,12 @@ def place_order(db: Session, user: User, data: PlaceOrderIn) -> Order:
         select(Variant).where(Variant.product_id.in_({pid for pid, _ in lines})).order_by(Variant.id).with_for_update()
     ).all()
     by_key = {(v.product_id, v.size): v for v in variants}
-    products = {p.id: p for p in db.scalars(select(Product).where(Product.id.in_({pid for pid, _ in lines})).options(selectinload(Product.images)))}
+    products = {
+        p.id: p
+        for p in db.scalars(
+            select(Product).where(Product.id.in_({pid for pid, _ in lines})).options(selectinload(Product.images))
+        )
+    }
 
     problems, items = [], []
     for (pid, size), qty in lines.items():
@@ -79,8 +101,17 @@ def place_order(db: Session, user: User, data: PlaceOrderIn) -> Order:
             problems.append(f"{label}: only {v.stock} left" if v.stock else f"{label} is sold out")
         else:
             v.stock -= qty
-            items.append(OrderItem(product_id=p.id, name=p.name, raga=p.raga, image=p.images[0].url if p.images else "",
-                                   size=None if size == ONE_SIZE else size, qty=qty, price=p.price))
+            items.append(
+                OrderItem(
+                    product_id=p.id,
+                    name=p.name,
+                    raga=p.raga,
+                    image=p.images[0].url if p.images else "",
+                    size=None if size == ONE_SIZE else size,
+                    qty=qty,
+                    price=p.price,
+                )
+            )
     if problems:
         db.rollback()
         raise ServiceError(". ".join(problems) + ".", 409, problems)
@@ -94,10 +125,20 @@ def place_order(db: Session, user: User, data: PlaceOrderIn) -> Order:
     if not user.name:
         user.name = address["name"]
 
-    order = Order(user_id=user.id, phone=user.phone, customer_name=address["name"], email=str(data.email),
-                  address=address, subtotal=subtotal, shipping=shipping, total=subtotal + shipping,
-                  payment_method=data.payment_method, note=data.note, items=items,
-                  events=[OrderEvent(status="placed")])
+    order = Order(
+        user_id=user.id,
+        phone=user.phone,
+        customer_name=address["name"],
+        email=str(data.email),
+        address=address,
+        subtotal=subtotal,
+        shipping=shipping,
+        total=subtotal + shipping,
+        payment_method=data.payment_method,
+        note=data.note,
+        items=items,
+        events=[OrderEvent(status="placed")],
+    )
     db.add(order)
     if order.payment_method == "online":
         db.flush()
@@ -117,11 +158,18 @@ def mark_paid_online(db: Session, order: Order, payment_id: str, via: str) -> Or
         # Paid after the hold ran out: refund it rather than keep money for a released order.
         rid = payments.refund(payment_id, order.total)
         order.payment_status, order.payment_ref = "refunded", payment_id
-        order.events.append(OrderEvent(status="cancelled", note=f"Paid after the order expired, refunded automatically · {rid}"))
+        order.events.append(
+            OrderEvent(status="cancelled", note=f"Paid after the order expired, refunded automatically · {rid}")
+        )
         db.commit()
         return order
     order.payment_status, order.payment_ref = "paid", payment_id
-    order.events.append(OrderEvent(status=order.status, note=f"Paid online · {payment_id}" + (" (confirmed by Razorpay)" if via == "webhook" else "")))
+    order.events.append(
+        OrderEvent(
+            status=order.status,
+            note=f"Paid online · {payment_id}" + (" (confirmed by Razorpay)" if via == "webhook" else ""),
+        )
+    )
     db.commit()
     notify(db, order, "new_order")
     return order
@@ -130,8 +178,16 @@ def mark_paid_online(db: Session, order: Order, payment_id: str, via: str) -> Or
 def release_unpaid(db: Session) -> int:
     """Cancels online orders left unpaid past the pay window, putting their stock back."""
     cutoff = datetime.now(UTC) - PAY_WINDOW
-    stale = db.scalars(select(Order).where(Order.payment_method == "online", Order.payment_status == "pending",
-                                           Order.status == "placed", Order.created_at < cutoff).with_for_update(skip_locked=True)).all()
+    stale = db.scalars(
+        select(Order)
+        .where(
+            Order.payment_method == "online",
+            Order.payment_status == "pending",
+            Order.status == "placed",
+            Order.created_at < cutoff,
+        )
+        .with_for_update(skip_locked=True)
+    ).all()
     for o in stale:
         _restock(db, o)
         o.status = "cancelled"
@@ -145,7 +201,11 @@ def _restock(db: Session, order: Order) -> None:
     for it in order.items:
         if it.product_id is None:
             continue
-        v = db.scalar(select(Variant).where(Variant.product_id == it.product_id, Variant.size == (it.size or ONE_SIZE)).with_for_update())
+        v = db.scalar(
+            select(Variant)
+            .where(Variant.product_id == it.product_id, Variant.size == (it.size or ONE_SIZE))
+            .with_for_update()
+        )
         if v:
             v.stock += it.qty
 
@@ -164,7 +224,9 @@ def upi_paid(db: Session, order: Order, ref: str) -> Order:
         raise ServiceError("This order was cancelled.", 409)
     if order.payment_status == "pending":
         order.payment_status, order.payment_ref = "claimed", ref
-        order.events.append(OrderEvent(status=order.status, note=f"Customer paid by UPI{f' · ref {ref}' if ref else ''}"))
+        order.events.append(
+            OrderEvent(status=order.status, note=f"Customer paid by UPI{f' · ref {ref}' if ref else ''}")
+        )
         db.commit()
     return order
 
@@ -181,7 +243,9 @@ def confirm_payment(db: Session, order_id: int) -> Order:
     return order
 
 
-def set_status(db: Session, order_id: int, status: str, note: str = "", courier: str = "", tracking_id: str = "") -> Order:
+def set_status(
+    db: Session, order_id: int, status: str, note: str = "", courier: str = "", tracking_id: str = ""
+) -> Order:
     order = _lock_order(db, order_id)
     if order.status in ("cancelled", "delivered"):
         raise ServiceError(f"Order is already {order.status}.", 409)

@@ -13,8 +13,14 @@ def test_upload_create_and_adjust_stock(admin):
     r = admin.post("/api/admin/products/upload", files={"file": ("p.jpg", jpeg_bytes(), "image/jpeg")})
     assert r.status_code == 200, r.text
     url = r.json()["url"]
-    body = {"name": "Rani Pink Dupatta", "raga": "Kalyani", "category_id": "sarees", "price": 2400,
-            "variants": [{"size": "ONE", "stock": 5}], "images": [url]}
+    body = {
+        "name": "Rani Pink Dupatta",
+        "raga": "Kalyani",
+        "category_id": "sarees",
+        "price": 2400,
+        "variants": [{"size": "ONE", "stock": 5}],
+        "images": [url],
+    }
     p = admin.post("/api/admin/products", json=body).json()
     assert p["slug"] == "kalyani" and p["total_stock"] == 5
     p = admin.post(f"/api/admin/products/{p['id']}/stock", json={"size": "ONE", "delta": -2}).json()
@@ -25,8 +31,14 @@ def test_upload_create_and_adjust_stock(admin):
 
 
 def test_mrp_below_price_rejected(admin):
-    body = {"name": "X", "category_id": "sarees", "price": 2400, "mrp": 2000,
-            "variants": [{"size": "ONE", "stock": 1}], "images": ["/uploads/products/x.jpg"]}
+    body = {
+        "name": "X",
+        "category_id": "sarees",
+        "price": 2400,
+        "mrp": 2000,
+        "variants": [{"size": "ONE", "stock": 1}],
+        "images": ["/uploads/products/x.jpg"],
+    }
     assert admin.post("/api/admin/products", json=body).status_code == 422
 
 

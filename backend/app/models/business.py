@@ -5,7 +5,16 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base, TimestampMixin
 
-EXPENSE_CATEGORIES = ("Rent", "Electricity", "Maintenance", "Tailoring", "Packing & courier", "Marketing", "Transport", "Other")
+EXPENSE_CATEGORIES = (
+    "Rent",
+    "Electricity",
+    "Maintenance",
+    "Tailoring",
+    "Packing & courier",
+    "Marketing",
+    "Transport",
+    "Other",
+)
 
 
 class Purchase(TimestampMixin, Base):
@@ -46,8 +55,12 @@ class Staff(TimestampMixin, Base):
     active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     leaves: Mapped[list["StaffLeave"]] = relationship(cascade="all, delete-orphan", order_by="StaffLeave.on.desc()")
-    advances: Mapped[list["StaffAdvance"]] = relationship(cascade="all, delete-orphan", order_by="StaffAdvance.given_on.desc()")
-    payments: Mapped[list["SalaryPayment"]] = relationship(cascade="all, delete-orphan", order_by="SalaryPayment.month.desc()")
+    advances: Mapped[list["StaffAdvance"]] = relationship(
+        cascade="all, delete-orphan", order_by="StaffAdvance.given_on.desc()"
+    )
+    payments: Mapped[list["SalaryPayment"]] = relationship(
+        cascade="all, delete-orphan", order_by="SalaryPayment.month.desc()"
+    )
 
 
 class StaffLeave(TimestampMixin, Base):

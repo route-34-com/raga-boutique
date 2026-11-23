@@ -23,9 +23,17 @@ def html(text: str, order, link: str = "", label: str = "Track your parcel", bra
     ink = INK.get(brand, INK["plum"])
     rows = "".join(
         f'<tr><td style="padding:6px 0">{escape(i.name)}{f" ({escape(i.size)})" if i.size else ""} × {i.qty}</td>'
-        f'<td style="padding:6px 0;text-align:right">{inr(i.price * i.qty)}</td></tr>' for i in order.items)
-    button = (f'<p><a href="{escape(link)}" style="display:inline-block;background:{ink};color:#f6efe6;padding:12px 22px;'
-              f'border-radius:999px;text-decoration:none">{escape(label)}</a></p>') if link else ""
+        f'<td style="padding:6px 0;text-align:right">{inr(i.price * i.qty)}</td></tr>'
+        for i in order.items
+    )
+    button = (
+        (
+            f'<p><a href="{escape(link)}" style="display:inline-block;background:{ink};color:#f6efe6;padding:12px 22px;'
+            f'border-radius:999px;text-decoration:none">{escape(label)}</a></p>'
+        )
+        if link
+        else ""
+    )
     return f"""<div style="background:#f6efe6;padding:32px 16px;font-family:Georgia,serif;color:{ink}">
 <div style="max-width:520px;margin:0 auto;background:#fffaf3;border-radius:16px;padding:28px">
 <p style="font-size:22px;margin:0 0 18px">Raga</p>

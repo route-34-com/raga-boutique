@@ -23,10 +23,11 @@ mkdir -p /srv/raga && chown raga /srv/raga   # put the repo here as /srv/raga
 ## App
 ```bash
 cd /srv/raga/backend
-cp .env.example .env    # fill in: ENV=prod, DATABASE_URL, JWT_SECRET (openssl rand -hex 32), COOKIE_SECURE=true,
-                        # OTP_PROVIDER=msg91, MSG91_AUTHKEY, MSG91_TEMPLATE_ID, CORS_ORIGINS=["https://your-domain"]
+cp .env.example .env    # fill in the production checklist in HANDOVER.md: ENV=prod, DATABASE_URL,
+                        # JWT_SECRET (openssl rand -hex 32), COOKIE_SECURE=true, PUBLIC_SITE_URL, IMAGE_STORE=disk,
+                        # and the keys of each integration being switched on
 uv sync --no-dev
-uv run alembic upgrade head
+uv run python -m alembic upgrade head
 uv run python -m scripts.seed --admin 98XXXXXXXX     # catalog + owner's admin number (no demo orders)
 
 cd ../frontend && npm ci && npm run build            # or build locally and copy dist/
@@ -38,9 +39,11 @@ cp ../deploy/Caddyfile /etc/caddy/Caddyfile && systemctl reload caddy
 ## Updating
 ```bash
 cd /srv/raga && git pull
-cd backend && uv sync --no-dev && uv run alembic upgrade head && sudo systemctl restart raga-api
+cd backend && uv sync --no-dev && uv run python -m alembic upgrade head && sudo systemctl restart raga-api
 cd ../frontend && npm ci && npm run build
 ```
+
+DigitalOcean blocks outgoing SMTP on 587: use Brevo on port 2525 (`SMTP_PORT=2525`).
 
 ## Backups beyond DO snapshots
 Nightly `pg_dump` of the database plus `backend/uploads/` (product photos) to DO Spaces or another machine.

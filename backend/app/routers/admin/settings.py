@@ -14,7 +14,10 @@ router = APIRouter()
 def get_settings(_: Admin, db: DB):
     s = store_settings(db)
     empty = {"free_ship_above": 0, "ship_fee": 0, "low_stock_at": 0, "couriers": [], "brand_theme": "plum"}
-    return {**{k: getattr(s, k) or empty.get(k, "") for k in SettingsIn.model_fields}, "online_payments": payments.mode()}
+    return {
+        **{k: getattr(s, k) or empty.get(k, "") for k in SettingsIn.model_fields},
+        "online_payments": payments.mode(),
+    }
 
 
 @router.put("/settings")
@@ -29,8 +32,10 @@ def put_settings(body: SettingsIn, _: Admin, db: DB):
 
 @router.get("/admins")
 def list_admins(me: Admin, db: DB):
-    return [{"id": u.id, "phone": u.phone, "name": u.name, "is_you": u.id == me.id, "is_super": is_super_admin(u)}
-            for u in db.scalars(select(User).where(User.is_admin.is_(True)).order_by(User.id))]
+    return [
+        {"id": u.id, "phone": u.phone, "name": u.name, "is_you": u.id == me.id, "is_super": is_super_admin(u)}
+        for u in db.scalars(select(User).where(User.is_admin.is_(True)).order_by(User.id))
+    ]
 
 
 @router.post("/admins", status_code=201)

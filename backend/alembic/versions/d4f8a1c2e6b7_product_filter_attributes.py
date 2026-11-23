@@ -5,27 +5,28 @@ Revises: c7a2e9f15b3d
 Create Date: 2026-10-22 15:30:00.000000
 
 """
-from typing import Sequence, Union
 
-from alembic import op
+from collections.abc import Sequence
+
 import sqlalchemy as sa
 
+from alembic import op
 
-revision: str = 'd4f8a1c2e6b7'
-down_revision: Union[str, Sequence[str], None] = 'c7a2e9f15b3d'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+revision: str = "d4f8a1c2e6b7"
+down_revision: str | Sequence[str] | None = "c7a2e9f15b3d"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 TEXT = [("color", 30), ("material", 40), ("work", 40), ("pattern", 40)]
 
 
 def upgrade() -> None:
     for name, length in TEXT:
-        op.add_column('products', sa.Column(name, sa.String(length=length), server_default="", nullable=False))
-    op.add_column('products', sa.Column('occasions', sa.JSON(), server_default="[]", nullable=False))
+        op.add_column("products", sa.Column(name, sa.String(length=length), server_default="", nullable=False))
+    op.add_column("products", sa.Column("occasions", sa.JSON(), server_default="[]", nullable=False))
 
 
 def downgrade() -> None:
-    op.drop_column('products', 'occasions')
+    op.drop_column("products", "occasions")
     for name, _ in TEXT:
-        op.drop_column('products', name)
+        op.drop_column("products", name)

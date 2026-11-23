@@ -4,3 +4,7 @@
 .vercel
 .env*.local
 demo/
+.ruff_cache/
+*.mp4
+*.MP4
+walkthrough-videos/

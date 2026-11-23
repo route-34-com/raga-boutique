@@ -41,7 +41,9 @@ class Product(TimestampMixin, Base):
     occasions: Mapped[list[str]] = mapped_column(JSON, default=list)
     active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     sort: Mapped[int] = mapped_column(Integer, default=0)
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
     category: Mapped[Category] = relationship()
     images: Mapped[list["ProductImage"]] = relationship(order_by="ProductImage.position", cascade="all, delete-orphan")

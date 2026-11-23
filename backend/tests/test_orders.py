@@ -16,7 +16,9 @@ def place(client, items, **extra):
 
 def test_requires_login():
     from fastapi.testclient import TestClient
+
     from app.main import app
+
     assert place(TestClient(app), [{"product_id": 1, "qty": 1}]).status_code == 401
 
 
@@ -72,9 +74,15 @@ def test_admin_status_flow(customer, admin):
     place(customer, [{"product_id": 1, "qty": 1}])
     oid = admin.get("/api/admin/orders").json()[0]["id"]
     assert admin.post(f"/api/admin/orders/{oid}/status", json={"status": "packed"}).status_code == 200  # can skip ahead
-    assert admin.post(f"/api/admin/orders/{oid}/status", json={"status": "confirmed"}).status_code == 409  # never backwards
-    assert admin.post(f"/api/admin/orders/{oid}/status", json={"status": "shipped"}).status_code == 400  # needs tracking
-    r = admin.post(f"/api/admin/orders/{oid}/status", json={"status": "shipped", "courier": "Delhivery", "tracking_id": "DL1"})
+    assert (
+        admin.post(f"/api/admin/orders/{oid}/status", json={"status": "confirmed"}).status_code == 409
+    )  # never backwards
+    assert (
+        admin.post(f"/api/admin/orders/{oid}/status", json={"status": "shipped"}).status_code == 400
+    )  # needs tracking
+    r = admin.post(
+        f"/api/admin/orders/{oid}/status", json={"status": "shipped", "courier": "Delhivery", "tracking_id": "DL1"}
+    )
     assert r.json()["tracking_id"] == "DL1"
     r = admin.post(f"/api/admin/orders/{oid}/status", json={"status": "delivered"})
     assert r.json()["payment_status"] == "paid"
@@ -98,8 +106,16 @@ def test_bad_pincode_gets_a_plain_message(customer):
 
 
 def test_public_settings_include_contact_details(admin):
-    body = {"free_ship_above": 5000, "ship_fee": 150, "low_stock_at": 2, "contact_phone": "9876500000",
-            "contact_whatsapp": "9876500000", "contact_email": "hi@example.com", "contact_address": "Chennai", "contact_hours": "10–8"}
+    body = {
+        "free_ship_above": 5000,
+        "ship_fee": 150,
+        "low_stock_at": 2,
+        "contact_phone": "9876500000",
+        "contact_whatsapp": "9876500000",
+        "contact_email": "hi@example.com",
+        "contact_address": "Chennai",
+        "contact_hours": "10–8",
+    }
     assert admin.put("/api/admin/settings", json=body).status_code == 200
     assert admin.get("/api/settings").json()["contact_whatsapp"] == "9876500000"
     assert admin.put("/api/admin/settings", json={**body, "contact_phone": "12"}).status_code == 422
@@ -124,9 +140,32 @@ def test_sort_by_popularity_and_filter_fields(customer):
 
 def test_admin_saves_filter_fields(admin):
     p = admin.get("/api/admin/products").json()[0]
-    body = {k: p[k] for k in ("name", "raga", "category_id", "mood", "price", "mrp", "tag", "swatch", "raga_note", "details", "care", "active")}
-    body |= {"variants": p["variants"], "images": [i["url"] for i in p["images"]],
-             "color": "Red", "material": "Banarasi silk", "work": "Zari", "pattern": "Brocade", "occasions": ["Wedding"]}
+    body = {
+        k: p[k]
+        for k in (
+            "name",
+            "raga",
+            "category_id",
+            "mood",
+            "price",
+            "mrp",
+            "tag",
+            "swatch",
+            "raga_note",
+            "details",
+            "care",
+            "active",
+        )
+    }
+    body |= {
+        "variants": p["variants"],
+        "images": [i["url"] for i in p["images"]],
+        "color": "Red",
+        "material": "Banarasi silk",
+        "work": "Zari",
+        "pattern": "Brocade",
+        "occasions": ["Wedding"],
+    }
     assert admin.put(f"/api/admin/products/{p['id']}", json=body).status_code == 200
     saved = admin.get(f"/api/products/{p['slug']}").json()
     assert (saved["color"], saved["occasions"]) == ("Red", ["Wedding"])
@@ -146,12 +185,18 @@ def test_accept_records_customer_notices(customer, admin):
 
 
 def test_bulk_dispatch_ships_each_and_reports_failures(customer, admin):
-    for items in ([{"product_id": 1, "qty": 1}], [{"product_id": 1, "qty": 1}], [{"product_id": 2, "size": "S", "qty": 1}]):
+    for items in (
+        [{"product_id": 1, "qty": 1}],
+        [{"product_id": 1, "qty": 1}],
+        [{"product_id": 2, "size": "S", "qty": 1}],
+    ):
         assert place(customer, items).status_code == 201
     ids = sorted(o["id"] for o in admin.get("/api/admin/orders").json())
     admin.post(f"/api/admin/orders/{ids[2]}/status", json={"status": "cancelled"})
-    r = admin.post("/api/admin/orders/dispatch", json={"items": [
-        {"order_id": i, "courier": "DTDC", "tracking_id": f"D{i}"} for i in ids]})
+    r = admin.post(
+        "/api/admin/orders/dispatch",
+        json={"items": [{"order_id": i, "courier": "DTDC", "tracking_id": f"D{i}"} for i in ids]},
+    )
     assert r.status_code == 200, r.text
     res = {x["order_id"]: x for x in r.json()}
     assert res[ids[0]]["ok"] and res[ids[1]]["ok"] and not res[ids[2]]["ok"]

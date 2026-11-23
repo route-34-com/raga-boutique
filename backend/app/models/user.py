@@ -16,7 +16,9 @@ class User(TimestampMixin, Base):
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    addresses: Mapped[list["Address"]] = relationship(back_populates="user", order_by="Address.id.desc()", cascade="all, delete-orphan")
+    addresses: Mapped[list["Address"]] = relationship(
+        back_populates="user", order_by="Address.id.desc()", cascade="all, delete-orphan"
+    )
 
 
 class Address(TimestampMixin, Base):

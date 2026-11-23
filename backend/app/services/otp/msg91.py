@@ -16,7 +16,11 @@ class Msg91Sender:
         r = httpx.post(
             self.url,
             headers={"authkey": s.msg91_authkey, "content-type": "application/json"},
-            json={"template_id": s.msg91_template_id, "short_url": "0", "recipients": [{"mobiles": phone.lstrip("+"), "otp": code}]},
+            json={
+                "template_id": s.msg91_template_id,
+                "short_url": "0",
+                "recipients": [{"mobiles": phone.lstrip("+"), "otp": code}],
+            },
             timeout=10,
         )
         r.raise_for_status()

@@ -38,8 +38,25 @@ def _apply(db, p: Product, body: ProductIn) -> None:
     sizes = [v.size.upper() for v in body.variants]
     if len(set(sizes)) != len(sizes):
         raise HTTPException(422, {"message": "Each size can only be listed once."})
-    for field in ("name", "raga", "category_id", "mood", "price", "mrp", "tag", "swatch", "raga_note", "details", "care", "active",
-                  "color", "material", "work", "pattern", "occasions"):
+    for field in (
+        "name",
+        "raga",
+        "category_id",
+        "mood",
+        "price",
+        "mrp",
+        "tag",
+        "swatch",
+        "raga_note",
+        "details",
+        "care",
+        "active",
+        "color",
+        "material",
+        "work",
+        "pattern",
+        "occasions",
+    ):
         setattr(p, field, getattr(body, field))
 
     # Variants: update in place so stock history isn't lost for sizes that stay.

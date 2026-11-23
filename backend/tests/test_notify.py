@@ -7,8 +7,15 @@ DTDC = {"name": "DTDC", "track_url": "https://t.example/?awb={id}"}
 
 
 def _order(**kw):
-    base = dict(order_no="RB1001", customer_name="Priya Raman", total=11800, courier="DTDC", tracking_id="X1",
-                address={"city": "Madurai"}, items=[SimpleNamespace(qty=1), SimpleNamespace(qty=2)])
+    base = dict(
+        order_no="RB1001",
+        customer_name="Priya Raman",
+        total=11800,
+        courier="DTDC",
+        tracking_id="X1",
+        address={"city": "Madurai"},
+        items=[SimpleNamespace(qty=1), SimpleNamespace(qty=2)],
+    )
     return SimpleNamespace(**(base | kw))
 
 
@@ -28,7 +35,9 @@ def test_render_shipped_without_pattern_drops_link_sentence():
 
 def test_render_accepted_formats_total():
     assert "Total ₹11,800 (cash on delivery)" in messages.render("accepted", _order(), [])
-    assert "Total ₹11,800 (paid online)" in messages.render("accepted", _order(payment_method="online", payment_status="paid"), [])
+    assert "Total ₹11,800 (paid online)" in messages.render(
+        "accepted", _order(payment_method="online", payment_status="paid"), []
+    )
 
 
 def test_render_new_order_for_owner():
@@ -61,7 +70,6 @@ import smtplib  # noqa: E402
 import pytest  # noqa: E402
 from sqlalchemy import select  # noqa: E402
 
-from app.core.config import get_settings  # noqa: E402
 from app.core.db import SessionLocal  # noqa: E402
 from app.models import Notification, Order, StoreSettings  # noqa: E402
 from app.services.notify import notify  # noqa: E402
@@ -70,7 +78,9 @@ from tests.conftest import ADDRESS  # noqa: E402
 
 @pytest.fixture
 def order_id(customer):
-    r = customer.post("/api/orders", json={"items": [{"product_id": 1, "qty": 1}], "address": ADDRESS, "email": "priya@example.com"})
+    r = customer.post(
+        "/api/orders", json={"items": [{"product_id": 1, "qty": 1}], "address": ADDRESS, "email": "priya@example.com"}
+    )
     assert r.status_code in (200, 201), r.text
     with SessionLocal() as db:
         return db.scalar(select(Order.id))
@@ -78,7 +88,12 @@ def order_id(customer):
 
 def rows(order_id, kind):
     with SessionLocal() as db:
-        return {n.channel: n for n in db.scalars(select(Notification).where(Notification.order_id == order_id, Notification.kind == kind))}
+        return {
+            n.channel: n
+            for n in db.scalars(
+                select(Notification).where(Notification.order_id == order_id, Notification.kind == kind)
+            )
+        }
 
 
 def run(order_id, kind, email=None):
@@ -93,7 +108,9 @@ def run(order_id, kind, email=None):
 def test_notify_accepted_creates_tap_and_logged_rows(order_id):
     run(order_id, "accepted")
     r = rows(order_id, "accepted")
-    assert r["whatsapp"].status == "tap" and r["whatsapp"].detail.startswith("https://wa.me/919876543210?text=Hi%20Priya")
+    assert r["whatsapp"].status == "tap" and r["whatsapp"].detail.startswith(
+        "https://wa.me/919876543210?text=Hi%20Priya"
+    )
     assert r["email"].status == "logged"
 
 
@@ -114,6 +131,7 @@ def test_smtp_failure_recorded(order_id, monkeypatch):
 
     def refuse(*a, **k):
         raise OSError("connection refused")
+
     monkeypatch.setattr(smtplib, "SMTP", refuse)
     run(order_id, "accepted")
     r = rows(order_id, "accepted")
@@ -126,7 +144,9 @@ def test_new_order_tap_mode_emails_shop_only(customer):
     with SessionLocal() as db:
         db.get(StoreSettings, 1).contact_email = "shop@example.com"
         db.commit()
-    customer.post("/api/orders", json={"items": [{"product_id": 1, "qty": 1}], "address": ADDRESS, "email": "priya@example.com"})
+    customer.post(
+        "/api/orders", json={"items": [{"product_id": 1, "qty": 1}], "address": ADDRESS, "email": "priya@example.com"}
+    )
     with SessionLocal() as db:
         oid = db.scalar(select(Order.id))
     r = rows(oid, "new_order")
@@ -136,6 +156,7 @@ def test_new_order_tap_mode_emails_shop_only(customer):
 def test_unexpected_send_error_marks_failed_and_still_emails(order_id, monkeypatch):
     def boom(*a, **k):
         raise ValueError("not json")
+
     monkeypatch.setattr(whatsapp, "send", boom)
     run(order_id, "accepted")
     r = rows(order_id, "accepted")
@@ -145,6 +166,7 @@ def test_unexpected_send_error_marks_failed_and_still_emails(order_id, monkeypat
 
 def test_cloud_uses_configured_template_names(monkeypatch):
     import httpx
+
     sent = {}
 
     class Resp:
@@ -157,6 +179,7 @@ def test_cloud_uses_configured_template_names(monkeypatch):
     def fake_post(url, json, headers, timeout):
         sent.update(json)
         return Resp()
+
     monkeypatch.setattr(get_settings(), "whatsapp_mode", "cloud")
     monkeypatch.setattr(httpx, "post", fake_post)
     assert whatsapp.send("+919876543210", "accepted", "Hi", ["Priya"]) == ("sent", "wamid.1")
@@ -169,6 +192,7 @@ def test_track_link_encodes_tracking_id():
 
 def test_site_url_falls_back_to_vercel_production_domain(monkeypatch):
     from app.core.config import Settings
+
     monkeypatch.setenv("VERCEL_PROJECT_PRODUCTION_URL", "raga.example")
     monkeypatch.delenv("PUBLIC_SITE_URL", raising=False)
     assert Settings(_env_file=None).public_site_url == "https://raga.example"

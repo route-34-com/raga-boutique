@@ -25,7 +25,9 @@ def notify(db: Session, order: Order, kind: str) -> list[Notification]:
 def _notify(db: Session, order: Order, kind: str) -> list[Notification]:
     cfg = db.get(StoreSettings, 1)
     couriers = (cfg.couriers if cfg else None) or []
-    done = set(db.scalars(select(Notification.channel).where(Notification.order_id == order.id, Notification.kind == kind)))
+    done = set(
+        db.scalars(select(Notification.channel).where(Notification.order_id == order.id, Notification.kind == kind))
+    )
     text = messages.render(kind, order, couriers)
     params = messages.params(kind, order, couriers)
     link, label = "", "Track your parcel"
@@ -44,8 +46,17 @@ def _notify(db: Session, order: Order, kind: str) -> list[Notification]:
     if want_wa and "whatsapp" not in done and (n := _claim(db, order, kind, "whatsapp")):
         made.append(_finish(db, n, _safely(whatsapp.send, wa_to, kind, text, params)))
     if "email" not in done and (n := _claim(db, order, kind, "email")):
-        result = _safely(email.send, mail_to, templates.subject(kind, order), text, templates.html(text, order, link, label, (cfg.brand_theme if cfg else "plum"))) if mail_to \
+        result = (
+            _safely(
+                email.send,
+                mail_to,
+                templates.subject(kind, order),
+                text,
+                templates.html(text, order, link, label, (cfg.brand_theme if cfg else "plum")),
+            )
+            if mail_to
             else ("skipped", "No email address")
+        )
         made.append(_finish(db, n, result))
     return made
 

@@ -82,8 +82,10 @@ def test_salary_cuts_unpaid_leave_and_advance(admin):
     assert p["leave_cut"] == 750
     assert p["advance_cut"] == 3000 and p["to_pay"] == 15000 - 750 - 3000
 
-    r = admin.post(f"/api/admin/staff/{sid}/salary", json={"month": MONTH, "leave_cut": 750, "advance_cut": 1000,
-                                                             "paid": 13250, "paid_on": TODAY})
+    r = admin.post(
+        f"/api/admin/staff/{sid}/salary",
+        json={"month": MONTH, "leave_cut": 750, "advance_cut": 1000, "paid": 13250, "paid_on": TODAY},
+    )
     assert r.status_code == 201 and r.json()["advance_owed"] == 2000
     again = admin.post(f"/api/admin/staff/{sid}/salary", json={"month": MONTH, "paid": 1, "paid_on": TODAY})
     assert again.status_code == 409
@@ -91,14 +93,18 @@ def test_salary_cuts_unpaid_leave_and_advance(admin):
 
 def test_advance_cut_cannot_exceed_what_is_owed(admin):
     sid = admin.post("/api/admin/staff", json={"name": "Ravi", "monthly_salary": 9000}).json()["id"]
-    r = admin.post(f"/api/admin/staff/{sid}/salary", json={"month": MONTH, "advance_cut": 500, "paid": 8500, "paid_on": TODAY})
+    r = admin.post(
+        f"/api/admin/staff/{sid}/salary", json={"month": MONTH, "advance_cut": 500, "paid": 8500, "paid_on": TODAY}
+    )
     assert r.status_code == 400
 
 
 def test_deleting_a_salary_entry_restores_the_advance(admin):
     sid = admin.post("/api/admin/staff", json={"name": "Devi", "monthly_salary": 10000}).json()["id"]
     admin.post(f"/api/admin/staff/{sid}/advances", json={"given_on": TODAY, "amount": 2000})
-    staff = admin.post(f"/api/admin/staff/{sid}/salary", json={"month": MONTH, "advance_cut": 2000, "paid": 8000, "paid_on": TODAY}).json()
+    staff = admin.post(
+        f"/api/admin/staff/{sid}/salary", json={"month": MONTH, "advance_cut": 2000, "paid": 8000, "paid_on": TODAY}
+    ).json()
     assert staff["advance_owed"] == 0
     staff = admin.delete(f"/api/admin/staff/{sid}/salary/{staff['payments'][0]['id']}").json()
     assert staff["advance_owed"] == 2000 and staff["payments"] == []

@@ -2,7 +2,10 @@ from tests.conftest import ADDRESS
 
 
 def buy_and_deliver(customer, admin, product_id=1):
-    r = customer.post("/api/orders", json={"items": [{"product_id": product_id, "qty": 1}], "address": ADDRESS, "email": "priya@example.com"})
+    r = customer.post(
+        "/api/orders",
+        json={"items": [{"product_id": product_id, "qty": 1}], "address": ADDRESS, "email": "priya@example.com"},
+    )
     assert r.status_code == 201, r.text
     oid = next(o["id"] for o in admin.get("/api/admin/orders").json() if o["order_no"] == r.json()["order_no"])
     admin.post(f"/api/admin/orders/{oid}/status", json={"status": "shipped", "courier": "DTDC", "tracking_id": "D1"})
@@ -14,7 +17,9 @@ def review(client, rating=5, comment="Beautiful drape, colour exactly as shown."
 
 
 def test_cannot_review_before_delivery(customer):
-    customer.post("/api/orders", json={"items": [{"product_id": 1, "qty": 1}], "address": ADDRESS, "email": "priya@example.com"})
+    customer.post(
+        "/api/orders", json={"items": [{"product_id": 1, "qty": 1}], "address": ADDRESS, "email": "priya@example.com"}
+    )
     r = review(customer)
     assert r.status_code == 403
     assert "delivered" in r.json()["detail"]["message"]
@@ -35,7 +40,9 @@ def test_second_review_updates_the_first(customer, admin):
     assert review(customer, 4, "Lovely, slightly lighter than expected.").status_code == 201
     body = customer.get("/api/products/yaman/reviews").json()
     assert body["count"] == 1 and body["average"] == 4.0
-    assert customer.get("/api/me/reviews").json() == [{"product_id": 1, "rating": 4, "comment": "Lovely, slightly lighter than expected."}]
+    assert customer.get("/api/me/reviews").json() == [
+        {"product_id": 1, "rating": 4, "comment": "Lovely, slightly lighter than expected."}
+    ]
 
 
 def test_rating_must_be_one_to_five(customer, admin):
@@ -65,6 +72,7 @@ def test_admin_can_delete_a_review(customer, admin):
 def test_best_reviews_come_first(customer, admin):
     from app.core.db import SessionLocal
     from app.models import Review, User
+
     with SessionLocal() as db:
         for i, stars in enumerate([3, 5, 4]):
             u = User(phone=f"+91900000020{i}", name=f"R{i}")

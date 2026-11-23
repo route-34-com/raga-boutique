@@ -27,13 +27,21 @@ class Order(TimestampMixin, Base):
     total: Mapped[int] = mapped_column(Integer)
     status: Mapped[str] = mapped_column(String(12), default="placed", index=True)
     payment_method: Mapped[str] = mapped_column(String(20), default="cod")
-    payment_status: Mapped[str] = mapped_column(String(12), default="pending")  # pending → claimed (UPI, customer says paid) → paid → refunded
-    payment_ref: Mapped[str] = mapped_column(String(40), default="", server_default="")  # UPI reference, or the gateway's payment id
-    gateway_order_id: Mapped[str] = mapped_column(String(40), default="", server_default="", index=True)  # Razorpay order id
+    payment_status: Mapped[str] = mapped_column(
+        String(12), default="pending"
+    )  # pending → claimed (UPI, customer says paid) → paid → refunded
+    payment_ref: Mapped[str] = mapped_column(
+        String(40), default="", server_default=""
+    )  # UPI reference, or the gateway's payment id
+    gateway_order_id: Mapped[str] = mapped_column(
+        String(40), default="", server_default="", index=True
+    )  # Razorpay order id
     courier: Mapped[str] = mapped_column(String(60), default="")
     tracking_id: Mapped[str] = mapped_column(String(60), default="")
     note: Mapped[str] = mapped_column(Text, default="")
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
     items: Mapped[list["OrderItem"]] = relationship(cascade="all, delete-orphan", order_by="OrderItem.id")
     events: Mapped[list["OrderEvent"]] = relationship(cascade="all, delete-orphan", order_by="OrderEvent.id")

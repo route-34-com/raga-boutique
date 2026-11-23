@@ -46,21 +46,33 @@ def create_gateway_order(order_no: str, amount: int) -> str:
     if provider() == "demo":
         return f"order_demo_{secrets.token_hex(7)}"
     try:
-        r = httpx.post(f"{API}/orders", auth=_auth(), timeout=15,
-                       json={"amount": amount * 100, "currency": "INR", "receipt": order_no, "notes": {"order_no": order_no}})
+        r = httpx.post(
+            f"{API}/orders",
+            auth=_auth(),
+            timeout=15,
+            json={"amount": amount * 100, "currency": "INR", "receipt": order_no, "notes": {"order_no": order_no}},
+        )
         r.raise_for_status()
         return r.json()["id"]
     except (httpx.HTTPError, KeyError, ValueError) as e:
         log.warning("Razorpay order failed for %s: %s", order_no, e)
-        raise ServiceError("Online payment is unavailable right now. Please try again, or choose cash on delivery.", 502) from None
+        raise ServiceError(
+            "Online payment is unavailable right now. Please try again, or choose cash on delivery.", 502
+        ) from None
 
 
 def checkout_options(order) -> dict:
     s = get_settings()
-    return {"provider": provider(), "key": s.razorpay_key_id if provider() == "razorpay" else "",
-            "order_id": order.gateway_order_id, "amount": order.total * 100, "currency": "INR",
-            "name": "Raga Boutique", "description": f"Order {order.order_no}",
-            "prefill": {"name": order.customer_name, "email": order.email, "contact": order.phone}}
+    return {
+        "provider": provider(),
+        "key": s.razorpay_key_id if provider() == "razorpay" else "",
+        "order_id": order.gateway_order_id,
+        "amount": order.total * 100,
+        "currency": "INR",
+        "name": "Raga Boutique",
+        "description": f"Order {order.order_no}",
+        "prefill": {"name": order.customer_name, "email": order.email, "contact": order.phone},
+    }
 
 
 def _hmac(secret: str, message: bytes) -> str:
@@ -87,4 +99,6 @@ def refund(payment_id: str, amount: int) -> str:
         return r.json()["id"]
     except (httpx.HTTPError, KeyError, ValueError) as e:
         log.warning("Razorpay refund failed for %s: %s", payment_id, e)
-        raise ServiceError("The refund couldn't be started, so the order was not cancelled. Please try again in a minute.", 502) from None
+        raise ServiceError(
+            "The refund couldn't be started, so the order was not cancelled. Please try again in a minute.", 502
+        ) from None

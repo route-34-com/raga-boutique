@@ -23,7 +23,9 @@ def request_otp(db: Session, mobile: str) -> tuple[str, int]:
     last = db.scalar(select(OtpCode).where(OtpCode.phone == phone).order_by(OtpCode.id.desc()).limit(1))
     if last and (wait := s.otp_resend_seconds - int((now - last.created_at).total_seconds())) > 0:
         raise ServiceError(f"Please wait {wait} seconds before asking for a new code.", 429)
-    sent_last_hour = db.scalar(select(func.count()).where(OtpCode.phone == phone, OtpCode.created_at > now - timedelta(hours=1)))
+    sent_last_hour = db.scalar(
+        select(func.count()).where(OtpCode.phone == phone, OtpCode.created_at > now - timedelta(hours=1))
+    )
     if sent_last_hour >= s.otp_max_per_hour:
         raise ServiceError("Too many codes requested. Please try again in an hour.", 429)
 
@@ -38,7 +40,13 @@ def verify_otp(db: Session, mobile: str, code: str) -> User:
     s = get_settings()
     phone = e164(mobile)
     now = datetime.now(UTC)
-    otp = db.scalar(select(OtpCode).where(OtpCode.phone == phone, OtpCode.used.is_(False)).order_by(OtpCode.id.desc()).limit(1).with_for_update())
+    otp = db.scalar(
+        select(OtpCode)
+        .where(OtpCode.phone == phone, OtpCode.used.is_(False))
+        .order_by(OtpCode.id.desc())
+        .limit(1)
+        .with_for_update()
+    )
     if not otp or otp.expires_at < now:
         raise ServiceError("That code has expired. Please request a new one.")
     if otp.attempts >= s.otp_max_attempts:

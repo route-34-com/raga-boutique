@@ -65,9 +65,13 @@ class ProductIn(BaseModel):
     material: Attr = ""
     work: Attr = ""
     pattern: Attr = ""
-    occasions: list[Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=30)]] = Field(default=[], max_length=8)
+    occasions: list[Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=30)]] = Field(
+        default=[], max_length=8
+    )
     variants: list[VariantIn] = Field(min_length=1, max_length=12)
-    images: list[Annotated[str, StringConstraints(pattern=r"^/uploads/products/[\w.-]+$")]] = Field(min_length=1, max_length=12)  # first is the cover
+    images: list[Annotated[str, StringConstraints(pattern=r"^/uploads/products/[\w.-]+$")]] = Field(
+        min_length=1, max_length=12
+    )  # first is the cover
 
 
 class StockAdjust(BaseModel):
@@ -100,7 +104,9 @@ SocialUrl = Annotated[str, StringConstraints(strip_whitespace=True, max_length=2
 class CourierIn(BaseModel):
     name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=60)]
     # Where the tracking ID goes, e.g. https://www.dtdc.in/tracking?awb={id}. Empty = no link in messages.
-    track_url: Annotated[str, StringConstraints(strip_whitespace=True, max_length=300, pattern=r"^(https?://\S*\{id\}\S*)?$")] = ""
+    track_url: Annotated[
+        str, StringConstraints(strip_whitespace=True, max_length=300, pattern=r"^(https?://\S*\{id\}\S*)?$")
+    ] = ""
 
 
 class SettingsIn(BaseModel):
@@ -109,14 +115,18 @@ class SettingsIn(BaseModel):
     low_stock_at: int = Field(ge=0)
     contact_phone: Mobile10 = ""
     contact_whatsapp: Mobile10 = ""
-    contact_email: Annotated[str, StringConstraints(strip_whitespace=True, max_length=120, pattern=r"^([^@\s]+@[^@\s]+\.[^@\s]+)?$")] = ""
+    contact_email: Annotated[
+        str, StringConstraints(strip_whitespace=True, max_length=120, pattern=r"^([^@\s]+@[^@\s]+\.[^@\s]+)?$")
+    ] = ""
     contact_address: Annotated[str, StringConstraints(strip_whitespace=True, max_length=300)] = ""
     contact_hours: Annotated[str, StringConstraints(strip_whitespace=True, max_length=120)] = ""
     instagram_url: SocialUrl = ""
     facebook_url: SocialUrl = ""
     couriers: list[CourierIn] = Field(default_factory=list, max_length=20)
     brand_theme: Literal["plum", "cocoa"] = "plum"
-    upi_id: Annotated[str, StringConstraints(strip_whitespace=True, max_length=60, pattern=r"^([\w.\-]{2,}@[A-Za-z]{2,})?$")] = ""
+    upi_id: Annotated[
+        str, StringConstraints(strip_whitespace=True, max_length=60, pattern=r"^([\w.\-]{2,}@[A-Za-z]{2,})?$")
+    ] = ""
     upi_name: Annotated[str, StringConstraints(strip_whitespace=True, max_length=60)] = ""
 
 

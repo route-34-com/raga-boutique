@@ -23,8 +23,12 @@ def demo(monkeypatch):
 @pytest.fixture
 def razorpay(monkeypatch):
     s = get_settings()
-    for k, v in {"payment_provider": "razorpay", "razorpay_key_id": "rzp_test_abc", "razorpay_key_secret": "sekret",
-                 "razorpay_webhook_secret": "hooksecret"}.items():
+    for k, v in {
+        "payment_provider": "razorpay",
+        "razorpay_key_id": "rzp_test_abc",
+        "razorpay_key_secret": "sekret",
+        "razorpay_webhook_secret": "hooksecret",
+    }.items():
         monkeypatch.setattr(s, k, v)
     calls = []
 
@@ -87,10 +91,16 @@ def test_razorpay_verify_checks_the_signature(customer, razorpay):
 
 def test_webhook_marks_paid_once_and_rejects_bad_signatures(customer, razorpay):
     no = place(customer, ITEM, payment_method="online").json()["order_no"]
-    body = json.dumps({"event": "payment.captured", "payload": {"payment": {"entity": {"id": "pay_W", "order_id": "order_RZP1"}}}}).encode()
-    assert customer.post("/api/payments/razorpay/webhook", content=body, headers={"X-Razorpay-Signature": "bad"}).json() == {"ok": False}
+    body = json.dumps(
+        {"event": "payment.captured", "payload": {"payment": {"entity": {"id": "pay_W", "order_id": "order_RZP1"}}}}
+    ).encode()
+    assert customer.post(
+        "/api/payments/razorpay/webhook", content=body, headers={"X-Razorpay-Signature": "bad"}
+    ).json() == {"ok": False}
     for _ in range(2):
-        r = customer.post("/api/payments/razorpay/webhook", content=body, headers={"X-Razorpay-Signature": sign("hooksecret", body)})
+        r = customer.post(
+            "/api/payments/razorpay/webhook", content=body, headers={"X-Razorpay-Signature": sign("hooksecret", body)}
+        )
         assert r.json() == {"ok": True}
     o = customer.get(f"/api/me/orders/{no}").json()
     assert (o["payment_status"], o["payment_ref"]) == ("paid", "pay_W")
@@ -99,8 +109,14 @@ def test_webhook_marks_paid_once_and_rejects_bad_signatures(customer, razorpay):
 
 def test_cancelling_a_paid_order_refunds_it(customer, admin, razorpay):
     no = place(customer, ITEM, payment_method="online").json()["order_no"]
-    customer.post(f"/api/me/orders/{no}/pay/verify", json={"razorpay_order_id": "order_RZP1", "razorpay_payment_id": "pay_R",
-                                                           "razorpay_signature": sign("sekret", b"order_RZP1|pay_R")})
+    customer.post(
+        f"/api/me/orders/{no}/pay/verify",
+        json={
+            "razorpay_order_id": "order_RZP1",
+            "razorpay_payment_id": "pay_R",
+            "razorpay_signature": sign("sekret", b"order_RZP1|pay_R"),
+        },
+    )
     o = admin.post(f"/api/admin/orders/{order_id(admin)}/status", json={"status": "cancelled"}).json()
     assert o["payment_status"] == "refunded"
     assert razorpay[-1] == ("https://api.razorpay.com/v1/payments/pay_R/refund", {"amount": 11800 * 100})

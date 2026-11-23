@@ -27,8 +27,15 @@ def verify(body: OtpVerify, response: Response, db: DB):
         raise e.http() from None
     promote_super_admin(db, user)
     s = get_settings()
-    response.set_cookie(COOKIE_NAME, create_session_token(user.id), max_age=s.session_days * 86400,
-                        httponly=True, samesite="lax", secure=s.cookie_secure, path="/")
+    response.set_cookie(
+        COOKIE_NAME,
+        create_session_token(user.id),
+        max_age=s.session_days * 86400,
+        httponly=True,
+        samesite="lax",
+        secure=s.cookie_secure,
+        path="/",
+    )
     return user
 
 

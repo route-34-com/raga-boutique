@@ -4,11 +4,28 @@ from collections.abc import Sequence
 from typing import Any
 
 LABELS = {
-    "name": "Name", "phone": "Phone number", "line1": "House, street", "line2": "Area, landmark", "city": "City",
-    "state": "State", "pincode": "Pincode", "email": "Email", "code": "Code", "price": "Selling price", "mrp": "MRP",
-    "stock": "Stock", "images": "Photos", "variants": "Sizes", "swatch": "Colour", "qty": "Quantity",
-    "free_ship_above": "Free shipping amount", "ship_fee": "Shipping fee", "low_stock_at": "Low-stock level",
-    "contact_email": "Contact email", "contact_phone": "Contact phone", "contact_whatsapp": "WhatsApp number",
+    "name": "Name",
+    "phone": "Phone number",
+    "line1": "House, street",
+    "line2": "Area, landmark",
+    "city": "City",
+    "state": "State",
+    "pincode": "Pincode",
+    "email": "Email",
+    "code": "Code",
+    "price": "Selling price",
+    "mrp": "MRP",
+    "stock": "Stock",
+    "images": "Photos",
+    "variants": "Sizes",
+    "swatch": "Colour",
+    "qty": "Quantity",
+    "free_ship_above": "Free shipping amount",
+    "ship_fee": "Shipping fee",
+    "low_stock_at": "Low-stock level",
+    "contact_email": "Contact email",
+    "contact_phone": "Contact phone",
+    "contact_whatsapp": "WhatsApp number",
 }
 # Fields with a fixed format get one clear sentence instead of the generic rule.
 FORMATS = {
@@ -44,7 +61,9 @@ def _sentence(err: dict) -> str:
     if kind == "string_too_long":
         return f"{label} should be at most {ctx.get('max_length')} characters."
     if kind in ("greater_than", "greater_than_equal"):
-        return f"{label} should be {'more than' if kind == 'greater_than' else 'at least'} {ctx.get('gt', ctx.get('ge'))}."
+        return (
+            f"{label} should be {'more than' if kind == 'greater_than' else 'at least'} {ctx.get('gt', ctx.get('ge'))}."
+        )
     if kind in ("less_than", "less_than_equal"):
         return f"{label} should be at most {ctx.get('lt', ctx.get('le'))}."
     if kind in ("int_parsing", "int_type", "float_parsing"):

@@ -6,10 +6,9 @@ from sqlalchemy.orm import selectinload
 
 from app.core.deps import DB
 from app.models import Category, Order, OrderItem, Product
-from app.services import payments
 from app.schemas.catalog import CategoryOut, ProductCard, ProductDetail, PublicSettings
 from app.schemas.review import ReviewList, ReviewOut
-from app.services import reviews
+from app.services import payments, reviews
 from app.services.orders import store_settings
 
 router = APIRouter(prefix="/api", tags=["catalog"])
@@ -22,9 +21,13 @@ def categories(db: DB):
 
 
 @router.get("/products", response_model=list[ProductCard])
-def products(db: DB, cat: str | None = None, mood: str | None = None,
-             sort: Literal["featured", "popular", "new", "discount", "low", "high"] = "featured",
-             q: Annotated[str | None, Query(max_length=80)] = None):
+def products(
+    db: DB,
+    cat: str | None = None,
+    mood: str | None = None,
+    sort: Literal["featured", "popular", "new", "discount", "low", "high"] = "featured",
+    q: Annotated[str | None, Query(max_length=80)] = None,
+):
     query = select(Product).join(Category).where(Product.active.is_(True), Category.active.is_(True)).options(*LOAD)
     if cat:
         query = query.where(Product.category_id == cat)
@@ -33,20 +36,36 @@ def products(db: DB, cat: str | None = None, mood: str | None = None,
     # Every word must match somewhere: "red silk" finds red pieces that are also silk.
     for word in (q or "").split()[:6]:
         like = f"%{word}%"
-        query = query.where(or_(Product.name.ilike(like), Product.raga.ilike(like), Product.mood.ilike(like),
-                                Product.tag.ilike(like), Category.name.ilike(like)))
+        query = query.where(
+            or_(
+                Product.name.ilike(like),
+                Product.raga.ilike(like),
+                Product.mood.ilike(like),
+                Product.tag.ilike(like),
+                Category.name.ilike(like),
+            )
+        )
     if sort == "popular":
         # Units ordered, cancelled orders excluded; never-ordered pieces fall back to the shop's own order.
-        sold = (select(OrderItem.product_id, func.sum(OrderItem.qty).label("units")).join(Order)
-                .where(Order.status != "cancelled").group_by(OrderItem.product_id).subquery())
+        sold = (
+            select(OrderItem.product_id, func.sum(OrderItem.qty).label("units"))
+            .join(Order)
+            .where(Order.status != "cancelled")
+            .group_by(OrderItem.product_id)
+            .subquery()
+        )
         query = query.outerjoin(sold, sold.c.product_id == Product.id)
         order = (func.coalesce(sold.c.units, 0).desc(), Product.sort, Product.id)
     elif sort == "discount":
         saving = case((Product.mrp > Product.price, (Product.mrp - Product.price) * 1.0 / Product.mrp), else_=0)
         order = (saving.desc(), Product.sort)
     else:
-        order = {"featured": (Product.sort, Product.id), "new": (Product.created_at.desc(), Product.id.desc()),
-                 "low": (Product.price,), "high": (Product.price.desc(),)}[sort]
+        order = {
+            "featured": (Product.sort, Product.id),
+            "new": (Product.created_at.desc(), Product.id.desc()),
+            "low": (Product.price,),
+            "high": (Product.price.desc(),),
+        }[sort]
     return db.scalars(query.order_by(*order)).all()
 
 
@@ -71,11 +90,19 @@ def product_reviews(slug: str, db: DB):
     if not p:
         raise HTTPException(404, {"message": "Product not found."})
     average, count = reviews.summary(db, p.id)
-    return {"average": average, "count": count, "reviews": [ReviewOut.model_validate(r) for r in reviews.latest(db, 50, p.id, best=True)]}
+    return {
+        "average": average,
+        "count": count,
+        "reviews": [ReviewOut.model_validate(r) for r in reviews.latest(db, 50, p.id, best=True)],
+    }
 
 
 @router.get("/reviews", response_model=ReviewList)
 def shop_reviews(db: DB, limit: Annotated[int, Query(ge=1, le=24)] = 8):
     """Shop-wide rating and the best reviews, for the home page."""
     average, count = reviews.summary(db)
-    return {"average": average, "count": count, "reviews": [reviews.with_product(r) for r in reviews.latest(db, limit, best=True)]}
+    return {
+        "average": average,
+        "count": count,
+        "reviews": [reviews.with_product(r) for r in reviews.latest(db, limit, best=True)],
+    }

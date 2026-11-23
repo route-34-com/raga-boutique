@@ -6,7 +6,15 @@ from app.core.deps import DB, Admin
 from app.core.errors import ServiceError
 from app.models import EXPENSE_CATEGORIES, Expense, Purchase, SalaryPayment, Staff, StaffAdvance, StaffLeave
 from app.schemas.business import (
-    AdvanceIn, ExpenseIn, ExpenseOut, LeaveIn, PurchaseIn, PurchaseOut, SalaryIn, StaffIn, StaffOut,
+    AdvanceIn,
+    ExpenseIn,
+    ExpenseOut,
+    LeaveIn,
+    PurchaseIn,
+    PurchaseOut,
+    SalaryIn,
+    StaffIn,
+    StaffOut,
 )
 from app.services import business as svc
 
@@ -33,8 +41,11 @@ def business(_: Admin, db: DB, month: str | None = None):
 @router.get("/purchases", response_model=list[PurchaseOut])
 def list_purchases(_: Admin, db: DB, month: str | None = None):
     start, end = _range(month)
-    return db.scalars(select(Purchase).where(Purchase.bought_on >= start, Purchase.bought_on < end)
-                      .order_by(Purchase.bought_on.desc(), Purchase.id.desc())).all()
+    return db.scalars(
+        select(Purchase)
+        .where(Purchase.bought_on >= start, Purchase.bought_on < end)
+        .order_by(Purchase.bought_on.desc(), Purchase.id.desc())
+    ).all()
 
 
 @router.post("/purchases", response_model=PurchaseOut, status_code=201)
@@ -51,8 +62,11 @@ def remove_purchase(purchase_id: int, _: Admin, db: DB):
 @router.get("/expenses")
 def list_expenses(_: Admin, db: DB, month: str | None = None):
     start, end = _range(month)
-    rows = db.scalars(select(Expense).where(Expense.spent_on >= start, Expense.spent_on < end)
-                      .order_by(Expense.spent_on.desc(), Expense.id.desc())).all()
+    rows = db.scalars(
+        select(Expense)
+        .where(Expense.spent_on >= start, Expense.spent_on < end)
+        .order_by(Expense.spent_on.desc(), Expense.id.desc())
+    ).all()
     return {"categories": EXPENSE_CATEGORIES, "items": [ExpenseOut.model_validate(r) for r in rows]}
 
 
