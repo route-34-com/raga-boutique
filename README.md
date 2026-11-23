@@ -164,7 +164,7 @@ Admin → Settings shows whether payments are live, in test mode, in demo mode o
 
 ### Admins And Super Admins
 
-Super admins are set in config (`SUPER_ADMIN_PHONES`, default `["9344780554","8248785648"]`). They are always admins,
+Super admins are the mobiles in `SUPER_ADMIN_PHONES` (a JSON list in `.env`, empty by default). They are always admins,
 can't be removed, and are the only ones who can add or remove admins under Admin → Settings. Other admins see the list
 read-only.
 

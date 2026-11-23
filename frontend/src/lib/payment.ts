@@ -1,3 +1,5 @@
+import type { StoreSettings } from "@/lib/types"
+
 type Payable = { payment_method: string; payment_status: string; payment_ref?: string; status?: string }
 
 const METHOD = {
@@ -21,3 +23,10 @@ export const paymentShort = (o: Payable) =>
     : o.payment_status === "paid" ? "Paid"
     : o.payment_status === "claimed" ? "To check"
     : o.payment_method === "online" ? "Awaiting payment" : "Pending"
+
+export function paymentMethods(s?: StoreSettings) {
+  const ways = ["cash or any UPI app on delivery"]
+  if (s?.upi_id) ways.push("UPI to our shop's UPI ID by QR code at checkout")
+  if (s?.online_payments === "razorpay") ways.push("UPI, cards, netbanking or wallets online through Razorpay")
+  return ways
+}

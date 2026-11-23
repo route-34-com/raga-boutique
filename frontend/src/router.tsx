@@ -7,6 +7,7 @@ import Checkout from "@/pages/store/Checkout"
 import Home from "@/pages/store/Home"
 import NotFound from "@/pages/store/NotFound"
 import OrderPage from "@/pages/store/OrderPage"
+import Policies from "@/pages/store/Policies"
 import ProductPage from "@/pages/store/ProductPage"
 import Shop from "@/pages/store/Shop"
 import Story from "@/pages/store/Story"
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
       { path: "/orders/:orderNo", element: <OrderPage /> },
       { path: "/wishlist", element: <Wishlist /> },
       { path: "/story", element: <Story /> },
+      { path: "/policies/:topic", element: <Policies /> },
       { path: "*", element: <NotFound /> },
     ],
   },

@@ -134,6 +134,11 @@
 @layer components {
   .eyebrow { @apply text-[11px] font-bold uppercase tracking-[0.16em] text-rust; }
   .container-x { @apply mx-auto w-full max-w-[1920px] px-4 sm:px-8 lg:px-14; }
+  .policy h2 { @apply mt-8 mb-2.5 text-[22px] leading-tight; }
+  .policy p, .policy li { @apply text-[15px] leading-relaxed text-muted-foreground; }
+  .policy p + p { @apply mt-3; }
+  .policy ul { @apply list-disc space-y-1.5 pl-5; }
+  .policy p a, .policy li a { @apply font-semibold text-cocoa underline decoration-rust/40 underline-offset-2 hover:text-rust; }
   /* Links highlight with a soft tinted ring instead of an underline; no layout shift. */
   .link-quiet { border-radius: 6px; transition: color .15s, background-color .15s, box-shadow .15s; }
   .link-quiet:hover, .link-quiet:focus-visible {

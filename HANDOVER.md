@@ -13,6 +13,9 @@ what is left to do before and after going live.
 - **Demo site**: currently hosted on Vercel with a Neon Postgres database. If the shop has added or edited real
   products there, take a `pg_dump` of that database before it is switched off and restore it into production.
 - **Domain**: `ragaboutique.in` (GoDaddy). Point an A record for `@` and `www` at the production server.
+- **Policy pages** (`/policies/terms`, `privacy`, `shipping`, `returns`, `contact`) are linked in the footer; Razorpay
+  checks them before activating an account. Their text is in `frontend/src/pages/store/Policies.tsx`; contact details,
+  delivery charges and payment methods are filled in from Admin → Settings. Confirm the returns rule with the shop.
 
 ## 2. Integrations to switch on
 
@@ -38,7 +41,7 @@ Every setting, with its meaning, is in [`backend/.env.example`](backend/.env.exa
 - [ ] `COOKIE_SECURE=true` (the site must be on HTTPS)
 - [ ] `PUBLIC_SITE_URL=https://ragaboutique.in`
 - [ ] `IMAGE_STORE=disk` on a server with a lasting disk (`db` only on serverless hosts), and `SERVERLESS=false`
-- [ ] `SUPER_ADMIN_PHONES` confirmed with the shop (currently `["9344780554","8248785648"]`)
+- [ ] `SUPER_ADMIN_PHONES` set to the shop owner's number(s), e.g. `["98XXXXXXXX"]`; they alone add or remove admins
 - [ ] `OTP_PROVIDER=msg91` with its keys, plus the keys of every other integration being switched on
 
 First launch:

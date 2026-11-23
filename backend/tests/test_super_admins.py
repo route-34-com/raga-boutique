@@ -4,7 +4,7 @@ from app.main import app
 from tests.conftest import login
 
 
-def super_admin(mobile: str = "9344780554") -> TestClient:
+def super_admin(mobile: str = "9111111111") -> TestClient:
     return login(TestClient(app), mobile)
 
 
@@ -29,8 +29,8 @@ def test_only_super_admins_add_and_remove_admins(admin):
 
 
 def test_super_admins_cannot_be_removed():
-    first, second = super_admin("9344780554"), super_admin("8248785648")
-    other = next(r for r in first.get("/api/admin/admins").json() if r["phone"] == "+918248785648")
+    first, second = super_admin("9111111111"), super_admin("9222222222")
+    other = next(r for r in first.get("/api/admin/admins").json() if r["phone"] == "+919222222222")
     r = first.delete(f"/api/admin/admins/{other['id']}")
     assert r.status_code == 409
     assert second.get("/api/admin/settings").status_code == 200

@@ -1,4 +1,4 @@
-import { Banknote, CreditCard, Heart, Mail, MapPin, Menu, MessageCircle, Phone, Search, ShoppingBag, Smartphone, User } from "lucide-react"
+import { Banknote, CreditCard, Heart, Mail, MapPin, Menu, MessageCircle, Phone, QrCode, Search, ShoppingBag, Smartphone, User } from "lucide-react"
 import { Suspense, useEffect, useState } from "react"
 import { Link, NavLink, Outlet, useLocation } from "react-router"
 
@@ -136,6 +136,7 @@ export function SocialLinks({ className, linkClass }: { className?: string; link
 
 function Footer() {
   const { data: cats = [] } = useCategories()
+  const { data: s } = useSettings()
   const a = "block py-1 text-sm opacity-80 hover:text-marigold hover:opacity-100"
   return (
     <footer className="mt-12 bg-cocoa px-4 pb-7 pt-12 text-sand sm:px-8 lg:mt-12 lg:px-14">
@@ -155,8 +156,9 @@ function Footer() {
           <h4 className="mb-3 font-heading text-lg text-background">Help</h4>
           <Link to="/account" className={a}>My orders</Link>
           <Link to="/story" className={a}>Our story</Link>
-          <Link to="/story#shipping" className={a}>Shipping &amp; orders</Link>
-          <Link to="/story#contact" className={a}>Contact</Link>
+          <Link to="/policies/shipping" className={a}>Shipping &amp; delivery</Link>
+          <Link to="/policies/returns" className={a}>Cancellation &amp; refunds</Link>
+          <Link to="/policies/contact" className={a}>Contact</Link>
         </div>
         <div>
           <h4 className="mb-3 font-heading text-lg text-background">Talk to us</h4>
@@ -168,12 +170,19 @@ function Footer() {
         <ul className="flex flex-wrap gap-2 text-xs font-semibold">
           <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><Banknote className="size-4 text-marigold" />Cash on delivery</li>
           <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><Smartphone className="size-4 text-marigold" />UPI on delivery</li>
-          <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 opacity-60 ring-1 ring-sand/15"><CreditCard className="size-4" />Cards &amp; online · coming soon</li>
+          {s?.upi_id && <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><QrCode className="size-4 text-marigold" />UPI QR at checkout</li>}
+          {s?.online_payments === "razorpay" && <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><CreditCard className="size-4 text-marigold" />Cards, UPI &amp; netbanking online</li>}
         </ul>
-        <Link to="/story#orders" className="text-sm opacity-80 hover:text-marigold hover:opacity-100 link-quiet">Payment details</Link>
+        <Link to="/policies/terms" className="text-sm opacity-80 hover:text-marigold hover:opacity-100 link-quiet">Payment terms</Link>
       </div>
       <div className="mx-auto mt-5 flex max-w-[1920px] flex-col justify-between gap-1.5 text-xs opacity-65 sm:flex-row">
-        <span>© 2026 Raga Boutique</span><span>Made in India, with patience.</span>
+        <span>© 2026 Raga Boutique</span>
+        <span className="flex flex-wrap gap-x-4 gap-y-1">
+          <Link to="/policies/terms" className="hover:text-marigold">Terms</Link>
+          <Link to="/policies/privacy" className="hover:text-marigold">Privacy</Link>
+          <Link to="/policies/shipping" className="hover:text-marigold">Shipping</Link>
+          <Link to="/policies/returns" className="hover:text-marigold">Refunds</Link>
+        </span>
       </div>
     </footer>
   )

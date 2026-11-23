@@ -6,6 +6,7 @@ os.environ["DATABASE_URL"] = os.environ.get(
 )
 os.environ["OTP_PROVIDER"] = "console"
 os.environ["OTP_RESEND_SECONDS"] = "0"
+os.environ["SUPER_ADMIN_PHONES"] = '["9111111111", "9222222222"]'
 os.environ["UPLOADS_DIR"] = tempfile.mkdtemp(prefix="raga-test-uploads-")
 
 import pytest

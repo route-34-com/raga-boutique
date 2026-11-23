@@ -2,6 +2,7 @@ import { ContactList, SocialLinks } from "@/components/store/StoreLayout"
 import { useSettings } from "@/hooks/queries"
 import { useTitle } from "@/hooks/useTitle"
 import { inr } from "@/lib/format"
+import { paymentMethods } from "@/lib/payment"
 import { Photo } from "@/components/common/Photo"
 
 export default function Story() {
@@ -9,7 +10,7 @@ export default function Story() {
   const { data: s } = useSettings()
   const cols = [
     ["shipping", "Shipping", `Dispatched in 2–3 days and delivered across India in 3–6 working days. Free above ${inr(s?.free_ship_above ?? 5000)}, otherwise ${inr(s?.ship_fee ?? 150)}. Every parcel is insured.`],
-    ["orders", "Orders & payment", "Pay by cash or any UPI app when your parcel arrives; card and online payments are coming soon. We confirm every order on WhatsApp and email, then send the tracking ID once it ships. All sales are final."],
+    ["orders", "Orders & payment", `Pay ${paymentMethods(s).join("; or ")}. We confirm every order on WhatsApp and email, then send the tracking ID once it ships. All sales are final; see cancellation and refunds.`],
     ["care", "Saree care", "Dry clean silks. Store folded in muslin, never plastic. Refold along new lines every few months so the zari doesn't crack."],
   ]
   return (
