@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "npm --prefix frontend ci",
-  "buildCommand": "npm --prefix frontend run build && mkdir -p frontend/dist/uploads/products && cp backend/scripts/seed_images/*.jpg frontend/dist/uploads/products/ && mv frontend/dist/index.html frontend/dist/shell.html && mkdir -p backend/app/web && cp frontend/dist/shell.html backend/app/web/shell.html",
+  "buildCommand": "bash vercel-build.sh",
   "outputDirectory": "frontend/dist",
   "regions": [
     "sin1"
