@@ -184,8 +184,9 @@ def policy(topic: str, s: StoreSettings) -> str:
             + "<h2>Who we share it with</h2><p>Only the services needed to run your order: the courier (name, phone, "
             "address), and the services that send our SMS, WhatsApp and email messages. We don't sell or rent your "
             "details, and we don't send marketing messages without your consent.</p><h2>Cookies and storage</h2>"
-            "<p>We use one cookie to keep you signed in. Your bag and wishlist are saved in your own browser. We don't use "
-            "advertising trackers.</p><h2>Your choices</h2><p>You can update your name, email and addresses under My "
+            "<p>We use one cookie to keep you signed in. Your bag and wishlist are saved in your own browser. We use Google "
+            "Analytics, which sets its own cookies, to count visits and see which pages are popular; it doesn't receive "
+            "your name, phone number or address, and its advertising features are switched off.</p><h2>Your choices</h2><p>You can update your name, email and addresses under My "
             "account. To have your account and details deleted, contact us; order records we must keep for tax purposes "
             "are kept for the period the law requires.</p>"
         ),

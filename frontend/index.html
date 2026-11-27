@@ -27,6 +27,19 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Raga, The Music of Colours" />
     <meta name="twitter:card" content="summary_large_image" />
+    <!-- Google Analytics (visits only, no advertising features), on the live domain only. -->
+    <script>
+      if (location.hostname === "ragaboutique.in") {
+        window.dataLayer = window.dataLayer || []
+        window.gtag = function () { dataLayer.push(arguments) }
+        gtag("js", new Date())
+        gtag("config", "G-S5BEHGR4CG", { allow_google_signals: false, allow_ad_personalization_signals: false })
+        var ga = document.createElement("script")
+        ga.async = true
+        ga.src = "https://www.googletagmanager.com/gtag/js?id=G-S5BEHGR4CG"
+        document.head.appendChild(ga)
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

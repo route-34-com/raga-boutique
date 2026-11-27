@@ -153,8 +153,9 @@ const TOPICS: Record<string, Topic> = {
         </p>
         <h2>Cookies and storage</h2>
         <p>
-          We use one cookie to keep you signed in. Your bag and wishlist are saved in your own browser. We don't use
-          advertising trackers.
+          We use one cookie to keep you signed in. Your bag and wishlist are saved in your own browser. We use Google
+          Analytics, which sets its own cookies, to count visits and see which pages are popular; it doesn't receive your
+          name, phone number or address, and its advertising features are switched off.
         </p>
         <h2>Your choices</h2>
         <p>
