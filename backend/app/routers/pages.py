@@ -13,6 +13,7 @@ import re
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import urlencode
 from xml.sax.saxutils import escape as xml_escape
 
 import httpx
@@ -354,7 +355,7 @@ def page_for(db, path: str) -> Page:
     path = path.strip("/")
     s = store_settings(db)
     free = f"Free shipping across India above {rupees(s.free_ship_above)}."
-    if path in ("", "index.html"):
+    if path == "":
         cats = active_categories(db)
         body = (
             f"{nav(cats)}<main><h1>{BRAND}: The Music of Colours</h1><p>{TAGLINE} {free}</p>"
@@ -423,6 +424,26 @@ def page_for(db, path: str) -> Page:
     )
 
 
+# Pages of the earlier site on this domain (a static site), sent to their closest page here so old links and
+# search results keep working. A weave, fabric, colour or search filter becomes a search on the new page.
+OLD_PAGES = {
+    "index.html": "/",
+    "sarees.html": "/shop/sarees",
+    "kurtas.html": "/shop/ethnic",
+    "wishlist.html": "/wishlist",
+    "cart.html": "/",
+    "admin.html": "/admin",
+}
+
+
+def old_page_target(path: str, params) -> str:
+    target = OLD_PAGES[path]
+    term = next((params[k] for k in ("search", "weave", "fabric", "color") if params.get(k)), "")
+    if term and target.startswith("/shop"):
+        target += "?" + urlencode({"q": term[:80]})
+    return target
+
+
 @router.get("/robots.txt", response_class=PlainTextResponse, include_in_schema=False)
 def robots():
     return PlainTextResponse(
@@ -467,6 +488,8 @@ def llms(db: DB):
 def page(full_path: str, request: Request, db: DB):
     if full_path.startswith(("api/", "uploads/", "assets/", "brand/")):
         raise HTTPException(404)
+    if full_path in OLD_PAGES:
+        return RedirectResponse(old_page_target(full_path, request.query_params), status_code=301)
     if full_path.endswith("/"):
         # One address per page: /shop/ moves permanently to /shop, keeping any search.
         target = "/" + full_path.strip("/") + (f"?{request.url.query}" if request.url.query else "")

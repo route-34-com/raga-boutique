@@ -156,3 +156,21 @@ def test_common_questions_page():
     assert r.status_code == 200 and "<title>Common questions · Raga Boutique</title>" in r.text
     assert "Can I pay cash on delivery?" in r.text and "within 48 hours of delivery" in r.text
     assert "/policies/faq" in get("/sitemap.xml").text
+
+
+def test_old_site_pages_redirect_to_their_new_pages():
+    c = TestClient(app, follow_redirects=False)
+    cases = {
+        "/index.html": "/",
+        "/sarees.html": "/shop/sarees",
+        "/sarees.html?weave=Kanjivaram": "/shop/sarees?q=Kanjivaram",
+        "/sarees.html?fabric=Silk&sort=rating": "/shop/sarees?q=Silk",
+        "/sarees.html?search=red%20silk": "/shop/sarees?q=red+silk",
+        "/kurtas.html?color=Blue": "/shop/ethnic?q=Blue",
+        "/wishlist.html": "/wishlist",
+        "/cart.html": "/",
+        "/admin.html": "/admin",
+    }
+    for old, new in cases.items():
+        r = c.get(old)
+        assert (r.status_code, r.headers["location"]) == (301, new), old
