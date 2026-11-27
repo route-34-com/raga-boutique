@@ -239,6 +239,29 @@ def active_products(db, category: str | None = None) -> list[Product]:
     return list(db.scalars(q))
 
 
+# As in the shipping and returns policies: dispatch in 2-3 working days, delivery in 3-6, India only, and no returns
+# for a change of mind (a damaged or wrong piece is replaced or refunded).
+RETURN_POLICY = {
+    "@type": "MerchantReturnPolicy",
+    "applicableCountry": "IN",
+    "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted",
+}
+
+
+def shipping_details(s, price: int) -> dict:
+    days = lambda lo, hi: {"@type": "QuantitativeValue", "minValue": lo, "maxValue": hi, "unitCode": "DAY"}  # noqa: E731
+    return {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+            "@type": "MonetaryAmount",
+            "value": 0 if price >= s.free_ship_above else s.ship_fee,
+            "currency": "INR",
+        },
+        "shippingDestination": {"@type": "DefinedRegion", "addressCountry": "IN"},
+        "deliveryTime": {"@type": "ShippingDeliveryTime", "handlingTime": days(2, 3), "transitTime": days(3, 6)},
+    }
+
+
 def product_page(db, slug: str) -> Page | None:
     p = db.scalar(
         select(Product)
@@ -259,6 +282,8 @@ def product_page(db, slug: str) -> Page | None:
         "url": absolute(f"/p/{p.slug}"),
         "itemCondition": "https://schema.org/NewCondition",
         "seller": {"@type": "Organization", "name": BRAND},
+        "shippingDetails": shipping_details(store_settings(db), p.price),
+        "hasMerchantReturnPolicy": RETURN_POLICY | {"merchantReturnLink": absolute("/policies/returns")},
     }
     product = {
         "@context": "https://schema.org",

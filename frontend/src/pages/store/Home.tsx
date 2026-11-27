@@ -127,7 +127,10 @@ export default function Home() {
           <p className="eyebrow">Raag Bhairavi</p>
           <h2 className="my-4 text-[clamp(30px,3.6vw,46px)] leading-none">Soft light,<br /><em className="text-rust">quiet gold.</em></h2>
           <p className="mb-6 max-w-[46ch] text-muted-foreground">Blush tissue silk with a zari border that catches the morning rather than demanding it. The saree we reach for when the occasion is close family and good coffee.</p>
-          <Button asChild className="h-12 rounded-full px-7"><Link to="/p/bhairavi">See the saree</Link></Button>
+          {/* The featured saree may sell out or be removed; then the button goes to the shop instead. */}
+          <Button asChild className="h-12 rounded-full px-7">
+            {products?.some((p) => p.slug === "bhairavi") ? <Link to="/p/bhairavi">See the saree</Link> : <Link to="/shop">Shop the collection</Link>}
+          </Button>
         </div>
       </section>
 

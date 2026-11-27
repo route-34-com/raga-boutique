@@ -37,6 +37,12 @@ def test_product_page_has_its_own_head_content_and_structured_data():
     assert "<h1>Aubergine Banarasi</h1>" in h and "₹11,800" in h
     product = next(d for d in ld(h) if d["@type"] == "Product")
     assert product["offers"]["price"] == 11800 and product["offers"]["availability"].endswith("InStock")
+    ship = product["offers"]["shippingDetails"]
+    assert ship["shippingRate"]["value"] == 0 and ship["shippingDestination"]["addressCountry"] == "IN"
+    assert ship["deliveryTime"]["transitTime"]["maxValue"] == 6
+    assert product["offers"]["hasMerchantReturnPolicy"]["returnPolicyCategory"].endswith("MerchantReturnNotPermitted")
+    megh = next(d for d in ld(get("/p/megh").text) if d["@type"] == "Product")
+    assert megh["offers"]["shippingDetails"]["shippingRate"]["value"] == 150
     assert '<script type="module" src="/assets/x.js">' in h
 
 
