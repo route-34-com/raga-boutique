@@ -17,7 +17,7 @@ import { Photo } from "@/components/common/Photo"
 
 export function Stars({ value, className }: { value: number; className?: string }) {
   return (
-    <span className={cn("inline-flex gap-0.5 text-marigold", className)} aria-label={`${value} out of 5 stars`}>
+    <span role="img" className={cn("inline-flex gap-0.5 text-marigold", className)} aria-label={`${value} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map((i) => {
         const fill = Math.max(0, Math.min(1, value - i + 1))
         return (
