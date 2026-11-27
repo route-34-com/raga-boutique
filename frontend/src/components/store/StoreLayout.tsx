@@ -148,13 +148,13 @@ function Footer() {
           <SocialLinks className="mt-5" linkClass="hover:bg-sand hover:text-cocoa" />
         </div>
         <div>
-          <h4 className="mb-3 font-heading text-lg text-background">Shop</h4>
+          <h2 className="mb-3 font-heading text-lg text-background">Shop</h2>
           {cats.map((c) => <Link key={c.id} to={`/shop/${c.id}`} className={a}>{c.name}</Link>)}
           <Link to="/shop?mood=bridal" className={a}>Bridal</Link>
           <Link to="/shop" className={a}>All pieces</Link>
         </div>
         <div>
-          <h4 className="mb-3 font-heading text-lg text-background">Help</h4>
+          <h2 className="mb-3 font-heading text-lg text-background">Help</h2>
           <Link to="/account" className={a}>My orders</Link>
           <Link to="/story" className={a}>Our story</Link>
           <Link to="/policies/shipping" className={a}>Shipping &amp; delivery</Link>
@@ -163,12 +163,12 @@ function Footer() {
           <Link to="/policies/contact" className={a}>Contact</Link>
         </div>
         <div>
-          <h4 className="mb-3 font-heading text-lg text-background">Talk to us</h4>
+          <h2 className="mb-3 font-heading text-lg text-background">Talk to us</h2>
           <ContactList className="opacity-85" linkClass="hover:text-marigold" />
         </div>
       </div>
       <div className="mx-auto mt-12 flex max-w-[1920px] flex-wrap items-center gap-x-5 gap-y-3 border-t border-sand/15 pt-6">
-        <h4 className="font-heading text-lg text-background">Payments</h4>
+        <h2 className="font-heading text-lg text-background">Payments</h2>
         <ul className="flex flex-wrap gap-2 text-xs font-semibold">
           <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><Banknote className="size-4 text-marigold" />Cash on delivery</li>
           <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><Smartphone className="size-4 text-marigold" />UPI on delivery</li>

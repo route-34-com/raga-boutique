@@ -139,7 +139,7 @@ export default function Home() {
           {SERVICES.map(([icon, title, body]) => (
             <div key={title} className="bg-paper p-7">
               <span className="mb-4 grid size-10 place-items-center rounded-full bg-sand text-rust">{icon}</span>
-              <h4 className="font-heading text-lg text-cocoa">{title}</h4>
+              <h3 className="font-heading text-lg text-cocoa">{title}</h3>
               <p className="text-sm text-muted-foreground">{body}</p>
             </div>
           ))}
