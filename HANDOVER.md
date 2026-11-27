@@ -62,6 +62,12 @@ First launch:
   endpoints fail with 500s. This happened once on the demo host, which does not run migrations by itself.
 - Keep the tests, ruff and the frontend build passing before deploying (`README.md` → Lint and Format).
 - `vercel.json`, `api/index.py` and `requirements.txt` are only for Vercel hosting; delete them if not using Vercel.
+- **Pages go through the API** (`backend/app/routers/pages.py`): it fills each page's title, description, canonical
+  link and structured data into the built `index.html`, answers 404 for unknown pages, and serves `robots.txt`,
+  `sitemap.xml` and `llms.txt`. Only `/assets`, `/brand` and `/uploads` are static. On a server, use
+  `deploy/Caddyfile` as is; on Vercel the build renames `index.html` to `shell.html` so every page reaches the API.
+- **Search Console**: verify `ragaboutique.in` in Google Search Console (DNS TXT record in GoDaddy) and submit
+  `https://ragaboutique.in/sitemap.xml`.
 
 ## 5. Known gaps
 

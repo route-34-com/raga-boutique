@@ -8,8 +8,8 @@ from fastapi.staticfiles import StaticFiles
 
 from app.core.config import get_settings
 from app.core.validation import friendly_errors
-from app.routers import account, admin, auth, catalog, payments
-from app.services.images import load_image_file
+from app.routers import account, admin, auth, catalog, pages, payments
+from app.services.images import load_or_make_variant
 
 logging.basicConfig(level=logging.INFO)
 
@@ -32,23 +32,26 @@ def create_app() -> FastAPI:
     def health():
         return {"ok": True}
 
-    if s.image_store == "db":
-        # Photo names are random and never reused, so browsers and the CDN can keep them forever.
-        @app.get("/uploads/products/{name}")
-        def product_photo(name: str):
-            data = load_image_file(name)
-            if data is None:
-                raise HTTPException(404)
-            # s-maxage lets Vercel's CDN keep the photo; without it the CDN asks the function every time.
-            return Response(
-                data,
-                media_type="image/jpeg",
-                headers={"Cache-Control": "public, max-age=31536000, s-maxage=31536000, immutable"},
-            )
-    else:
-        # In production Caddy serves /uploads directly; this is for local dev.
+    # Photo names are random and never reused, so browsers and the CDN can keep them forever. Smaller copies
+    # ("<name>.w480.jpg") are made from the original the first time they're asked for.
+    @app.get("/uploads/products/{name}")
+    def product_photo(name: str):
+        data = load_or_make_variant(name)
+        if data is None:
+            raise HTTPException(404)
+        # s-maxage lets Vercel's CDN keep the photo; without it the CDN asks the function every time.
+        return Response(
+            data,
+            media_type="image/jpeg",
+            headers={"Cache-Control": "public, max-age=31536000, s-maxage=31536000, immutable"},
+        )
+
+    if s.image_store != "db":
+        # Other files under /uploads; in production Caddy serves them and sends only missing copies here.
         s.uploads_dir.mkdir(parents=True, exist_ok=True)
         app.mount("/uploads", StaticFiles(directory=s.uploads_dir), name="uploads")
+    # Last: robots.txt, sitemap.xml and the catch-all page route, so they never shadow /api or /uploads.
+    app.include_router(pages.router)
     return app
 
 

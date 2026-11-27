@@ -75,7 +75,7 @@ export function CartSheet() {
               <p className="text-xs text-muted-foreground">{left > 0 ? `Add ${inr(left)} more for free shipping.` : "You've unlocked free shipping."}</p>
               <div className="flex justify-between text-base"><span>Subtotal</span><strong>{inr(subtotal)}</strong></div>
               <Button className="h-12 rounded-full" onClick={() => { setOpen(false); navigate("/checkout") }}>Checkout</Button>
-              <p className="text-center text-[13px] text-muted-foreground">Your bag is kept in this tab only. Closing the tab clears it.</p>
+              <p className="text-center text-[13px] text-muted-foreground">Your bag is saved on this device, so it's here when you come back.</p>
             </SheetFooter>
           </>
         )}

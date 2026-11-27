@@ -8,3 +8,6 @@ demo/
 *.mp4
 *.MP4
 walkthrough-videos/
+
+# Copy of the built page for the Vercel function (made by the build)
+backend/app/web/

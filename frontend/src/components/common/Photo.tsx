@@ -8,10 +8,30 @@ type PhotoProps = React.ComponentProps<"img"> & {
   hideOnError?: boolean
 }
 
-export function Photo({ src, alt = "", className, tone, hideOnError, onError, ...props }: PhotoProps) {
+const PRODUCT_PHOTO = /^(\/uploads\/products\/[\w-]+)\.jpg$/
+const BANNER = /^(\/brand\/[\w-]+)\.webp$/
+
+/** Product photos have 480 and 960px copies, banners a 640px one; the browser picks the smallest that looks sharp. */
+function photoSrcSet(src?: string) {
+  const m = src?.match(PRODUCT_PHOTO)
+  if (m) return `${m[1]}.w480.jpg 480w, ${m[1]}.w960.jpg 960w, ${src} 1600w`
+  const b = src?.match(BANNER)
+  return b ? `${b[1]}-640.webp 640w, ${src} 1080w` : undefined
+}
+
+export function Photo({ src, alt = "", className, tone, hideOnError, onError, sizes, ...props }: PhotoProps) {
   const [failed, setFailed] = useState<string | undefined>()
+  const [plain, setPlain] = useState(false)
   if (src && failed !== src) {
-    return <img src={src} alt={alt} className={className} onError={(e) => { setFailed(src); onError?.(e) }} {...props} />
+    const srcSet = plain ? undefined : photoSrcSet(src)
+    return (
+      <img src={src} srcSet={srcSet} sizes={srcSet ? sizes ?? "(min-width: 1024px) 25vw, 50vw" : undefined} alt={alt}
+        className={className} {...props}
+        onError={(e) => {
+          if (srcSet) { setPlain(true); return }
+          setFailed(src); onError?.(e)
+        }} />
+    )
   }
   if (hideOnError) return null
   return (

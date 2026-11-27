@@ -4,6 +4,7 @@ import tempfile
 os.environ["DATABASE_URL"] = os.environ.get(
     "TEST_DATABASE_URL", "postgresql+psycopg://raga:raga_dev@127.0.0.1:5432/raga_test"
 )
+os.environ["PUBLIC_SITE_URL"] = "http://localhost:5173"
 os.environ["OTP_PROVIDER"] = "console"
 os.environ["OTP_RESEND_SECONDS"] = "0"
 os.environ["SUPER_ADMIN_PHONES"] = '["9111111111", "9222222222"]'

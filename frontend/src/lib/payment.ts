@@ -24,9 +24,15 @@ export const paymentShort = (o: Payable) =>
     : o.payment_status === "claimed" ? "To check"
     : o.payment_method === "online" ? "Awaiting payment" : "Pending"
 
+/** Online payment through Razorpay (or its demo stand-in) is switched on. */
+export const onlineOn = (s?: StoreSettings) => !!s?.online_payments
+
+/** The shop's own UPI QR is offered only while online payment is off; Razorpay covers UPI otherwise. */
+export const upiQrOn = (s?: StoreSettings) => !!s?.upi_id && !onlineOn(s)
+
 export function paymentMethods(s?: StoreSettings) {
   const ways = ["cash or any UPI app on delivery"]
-  if (s?.upi_id) ways.push("UPI to our shop's UPI ID by QR code at checkout")
-  if (s?.online_payments === "razorpay") ways.push("UPI, cards, netbanking or wallets online through Razorpay")
+  if (upiQrOn(s)) ways.push("UPI to our shop's UPI ID by QR code at checkout")
+  if (onlineOn(s)) ways.push("UPI, cards, netbanking or wallets online through Razorpay")
   return ways
 }

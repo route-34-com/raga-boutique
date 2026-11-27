@@ -9,7 +9,6 @@ import { useTitle } from "@/hooks/useTitle"
 import { MOODS, cover, inr } from "@/lib/format"
 import { Photo } from "@/components/common/Photo"
 import { cn } from "@/lib/utils"
-import { useLogo } from "@/lib/brand"
 
 const SERVICES = [
   ["✦", "Silk Mark certified", "Pure silk weaves come with their certificate."],
@@ -30,7 +29,6 @@ function SectionHead({ eyebrow, title, aside }: { eyebrow: string; title: string
 }
 
 export default function Home() {
-  const logo = useLogo()
   const { data: products, isLoading } = useProducts()
   const { data: newest } = useProducts({ sort: "new" })
   const { data: cats = [] } = useCategories()
@@ -43,9 +41,8 @@ export default function Home() {
   return (
     <>
       <section className="container-x grid gap-8 pt-6 md:grid-cols-[1fr_1fr] md:gap-10 md:pt-6">
-        <div className="flex flex-col gap-6 max-md:order-2 md:pb-12 md:pt-2">
+        <div className="flex flex-col gap-6 md:pb-12 md:pt-2">
           <div>
-            <img src={logo} alt="Raga — The Music of Colours" className="mb-6 h-16 w-auto md:hidden" />
             <p className="eyebrow">Festive edit · Autumn 2026</p>
             <h1 className="mt-4 whitespace-nowrap text-[clamp(44px,6.2vw,92px)] leading-[0.98] 3xl:text-[112px]">Every weave<br />has a <em className="font-light text-rust">raga.</em></h1>
           </div>
@@ -70,7 +67,7 @@ export default function Home() {
               <div className="grid grid-cols-5 gap-2.5">
                 {justIn.map((p) => (
                   <Link key={p.id} to={`/p/${p.slug}`} title={p.name} className="group relative block aspect-square overflow-hidden rounded-xl bg-sand">
-                    <Photo src={cover(p)} tone={p.swatch} alt={p.name} loading="lazy" className="size-full object-cover object-top transition duration-500 group-hover:scale-105" />
+                    <Photo src={cover(p)} tone={p.swatch} alt={p.name} loading="lazy" sizes="120px" className="size-full object-cover object-top transition duration-500 group-hover:scale-105" />
                     <span className="absolute bottom-1.5 left-1.5 rounded-full bg-paper/95 px-2 py-0.5 text-[11px] font-semibold text-cocoa">{inr(p.price)}</span>
                   </Link>
                 ))}
@@ -80,11 +77,11 @@ export default function Home() {
         </div>
         <div className="relative self-start pb-9 pl-7 md:pb-12 md:pl-12">
           <figure className="aspect-[4/4.4] overflow-hidden rounded-t-[160px] rounded-b-2xl md:aspect-[4/4.6] md:rounded-t-[220px] 3xl:-mr-[calc(max(0px,(100vw-120rem)/2)+3.5rem)] 3xl:aspect-auto 3xl:h-[min(76vh,780px)] 3xl:rounded-r-none 3xl:rounded-tl-[260px]">
-            <Photo src="/brand/hero-marigold.jpg" alt="Model in a marigold Kanjivaram saree with royal blue border in a temple courtyard"
+            <Photo src="/brand/hero-marigold.webp" sizes="(min-width: 768px) 50vw, 100vw" fetchPriority="high" alt="Model in a marigold Kanjivaram saree with royal blue border in a temple courtyard"
               className="size-full animate-[drift_18s_ease-in-out_infinite_alternate] object-cover object-[55%_30%]" />
           </figure>
           <figure className="absolute bottom-0 left-0 aspect-[4/5] w-[36%] overflow-hidden rounded-2xl border-[6px] border-background shadow-[0_20px_40px_-18px_color-mix(in_oklab,var(--cocoa)_45%,transparent)]">
-            <Photo src="/brand/peach-bhairavi.jpg" alt="Model in a peach tissue silk saree" className="size-full object-cover" />
+            <Photo src="/brand/peach-bhairavi.webp" sizes="(min-width: 768px) 18vw, 36vw" alt="Model in a peach tissue silk saree" className="size-full object-cover" />
           </figure>
           {hero && (
             <Link to="/p/hindol" className="absolute bottom-14 right-3 inline-flex items-center gap-2 rounded-full bg-paper px-4 py-2.5 text-xs font-semibold shadow-lg transition-transform hover:-translate-y-0.5 md:bottom-[74px] md:right-5 md:text-sm">
@@ -103,7 +100,7 @@ export default function Home() {
             if (!p) return isLoading ? <Skeleton key={k} className="aspect-[3/4.4] rounded-t-[120px] rounded-b-2xl" /> : null
             return (
               <Link key={k} to={`/shop?mood=${k}`} className="group relative isolate aspect-[3/4.4] overflow-hidden rounded-t-[120px] rounded-b-2xl text-white">
-                <Photo src={cover(p)} tone={p.swatch} alt="" loading="lazy" className="absolute inset-0 -z-20 size-full object-cover transition duration-700 group-hover:scale-105" />
+                <Photo src={cover(p)} tone={p.swatch} alt="" loading="lazy" sizes="(min-width: 1024px) 17vw, (min-width: 640px) 33vw, 50vw" className="absolute inset-0 -z-20 size-full object-cover transition duration-700 group-hover:scale-105" />
                 <span className="absolute inset-0 -z-10 bg-gradient-to-t from-[color-mix(in_oklab,var(--foreground)_75%,transparent)] to-transparent to-55%" />
                 <span className="absolute bottom-8 left-4 font-heading text-xl md:text-2xl">{m.label}</span>
                 <span className="absolute bottom-3.5 left-4 text-[11px] uppercase tracking-[0.12em] opacity-85">Raag {p.raga}</span>
@@ -124,7 +121,7 @@ export default function Home() {
 
       <section className="container-x grid items-center gap-8 pt-10 md:grid-cols-[1.1fr_1fr] md:gap-16 md:pt-16">
         <figure className="aspect-[4/3.4] overflow-hidden rounded-2xl md:aspect-square 3xl:aspect-[5/4]">
-          <Photo src="/brand/hero-peach.jpg" alt="Model in a peach saree on a garden path" loading="lazy" className="size-full object-cover" />
+          <Photo src="/brand/hero-peach.webp" sizes="(min-width: 768px) 50vw, 100vw" alt="Model in a peach saree on a garden path" loading="lazy" className="size-full object-cover" />
         </figure>
         <div>
           <p className="eyebrow">Raag Bhairavi</p>

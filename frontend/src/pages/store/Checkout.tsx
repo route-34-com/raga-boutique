@@ -13,6 +13,7 @@ import { keys, useAddresses, useMe, useSettings } from "@/hooks/queries"
 import { ApiError, post } from "@/lib/api"
 import { useTitle } from "@/hooks/useTitle"
 import { cover, fmtPhone, inr } from "@/lib/format"
+import { upiQrOn } from "@/lib/payment"
 import type { Address } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/stores/cart"
@@ -73,7 +74,7 @@ export default function Checkout() {
   const [error, setError] = useState<string[]>([])
   const { data: settings } = useSettings()
   const online = settings?.online_payments ?? ""
-  const upiReady = !!settings?.upi_id && !online
+  const upiReady = upiQrOn(settings)
   const [choice, setPay] = useState<"online" | "cod" | "upi" | null>(null)
   const pay = choice ?? (online ? "online" : "cod")
   const payOnline = usePayOnline()
@@ -156,12 +157,6 @@ export default function Checkout() {
               <Label className={cn("flex cursor-pointer items-center gap-3 rounded-xl border bg-paper p-4 font-normal", pay === "upi" && "border-cocoa ring-1 ring-cocoa")}>
                 <RadioGroupItem value="upi" />
                 <span>Pay now with UPI<span className="block text-xs text-muted-foreground">GPay, PhonePe, Paytm or any UPI app · scan a QR code after placing the order</span></span>
-              </Label>
-            )}
-            {!online && (
-              <Label className="flex cursor-not-allowed items-center gap-3 rounded-xl border bg-paper p-4 font-normal opacity-60">
-                <RadioGroupItem value="card" disabled /> Cards &amp; netbanking
-                <span className="ml-auto rounded-md bg-sand px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide">Coming soon</span>
               </Label>
             )}
           </RadioGroup>

@@ -16,8 +16,8 @@ type CartState = {
 
 type Saved = { lines: CartLine[]; wishlist: number[] }
 
-// The bag lives in this tab only (sessionStorage: survives reloads, not closing the tab).
-// The wishlist stays in localStorage, across visits.
+// The bag and wishlist stay in localStorage, across visits on this browser.
+// A bag left in sessionStorage by the earlier tab-only version is picked up once.
 function read<T>(store: Storage, key: string, fallback: T): T {
   try { return JSON.parse(store.getItem(key) ?? "null") ?? fallback } catch { return fallback }
 }
@@ -25,9 +25,14 @@ function write(store: Storage, key: string, value: unknown) {
   try { store.setItem(key, JSON.stringify(value)) } catch { /* private mode or full: keep it in memory */ }
 }
 const splitStorage: PersistStorage<Saved> = {
-  getItem: () => ({ state: { lines: read(sessionStorage, "raga-bag", []), wishlist: read(localStorage, "raga-wishlist", []) } }),
-  setItem: (_, { state }) => { write(sessionStorage, "raga-bag", state.lines); write(localStorage, "raga-wishlist", state.wishlist) },
-  removeItem: () => { sessionStorage.removeItem("raga-bag"); localStorage.removeItem("raga-wishlist") },
+  getItem: () => ({
+    state: {
+      lines: read<CartLine[] | null>(localStorage, "raga-bag", null) ?? read(sessionStorage, "raga-bag", []),
+      wishlist: read(localStorage, "raga-wishlist", []),
+    },
+  }),
+  setItem: (_, { state }) => { write(localStorage, "raga-bag", state.lines); write(localStorage, "raga-wishlist", state.wishlist) },
+  removeItem: () => { localStorage.removeItem("raga-bag"); localStorage.removeItem("raga-wishlist") },
 }
 
 const same = (a: CartLine, productId: number, size: string | null) => a.productId === productId && a.size === size

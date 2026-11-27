@@ -5,7 +5,7 @@ import { ContactList } from "@/components/store/StoreLayout"
 import { useSettings } from "@/hooks/queries"
 import { useTitle } from "@/hooks/useTitle"
 import { inr } from "@/lib/format"
-import { paymentMethods } from "@/lib/payment"
+import { onlineOn, paymentMethods, upiQrOn } from "@/lib/payment"
 import type { StoreSettings } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import NotFound from "@/pages/store/NotFound"
@@ -46,7 +46,7 @@ const TOPICS: Record<string, Topic> = {
   },
   returns: {
     title: "Cancellation & refunds",
-    body: () => (
+    body: (s) => (
       <>
         <h2>Cancelling an order</h2>
         <ul>
@@ -56,7 +56,9 @@ const TOPICS: Record<string, Topic> = {
             We may cancel an order if a piece is out of stock or listed at a wrong price. If you have already paid, you get
             a full refund.
           </li>
-          <li>An online order that isn't paid within 30 minutes is cancelled automatically, and nothing is charged.</li>
+          {onlineOn(s) && (
+            <li>An online order that isn't paid within 30 minutes is cancelled automatically, and nothing is charged.</li>
+          )}
         </ul>
         <h2>Returns and exchanges</h2>
         <p>
@@ -70,9 +72,12 @@ const TOPICS: Record<string, Topic> = {
         </p>
         <h2>Refunds</h2>
         <ul>
-          <li>Online payments are refunded to the same card, UPI account or bank account they were paid from.</li>
+          {onlineOn(s) && (
+            <li>Payments made online through Razorpay are refunded to the same card, UPI account or bank account they came from.</li>
+          )}
+          {upiQrOn(s) && <li>Payments made by scanning our UPI QR code are refunded by UPI to the account they came from.</li>}
           <li>Refunds are started the day the cancellation is accepted and usually reach you in 5–7 working days, depending on your bank.</li>
-          <li>Cash on delivery and UPI-on-delivery orders are refunded by bank transfer or UPI to the details you share with us.</li>
+          <li>Orders paid in cash or by UPI on delivery are refunded by bank transfer or UPI to the details you share with us.</li>
         </ul>
       </>
     ),
@@ -119,7 +124,7 @@ const TOPICS: Record<string, Topic> = {
   },
   privacy: {
     title: "Privacy policy",
-    body: () => (
+    body: (s) => (
       <>
         <p>Raga Boutique collects only what it needs to take and deliver your orders.</p>
         <h2>What we collect</h2>
@@ -129,10 +134,17 @@ const TOPICS: Record<string, Topic> = {
           <li>Your orders and reviews, so you can see them under My orders.</li>
         </ul>
         <h2>Payments</h2>
-        <p>
-          Online payments are handled by Razorpay. Your card, UPI and bank details go to Razorpay directly; we never see or
-          store them.
-        </p>
+        {onlineOn(s) ? (
+          <p>
+            Online payments are handled by Razorpay. Your card, UPI and bank details go to Razorpay directly; we never see or
+            store them.
+          </p>
+        ) : (
+          <p>
+            You pay {paymentMethods(s).join(", or ")}. We never see or store your card or bank details; if you pay by UPI,
+            we only keep the UPI reference number to match your payment.
+          </p>
+        )}
         <h2>Who we share it with</h2>
         <p>
           Only the services needed to run your order: the courier (name, phone, address), and the services that send our SMS,

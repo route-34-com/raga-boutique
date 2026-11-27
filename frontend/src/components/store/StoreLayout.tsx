@@ -11,6 +11,7 @@ import { StoreLocation } from "@/components/store/StoreLocation"
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
 import { useCategories, useMe, useSettings } from "@/hooks/queries"
 import { fmtPhone, inr, waLink } from "@/lib/format"
+import { onlineOn, upiQrOn } from "@/lib/payment"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/stores/cart"
 import { useBrandSync, useLogo } from "@/lib/brand"
@@ -170,8 +171,8 @@ function Footer() {
         <ul className="flex flex-wrap gap-2 text-xs font-semibold">
           <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><Banknote className="size-4 text-marigold" />Cash on delivery</li>
           <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><Smartphone className="size-4 text-marigold" />UPI on delivery</li>
-          {s?.upi_id && <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><QrCode className="size-4 text-marigold" />UPI QR at checkout</li>}
-          {s?.online_payments === "razorpay" && <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><CreditCard className="size-4 text-marigold" />Cards, UPI &amp; netbanking online</li>}
+          {upiQrOn(s) && <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><QrCode className="size-4 text-marigold" />UPI QR at checkout</li>}
+          {onlineOn(s) && <li className="flex items-center gap-1.5 rounded-full px-3 py-1.5 ring-1 ring-sand/30"><CreditCard className="size-4 text-marigold" />Cards, UPI &amp; netbanking online</li>}
         </ul>
         <Link to="/policies/terms" className="text-sm opacity-80 hover:text-marigold hover:opacity-100 link-quiet">Payment terms</Link>
       </div>

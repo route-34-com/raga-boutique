@@ -21,7 +21,7 @@ export default function Story() {
       </section>
       <section className="container-x grid items-center gap-8 pt-8 md:grid-cols-[1fr_1.1fr] md:gap-20">
         <figure className="aspect-[4/5] max-h-[600px] overflow-hidden rounded-t-[200px] rounded-b-2xl ring-2 ring-marigold/60 ring-offset-4 ring-offset-background">
-          <Photo src="/brand/story-together.jpg" alt="Suja and her daughter handing a customer a Raga Boutique bag in the showroom" className="size-full object-cover object-top" />
+          <Photo src="/brand/story-together.webp" sizes="(min-width: 768px) 45vw, 100vw" alt="Suja and her daughter handing a customer a Raga Boutique bag in the showroom" className="size-full object-cover object-top" />
         </figure>
         <div className="space-y-4">
           <p className="eyebrow">Meet Suja and her daughter</p>
@@ -33,7 +33,7 @@ export default function Story() {
         </div>
       </section>
       <section className="container-x grid items-center gap-8 pt-14 md:grid-cols-[1.1fr_1fr] md:gap-24">
-        <figure className="aspect-[4/5] max-h-[640px] overflow-hidden rounded-2xl"><Photo src="/brand/story-showroom.jpg" alt="Suja and her daughter with stacks of sarees at the Raga showroom counter" className="size-full object-cover object-top" /></figure>
+        <figure className="aspect-[4/5] max-h-[640px] overflow-hidden rounded-2xl"><Photo src="/brand/story-showroom.webp" sizes="(min-width: 768px) 50vw, 100vw" alt="Suja and her daughter with stacks of sarees at the Raga showroom counter" className="size-full object-cover object-top" /></figure>
         <div className="space-y-4">
           <p className="eyebrow">Why ragas?</p>
           <h2 className="text-[clamp(30px,3.6vw,46px)] leading-tight">A colour sets a mood <em className="text-rust">before a word is said.</em></h2>

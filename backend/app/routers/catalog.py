@@ -1,14 +1,14 @@
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, HTTPException, Query
-from sqlalchemy import case, func, or_, select
+from sqlalchemy import String, case, cast, func, or_, select
 from sqlalchemy.orm import selectinload
 
 from app.core.deps import DB
 from app.models import Category, Order, OrderItem, Product
 from app.schemas.catalog import CategoryOut, ProductCard, ProductDetail, PublicSettings
 from app.schemas.review import ReviewList, ReviewOut
-from app.services import payments, reviews
+from app.services import payments, reviews, search
 from app.services.orders import store_settings
 
 router = APIRouter(prefix="/api", tags=["catalog"])
@@ -34,17 +34,22 @@ def products(
     if mood:
         query = query.where(Product.mood == mood)
     # Every word must match somewhere: "red silk" finds red pieces that are also silk.
-    for word in (q or "").split()[:6]:
-        like = f"%{word}%"
-        query = query.where(
-            or_(
-                Product.name.ilike(like),
-                Product.raga.ilike(like),
-                Product.mood.ilike(like),
-                Product.tag.ilike(like),
-                Category.name.ilike(like),
-            )
-        )
+    # A word matches any of its spellings: "sari", "pattu" and "kanchipuram" find sarees, silk and Kanjivaram.
+    fields = (
+        Product.name,
+        Product.raga,
+        Product.mood,
+        Product.tag,
+        Product.color,
+        Product.material,
+        Product.work,
+        Product.pattern,
+        cast(Product.details, String),
+        cast(Product.occasions, String),
+        Category.name,
+    )
+    for word in search.words(q):
+        query = query.where(or_(*(f.ilike(f"%{t}%") for t in search.terms(word) for f in fields)))
     if sort == "popular":
         # Units ordered, cancelled orders excluded; never-ordered pieces fall back to the shop's own order.
         sold = (

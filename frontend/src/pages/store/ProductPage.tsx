@@ -72,12 +72,12 @@ export default function ProductPage() {
             {p.images.map((im, i) => (
               <button key={im.id} onClick={() => setImg(i)} aria-label={`Photo ${i + 1}`}
                 className={cn("aspect-[4/5] w-16 overflow-hidden rounded-lg transition md:w-auto", i === img ? "outline-2 outline-offset-2 outline-cocoa" : "opacity-55")}>
-                <Photo src={im.url} tone={p.swatch} alt="" className="size-full object-cover" />
+                <Photo src={im.url} tone={p.swatch} alt="" sizes="80px" className="size-full object-cover" />
               </button>
             ))}
           </div>
           <figure className="aspect-[4/5] overflow-hidden rounded-2xl bg-sand">
-            <Photo src={p.images[img]?.url} tone={p.swatch} alt={p.name} className="size-full object-cover" />
+            <Photo src={p.images[img]?.url} tone={p.swatch} alt={p.name} sizes="(min-width: 768px) 55vw, 100vw" className="size-full object-cover" />
           </figure>
         </div>
 
