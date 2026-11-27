@@ -164,6 +164,41 @@ const TOPICS: Record<string, Topic> = {
       </>
     ),
   },
+  faq: {
+    title: "Common questions",
+    body: (s) => (
+      <>
+        <h2>How long does delivery take?</h2>
+        <p>
+          We dispatch within 2–3 working days of confirming your order, and delivery takes 3–6 working days after that,
+          anywhere in India.
+        </p>
+        <h2>Is delivery free?</h2>
+        <p>
+          Yes, on orders above {inr(s?.free_ship_above ?? 5000)}. Below that, delivery is a flat {inr(s?.ship_fee ?? 150)}.
+        </p>
+        <h2>Can I pay cash on delivery?</h2>
+        <p>Yes. You can pay {paymentMethods(s).join("; or ")}.</p>
+        <h2>Can I return or exchange a saree?</h2>
+        <p>
+          All sales are final, so we don't take returns for a change of mind. If a piece arrives damaged or isn't the one you
+          ordered, tell us within 48 hours of delivery with photos and we'll replace or refund it.{" "}
+          <Link to="/policies/returns">Cancellation &amp; refunds</Link>
+        </p>
+        <h2>Do you do fall, pico and blouse stitching?</h2>
+        <p>Yes, on request. Message us on WhatsApp after you order and we'll share the charges and time.</p>
+        <h2>Can I see a saree on a video call first?</h2>
+        <p>Yes. Message us on WhatsApp to book a video call and we'll show you the drape and the true colour in daylight.</p>
+        <h2>How do I track my order?</h2>
+        <p>
+          Once it ships, we send the courier name and tracking ID by WhatsApp and email. It also shows under{" "}
+          <Link to="/account">My orders</Link>.
+        </p>
+        <h2>Where is your showroom?</h2>
+        <p>{s?.contact_address || "Tiruchengode, Tamil Nadu"}{s?.contact_hours ? `. Open ${s.contact_hours}.` : "."}</p>
+      </>
+    ),
+  },
   contact: {
     title: "Contact us",
     body: (s) => (

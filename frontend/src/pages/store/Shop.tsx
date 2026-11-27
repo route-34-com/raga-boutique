@@ -52,7 +52,7 @@ export default function Shop() {
   const title = search ? `“${search}”` : onlyMood ? MOODS[onlyMood]?.label : cat ? cats.find((c) => c.id === cat)?.name : "Shop all"
   const sub = search ? <>Search results · <Link to={`/shop${cat ? "/" + cat : ""}`} className="hover:text-rust link-quiet">clear search</Link></>
     : onlyMood ? MOODS[onlyMood]?.note : "Handwoven, small-batch, named for the music they remind us of."
-  useTitle(search ? `Search: ${search}` : title ?? "Shop")
+  useTitle(search ? `Search: ${search}` : onlyMood ? title : cat ? (title ? `${title} Online` : undefined) : "Shop Sarees & Ethnic Wear")
 
   if (cat && cats.length && !cats.some((c) => c.id === cat)) return <NotFound />
 

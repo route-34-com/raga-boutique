@@ -44,7 +44,7 @@ def test_home_category_and_policy_pages():
     home = get("/")
     assert home.status_code == 200 and "ClothingStore" in home.text and 'href="/p/megh"' in home.text
     cat = get("/shop/sarees")
-    assert cat.status_code == 200 and "<title>Sarees · Raga Boutique</title>" in cat.text
+    assert cat.status_code == 200 and "<title>Sarees Online · Raga Boutique</title>" in cat.text
     pol = get("/policies/returns")
     assert pol.status_code == 200 and "Cancellation &amp; refunds" in pol.text
 
@@ -107,6 +107,8 @@ def test_key_policy_facts_match_the_react_pages():
         "courts of Namakkal district",
         "isn't paid within 30 minutes",
         "Raga began in 2013",
+        "We dispatch within 2–3 working days of confirming your order",
+        "Yes, on request. Message us on WhatsApp after you order",
     ):
         assert fact in react, f"React text changed: {fact!r}; update app/routers/page_text.py to match"
 
@@ -129,4 +131,22 @@ def test_product_ratings_and_shop_hours_in_structured_data():
     shop = next(d for d in ld(get("/").text) if d["@type"] == "ClothingStore")
     hours = shop["openingHoursSpecification"][0]
     assert (hours["opens"], hours["closes"], len(hours["dayOfWeek"])) == ("10:00", "20:00", 6)
+    assert shop.get("geo", {}).get("latitude") == 11.3781119 or "address" not in shop
     assert pages.opening_hours("open all day") == []
+
+
+def test_trailing_slash_moves_to_one_address():
+    c = TestClient(app, follow_redirects=False)
+    r = c.get("/shop/")
+    assert r.status_code == 301 and r.headers["location"] == "/shop"
+    r = c.get("/p/yaman/?ref=wa")
+    assert r.status_code == 301 and r.headers["location"] == "/p/yaman?ref=wa"
+    assert c.get("/").status_code == 200
+    assert c.get("/%2Fevil.example/").headers["location"] == "/evil.example"
+
+
+def test_common_questions_page():
+    r = get("/policies/faq")
+    assert r.status_code == 200 and "<title>Common questions · Raga Boutique</title>" in r.text
+    assert "Can I pay cash on delivery?" in r.text and "within 48 hours of delivery" in r.text
+    assert "/policies/faq" in get("/sitemap.xml").text

@@ -16,8 +16,8 @@ from pathlib import Path
 from xml.sax.saxutils import escape as xml_escape
 
 import httpx
-from fastapi import APIRouter, HTTPException, Response
-from fastapi.responses import HTMLResponse, PlainTextResponse
+from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
@@ -42,6 +42,10 @@ POLICIES = {
     ),
     "terms": ("Terms & conditions", "The terms for buying from Raga Boutique, Tiruchengode."),
     "privacy": ("Privacy policy", "What Raga Boutique collects, why, and who it is shared with."),
+    "faq": (
+        "Common questions",
+        "Delivery time, cash on delivery, returns, fall and pico, video calls and the showroom: quick answers from Raga Boutique.",
+    ),
     "contact": ("Contact us", "Call, WhatsApp, email or visit Raga Boutique in Tiruchengode, Tamil Nadu."),
 }
 PRIVATE = re.compile(r"^(checkout|account|wishlist|orders/[^/]+|admin(/.*)?)$")
@@ -49,6 +53,7 @@ SHELL_FILES = (
     Path(__file__).resolve().parents[1] / "web" / "shell.html",  # copied there by the Vercel build
     Path(__file__).resolve().parents[3] / "frontend" / "dist" / "index.html",  # a server with the built frontend
 )
+SHOP_LAT, SHOP_LNG = 11.3781119, 77.8881439
 CACHE = "public, max-age=0, s-maxage=300, stale-while-revalidate=86400"
 
 
@@ -175,6 +180,10 @@ def store_data(db) -> dict:
             "postalCode": (re.findall(r"\b6\d{5}\b", s.contact_address) or [""])[-1],
             "addressCountry": "IN",
         }
+    if s.contact_address:
+        # The showroom's pin on Google Maps (Raga Boutique, Erode Main Road, Tiruchengode).
+        data["geo"] = {"@type": "GeoCoordinates", "latitude": SHOP_LAT, "longitude": SHOP_LNG}
+        data["hasMap"] = f"https://www.google.com/maps/search/?api=1&query={SHOP_LAT},{SHOP_LNG}"
     social = [u for u in (s.instagram_url, s.facebook_url) if u]
     if social:
         data["sameAs"] = social
@@ -337,11 +346,14 @@ def page_for(db, path: str) -> Page:
                 "query-input": "required name=search_term_string",
             },
         }
-        return Page(f"{BRAND} — The Music of Colours", f"{TAGLINE} {free}", "/", body, data=[store_data(db), website])
+        home_desc = f"Handwoven silk sarees and ethnic wear from {BRAND}, Tiruchengode, each named after a raga. {free}"
+        return Page(
+            f"{BRAND} | Silk Sarees & Ethnic Wear in Tiruchengode", home_desc, "/", body, data=[store_data(db), website]
+        )
     if path == "shop":
         cats = active_categories(db)
         return Page(
-            f"Shop all · {BRAND}",
+            f"Shop Sarees & Ethnic Wear · {BRAND}",
             clip(f"Shop handwoven sarees, lehengas, anarkalis and dress materials from {BRAND}, Tiruchengode. {free}"),
             "/shop",
             f"{nav(cats)}<main><h1>Shop all</h1>{product_list(active_products(db))}</main>",
@@ -352,7 +364,7 @@ def page_for(db, path: str) -> Page:
         if cat:
             items = active_products(db, cat.id)
             return Page(
-                f"{cat.name} · {BRAND}",
+                f"{cat.name} Online · {BRAND}",
                 clip(
                     f"Shop {cat.name.lower()} at {BRAND}: {len(items)} handpicked pieces, each named after a raga. {free}"
                 ),
@@ -427,9 +439,13 @@ def llms(db: DB):
 
 
 @router.get("/{full_path:path}", include_in_schema=False)
-def page(full_path: str, db: DB):
+def page(full_path: str, request: Request, db: DB):
     if full_path.startswith(("api/", "uploads/", "assets/", "brand/")):
         raise HTTPException(404)
+    if full_path.endswith("/"):
+        # One address per page: /shop/ moves permanently to /shop, keeping any search.
+        target = "/" + full_path.strip("/") + (f"?{request.url.query}" if request.url.query else "")
+        return RedirectResponse(target, status_code=301)
     pg = page_for(db, full_path)
     try:
         doc = render(pg)

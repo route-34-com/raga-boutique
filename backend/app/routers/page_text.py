@@ -189,6 +189,24 @@ def policy(topic: str, s: StoreSettings) -> str:
             "account. To have your account and details deleted, contact us; order records we must keep for tax purposes "
             "are kept for the period the law requires.</p>"
         ),
+        "faq": lambda: (
+            "<h2>How long does delivery take?</h2><p>We dispatch within 2–3 working days of confirming your order, and "
+            "delivery takes 3–6 working days after that, anywhere in India.</p>"
+            f"<h2>Is delivery free?</h2><p>Yes, on orders above {rupees(s.free_ship_above)}. Below that, delivery is a flat "
+            f"{rupees(s.ship_fee)}.</p>"
+            f"<h2>Can I pay cash on delivery?</h2><p>Yes. You can pay {e('; or '.join(payment_methods(s)))}.</p>"
+            "<h2>Can I return or exchange a saree?</h2><p>All sales are final, so we don't take returns for a change of "
+            "mind. If a piece arrives damaged or isn't the one you ordered, tell us within 48 hours of delivery with photos "
+            "and we'll replace or refund it.</p>"
+            "<h2>Do you do fall, pico and blouse stitching?</h2><p>Yes, on request. Message us on WhatsApp after you order "
+            "and we'll share the charges and time.</p>"
+            "<h2>Can I see a saree on a video call first?</h2><p>Yes. Message us on WhatsApp to book a video call and we'll "
+            "show you the drape and the true colour in daylight.</p>"
+            "<h2>How do I track my order?</h2><p>Once it ships, we send the courier name and tracking ID by WhatsApp and "
+            "email. It also shows under My orders.</p>"
+            f"<h2>Where is your showroom?</h2><p>{e(s.contact_address or 'Tiruchengode, Tamil Nadu')}"
+            f"{f'. Open {e(s.contact_hours)}.' if s.contact_hours else '.'}</p>"
+        ),
         "contact": lambda: (
             "<p>Questions about a piece, an order or a refund? Message us, call, or visit the showroom. Want to see a "
             "drape or the true colour first? Book a video call and we'll walk you through the pieces.</p>"
