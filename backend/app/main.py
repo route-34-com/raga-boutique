@@ -42,7 +42,7 @@ def create_app() -> FastAPI:
         # s-maxage lets Vercel's CDN keep the photo; without it the CDN asks the function every time.
         return Response(
             data,
-            media_type="image/jpeg",
+            media_type="image/webp" if name.endswith(".webp") else "image/jpeg",
             headers={"Cache-Control": "public, max-age=31536000, s-maxage=31536000, immutable"},
         )
 

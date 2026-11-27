@@ -14,14 +14,16 @@ from app.models import ImageFile
 MAX_BYTES = 12 * 1024 * 1024
 MAX_SIDE = 1600
 URL_PREFIX = "/uploads/products/"
-# Smaller copies for phones and product cards: "<name>.w480.jpg" and "<name>.w960.jpg" next to "<name>.jpg".
+# Smaller copies for phones and product cards: "<name>.w480.webp" and "<name>.w960.webp" next to "<name>.jpg"
+# (".jpg" copies are still served for links made before WebP).
 WIDTHS = (480, 960)
-VARIANT = re.compile(r"^(?P<stem>[\w-]+)\.w(?P<width>480|960)\.jpg$")
-SAFE_NAME = re.compile(r"^[\w.-]+\.jpg$")
+FORMATS = {"jpg": "JPEG", "webp": "WEBP"}
+VARIANT = re.compile(r"^(?P<stem>[\w-]+)\.w(?P<width>480|960)\.(?P<ext>jpg|webp)$")
+SAFE_NAME = re.compile(r"^[\w.-]+\.(jpg|webp)$")
 
 
 def store_image_file(name: str, data: bytes) -> str:
-    """Writes finished JPEG bytes to the configured store. Returns the public URL path."""
+    """Writes finished image bytes to the configured store. Returns the public URL path."""
     if get_settings().image_store == "db":
         with SessionLocal() as db:
             db.merge(ImageFile(name=name, data=data))
@@ -45,12 +47,15 @@ def load_image_file(name: str) -> bytes | None:
     return path.read_bytes() if path.is_file() else None
 
 
-def _shrink(data: bytes, width: int) -> bytes:
+def _shrink(data: bytes, width: int, ext: str = "webp") -> bytes:
     img = Image.open(BytesIO(data)).convert("RGB")
     if img.width > width:
         img = img.resize((width, round(img.height * width / img.width)), Image.LANCZOS)
     out = BytesIO()
-    img.save(out, "JPEG", quality=80, optimize=True, progressive=True)
+    if ext == "webp":
+        img.save(out, "WEBP", quality=78, method=6)
+    else:
+        img.save(out, "JPEG", quality=80, optimize=True, progressive=True)
     return out.getvalue()
 
 
@@ -74,7 +79,7 @@ def load_or_make_variant(name: str) -> bytes | None:
     original = load_image_file(f"{m['stem']}.jpg") or _static_original(f"{m['stem']}.jpg")
     if original is None:
         return None
-    data = _shrink(original, int(m["width"]))
+    data = _shrink(original, int(m["width"]), m["ext"])
     store_image_file(name, data)
     return data
 
@@ -93,7 +98,7 @@ def save_product_image(raw: bytes) -> str:
     img.save(out, "JPEG", quality=85, optimize=True, progressive=True)
     stem = uuid.uuid4().hex
     for width in WIDTHS:
-        store_image_file(f"{stem}.w{width}.jpg", _shrink(out.getvalue(), width))
+        store_image_file(f"{stem}.w{width}.webp", _shrink(out.getvalue(), width, "webp"))
     return store_image_file(f"{stem}.jpg", out.getvalue())
 
 
@@ -102,7 +107,7 @@ def delete_product_image(url: str) -> None:
         return
     name = Path(url).name
     stem = name.removesuffix(".jpg")
-    names = [name, *(f"{stem}.w{w}.jpg" for w in WIDTHS)]
+    names = [name, *(f"{stem}.w{w}.{x}" for w in WIDTHS for x in FORMATS)]
     if get_settings().image_store == "db":
         with SessionLocal() as db:
             for n in names:

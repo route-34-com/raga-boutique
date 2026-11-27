@@ -24,8 +24,10 @@ def test_upload_makes_small_copies(admin):
     ]
     stem = url.removesuffix(".jpg")
     assert size(admin.get(url).content) == (1280, 1600)
-    assert size(admin.get(f"{stem}.w480.jpg").content) == (480, 600)
-    assert size(admin.get(f"{stem}.w960.jpg").content) == (960, 1200)
+    small = admin.get(f"{stem}.w480.webp")
+    assert small.headers["content-type"] == "image/webp" and size(small.content) == (480, 600)
+    assert size(admin.get(f"{stem}.w960.webp").content) == (960, 1200)
+    assert size(admin.get(f"{stem}.w480.jpg").content) == (480, 600)  # older links still work
 
 
 def test_missing_copy_is_made_from_the_original_and_kept():
@@ -62,3 +64,19 @@ def test_copy_of_a_static_demo_photo_is_made_from_the_site_copy(monkeypatch):
     assert size(data) == (480, 600)
     assert calls == ["http://localhost:5173/uploads/products/static-demo.jpg"]
     assert images.load_or_make_variant("static-demo.w480.jpg") == data and len(calls) == 1
+
+
+def test_webp_copy_is_made_on_request_and_is_smaller_than_jpeg():
+    from PIL import ImageDraw
+
+    img = Image.new("RGB", (1200, 1500), "white")
+    d = ImageDraw.Draw(img)
+    for i in range(0, 1200, 7):
+        d.line((i, 0, 1200 - i, 1500), fill=(i % 255, 90, 160), width=3)
+    buf = BytesIO()
+    img.save(buf, "JPEG", quality=90)
+    store_image_file("busy-piece.jpg", buf.getvalue())
+    c = TestClient(app)
+    webp, jpg = c.get("/uploads/products/busy-piece.w480.webp"), c.get("/uploads/products/busy-piece.w480.jpg")
+    assert webp.status_code == jpg.status_code == 200
+    assert webp.headers["content-type"] == "image/webp" and len(webp.content) < len(jpg.content)

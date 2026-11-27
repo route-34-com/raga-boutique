@@ -11,10 +11,10 @@ type PhotoProps = React.ComponentProps<"img"> & {
 const PRODUCT_PHOTO = /^(\/uploads\/products\/[\w-]+)\.jpg$/
 const BANNER = /^(\/brand\/[\w-]+)\.webp$/
 
-/** Product photos have 480 and 960px copies, banners a 640px one; the browser picks the smallest that looks sharp. */
+/** Product photos have 480 and 960px WebP copies, banners a 640px one; the browser picks the smallest that looks sharp. */
 function photoSrcSet(src?: string) {
   const m = src?.match(PRODUCT_PHOTO)
-  if (m) return `${m[1]}.w480.jpg 480w, ${m[1]}.w960.jpg 960w, ${src} 1600w`
+  if (m) return `${m[1]}.w480.webp 480w, ${m[1]}.w960.webp 960w, ${src} 1600w`
   const b = src?.match(BANNER)
   return b ? `${b[1]}-640.webp 640w, ${src} 1080w` : undefined
 }
