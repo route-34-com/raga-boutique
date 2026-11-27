@@ -34,10 +34,15 @@
         window.gtag = function () { dataLayer.push(arguments) }
         gtag("js", new Date())
         gtag("config", "G-S5BEHGR4CG", { allow_google_signals: false, allow_ad_personalization_signals: false })
-        var ga = document.createElement("script")
-        ga.async = true
-        ga.src = "https://www.googletagmanager.com/gtag/js?id=G-S5BEHGR4CG"
-        document.head.appendChild(ga)
+        // The script itself waits until the page has loaded, so it doesn't slow the first view; visits are queued.
+        window.addEventListener("load", function () {
+          setTimeout(function () {
+            var ga = document.createElement("script")
+            ga.async = true
+            ga.src = "https://www.googletagmanager.com/gtag/js?id=G-S5BEHGR4CG"
+            document.head.appendChild(ga)
+          }, 1500)
+        })
       }
     </script>
   </head>

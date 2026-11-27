@@ -65,12 +65,12 @@ function Header() {
       <div className="container-x grid grid-cols-[1fr_auto_1fr] items-center py-2.5">
         <button className="-ml-2 grid size-10 place-items-center justify-self-start xl:hidden" aria-label="Menu" onClick={() => setMenu(true)}><Menu className="size-5" /></button>
         <Link to="/" className="hidden justify-self-start xl:block" aria-label="Raga Boutique home">
-          <img src={logo} alt="Raga — The Music of Colours" className={cn("w-auto transition-[height]", scrolled ? "h-10" : "h-12")} />
+          <img src={logo} width={480} height={227} alt="Raga — The Music of Colours" className={cn("w-auto transition-[height]", scrolled ? "h-10" : "h-12")} />
         </Link>
         <NavLinks className="hidden items-center gap-1 py-2.5 text-[15px] font-medium xl:flex 2xl:gap-2" />
         {/* Small screens: logo centred between the menu button and the icons. Desktop: logo on the left (above). */}
         <Link to="/" className="justify-self-center px-2 xl:hidden" aria-label="Raga Boutique home">
-          <img src={logo} alt="Raga — The Music of Colours" className={cn("w-auto transition-[height]", scrolled ? "h-10" : "h-11 md:h-[52px]")} />
+          <img src={logo} width={480} height={227} alt="Raga — The Music of Colours" className={cn("w-auto transition-[height]", scrolled ? "h-10" : "h-11 md:h-[52px]")} />
         </Link>
         <div className="flex items-center justify-end gap-1">
           {me?.is_admin && <Link to="/admin" className="mr-1 hidden rounded-full bg-marigold px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-cocoa xl:block">Admin</Link>}
@@ -143,7 +143,7 @@ function Footer() {
     <footer className="mt-12 bg-cocoa px-4 pb-7 pt-12 text-sand sm:px-8 lg:mt-12 lg:px-14">
       <div className="mx-auto grid max-w-[1920px] gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_.8fr_.8fr_1.4fr]">
         <div>
-          <img src="/brand/logo-sm.png" alt="Raga" className="mb-4 w-[170px] brightness-0 invert-[.9] sepia-[.3]" />
+          <img src="/brand/logo-sm.webp" alt="Raga" className="mb-4 w-[170px] brightness-0 invert-[.9] sepia-[.3]" />
           <p className="max-w-[34ch] text-sm opacity-80">Handwoven sarees and ethnic wear, chosen the way you'd choose a song: by the mood it leaves you in.</p>
           <SocialLinks className="mt-5" linkClass="hover:bg-sand hover:text-cocoa" />
         </div>

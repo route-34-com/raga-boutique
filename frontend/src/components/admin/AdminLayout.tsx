@@ -78,7 +78,7 @@ export function AdminLayout() {
       <aside className="sticky top-0 z-30 bg-sidebar text-sidebar-foreground md:h-screen print:hidden">
         <div className="flex items-center justify-between px-3 pt-2.5 md:hidden">
           <NavLink to="/admin" className="flex items-center gap-2">
-            <img src="/brand/logo-sm.png" alt="Raga" className="w-16 brightness-0 invert-[.9] sepia-[.3]" />
+            <img src="/brand/logo-sm.webp" alt="Raga" className="w-16 brightness-0 invert-[.9] sepia-[.3]" />
             <span className="rounded-md bg-marigold px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-cocoa">Admin</span>
           </NavLink>
           <div className="flex items-center gap-1">
@@ -88,7 +88,7 @@ export function AdminLayout() {
         </div>
         <div className="flex items-center gap-2 overflow-x-auto px-3 py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:h-full md:flex-col md:items-stretch md:px-3.5 md:py-5">
           <NavLink to="/admin" className="hidden shrink-0 items-center gap-2.5 md:flex md:px-2 md:pb-5">
-            <img src="/brand/logo-sm.png" alt="Raga" className="w-16 brightness-0 invert-[.9] sepia-[.3] md:w-[92px]" />
+            <img src="/brand/logo-sm.webp" alt="Raga" className="w-16 brightness-0 invert-[.9] sepia-[.3] md:w-[92px]" />
             <span className="rounded-md bg-marigold px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.14em] text-cocoa">Admin</span>
           </NavLink>
           <nav className="flex gap-0.5 md:flex-col md:gap-0 md:overflow-y-auto md:[scrollbar-width:none]">

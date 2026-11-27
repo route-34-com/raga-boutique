@@ -55,6 +55,13 @@ SHELL_FILES = (
     Path(__file__).resolve().parents[3] / "frontend" / "dist" / "index.html",  # a server with the built frontend
 )
 SHOP_LAT, SHOP_LNG = 11.3781119, 77.8881439
+# The home banner is the largest thing on the first screen; fetching it before the scripts run speeds up the page.
+# Must match the banner's srcset and sizes in frontend/src/pages/store/Home.tsx.
+HERO_PRELOAD = (
+    '<link rel="preload" as="image" type="image/webp" href="/brand/hero-marigold-640.webp" '
+    'imagesrcset="/brand/hero-marigold-640.webp 640w, /brand/hero-marigold.webp 1080w" '
+    'imagesizes="(min-width: 768px) 50vw, 100vw" fetchpriority="high" />'
+)
 CACHE = "public, max-age=0, s-maxage=300, stale-while-revalidate=86400"
 
 
@@ -69,6 +76,7 @@ class Page:
     data: list[dict] = field(default_factory=list)
     status: int = 200
     index: bool = True
+    preload: str = ""  # extra <link rel="preload"> for the page's main image
 
 
 def site() -> str:
@@ -115,6 +123,7 @@ def render(page: Page) -> str:
     out = shell()
     url = absolute(page.path)
     head = [
+        *([page.preload] if page.preload else []),
         f"<title>{e(page.title)}</title>",
         f'<meta name="description" content="{e(page.description)}" />',
         f'<link rel="canonical" href="{e(url)}" />',
@@ -374,7 +383,12 @@ def page_for(db, path: str) -> Page:
         }
         home_desc = f"Handwoven silk sarees and ethnic wear from {BRAND}, Tiruchengode, each named after a raga. {free}"
         return Page(
-            f"{BRAND} | Silk Sarees & Ethnic Wear in Tiruchengode", home_desc, "/", body, data=[store_data(db), website]
+            f"{BRAND} | Silk Sarees & Ethnic Wear in Tiruchengode",
+            home_desc,
+            "/",
+            body,
+            data=[store_data(db), website],
+            preload=HERO_PRELOAD,
         )
     if path == "shop":
         cats = active_categories(db)

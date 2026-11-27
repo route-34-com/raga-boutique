@@ -5,9 +5,9 @@ import { useSettings } from "@/hooks/queries"
 export type Brand = "plum" | "cocoa"
 
 export const BRANDS: Record<Brand, { label: string; note: string; ink: string; logo: string; icon: string; iconType: string; touch: string }> = {
-  plum: { label: "Plum", note: "The colour of the Instagram logo", ink: "#732853", logo: "/brand/logo-plum.png",
+  plum: { label: "Plum", note: "The colour of the Instagram logo", ink: "#732853", logo: "/brand/logo-plum.webp",
     icon: "/brand/favicon-plum.png", iconType: "image/png", touch: "/brand/apple-touch-icon-plum.png" },
-  cocoa: { label: "Cocoa", note: "The original deep brown", ink: "#3d1d0f", logo: "/brand/logo-sm.png",
+  cocoa: { label: "Cocoa", note: "The original deep brown", ink: "#3d1d0f", logo: "/brand/logo-sm.webp",
     icon: "/brand/favicon.svg", iconType: "image/svg+xml", touch: "/brand/apple-touch-icon.png" },
 }
 

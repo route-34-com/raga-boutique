@@ -174,3 +174,8 @@ def test_old_site_pages_redirect_to_their_new_pages():
     for old, new in cases.items():
         r = c.get(old)
         assert (r.status_code, r.headers["location"]) == (301, new), old
+
+
+def test_home_preloads_its_banner_and_other_pages_do_not():
+    assert 'rel="preload" as="image"' in get("/").text
+    assert 'rel="preload" as="image"' not in get("/p/yaman").text

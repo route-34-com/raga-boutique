@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Check, Copy, Smartphone } from "lucide-react"
-import QRCode from "qrcode"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -25,7 +24,9 @@ export function UpiPay({ order, upiId, payee }: { order: OrderDetail; upiId: str
   const link = upiLink(upiId, payee, order.total, order.order_no)
 
   useEffect(() => {
-    QRCode.toDataURL(link, { width: 480, margin: 1, errorCorrectionLevel: "M", color: { dark: "#2a160c", light: "#ffffff" } }).then(setQr)
+    // Loaded only here, so the QR library isn't part of every page's download.
+    import("qrcode").then(({ default: QRCode }) =>
+      QRCode.toDataURL(link, { width: 480, margin: 1, errorCorrectionLevel: "M", color: { dark: "#2a160c", light: "#ffffff" } }).then(setQr))
   }, [link])
 
   const paid = useMutation({
