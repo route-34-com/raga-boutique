@@ -3,6 +3,7 @@ import uuid
 from io import BytesIO
 from pathlib import Path
 
+import httpx
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 from app.core.config import get_settings
@@ -53,13 +54,24 @@ def _shrink(data: bytes, width: int) -> bytes:
     return out.getvalue()
 
 
+def _static_original(name: str) -> bytes | None:
+    """On Vercel the demo catalogue photos are static files next to the site, not in the database."""
+    if get_settings().image_store != "db":
+        return None
+    try:
+        r = httpx.get(f"{get_settings().public_site_url.rstrip('/')}{URL_PREFIX}{name}", timeout=10)
+    except httpx.HTTPError:
+        return None
+    return r.content if r.status_code == 200 and r.headers.get("content-type", "").startswith("image/") else None
+
+
 def load_or_make_variant(name: str) -> bytes | None:
     """A smaller copy of a stored photo; made from the original and kept the first time it's asked for."""
     found = load_image_file(name)
     m = VARIANT.fullmatch(name)
     if found is not None or not m:
         return found
-    original = load_image_file(f"{m['stem']}.jpg")
+    original = load_image_file(f"{m['stem']}.jpg") or _static_original(f"{m['stem']}.jpg")
     if original is None:
         return None
     data = _shrink(original, int(m["width"]))

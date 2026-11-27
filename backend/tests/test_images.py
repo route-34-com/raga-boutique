@@ -41,3 +41,24 @@ def test_unknown_or_unsafe_names_are_404():
     assert c.get("/uploads/products/nothing.w480.jpg").status_code == 404
     assert c.get("/uploads/products/nothing.w123.jpg").status_code == 404
     assert c.get("/uploads/products/..%2F..%2Fsecret.jpg").status_code == 404
+
+
+def test_copy_of_a_static_demo_photo_is_made_from_the_site_copy(monkeypatch):
+    from types import SimpleNamespace
+
+    from app.services import images
+
+    calls = []
+    monkeypatch.setattr(get_settings(), "image_store", "db")
+    monkeypatch.setattr(
+        images.httpx,
+        "get",
+        lambda url, timeout: (
+            calls.append(url)
+            or SimpleNamespace(status_code=200, headers={"content-type": "image/jpeg"}, content=jpeg(1000, 1250))
+        ),
+    )
+    data = images.load_or_make_variant("static-demo.w480.jpg")
+    assert size(data) == (480, 600)
+    assert calls == ["http://localhost:5173/uploads/products/static-demo.jpg"]
+    assert images.load_or_make_variant("static-demo.w480.jpg") == data and len(calls) == 1
